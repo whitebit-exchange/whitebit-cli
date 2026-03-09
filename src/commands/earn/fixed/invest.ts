@@ -1,26 +1,30 @@
-import { defineCommand, option } from '@bunli/core';
+import { defineCommand } from '@bunli/core';
 import { z } from 'zod';
-
-import { AccountApi } from '../../lib/api/account';
-import { loadAuthConfig, loadConfig } from '../../lib/config';
-import { formatOutput } from '../../lib/formatter';
-import { HttpClient } from '../../lib/http';
+import { AccountApi } from '../../../lib/api/account';
+import { parseArg } from '../../../lib/cli-helpers';
+import { loadAuthConfig, loadConfig } from '../../../lib/config';
+import { formatOutput } from '../../../lib/formatter';
+import { HttpClient } from '../../../lib/http';
 
 export const accountInvestCommand = defineCommand({
   name: 'invest',
   description: 'Invest in a fixed plan',
-  options: {
-    planId: option(z.string().min(1), {
-      description: 'Investment plan ID',
-    }),
-    amount: option(z.string().min(1), {
-      short: 'a',
-      description: 'Amount to invest',
-    }),
-  },
-  handler: async ({ flags }) => {
+  handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
+
+    const planId = parseArg(
+      positional[0],
+      z.string().min(1),
+      'PLAN_ID',
+      'whitebit earn fixed invest <plan_id> <amount>',
+    );
+    const amount = parseArg(
+      positional[1],
+      z.string().min(1),
+      'AMOUNT',
+      'whitebit earn fixed invest <plan_id> <amount>',
+    );
 
     const client = new HttpClient({
       apiUrl: config.apiUrl,
@@ -30,8 +34,8 @@ export const accountInvestCommand = defineCommand({
     const api = new AccountApi(client);
 
     const response = await api.invest({
-      planId: flags.planId,
-      amount: flags.amount,
+      planId,
+      amount,
     });
 
     if (runtimeConfig.dryRun) {

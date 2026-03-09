@@ -1,22 +1,24 @@
-import { defineCommand, option } from '@bunli/core';
+import { defineCommand } from '@bunli/core';
 import { z } from 'zod';
-
-import { AccountApi } from '../../lib/api/account';
-import { loadAuthConfig, loadConfig } from '../../lib/config';
-import { formatOutput } from '../../lib/formatter';
-import { HttpClient } from '../../lib/http';
+import { AccountApi } from '../../../lib/api/account';
+import { parseArg } from '../../../lib/cli-helpers';
+import { loadAuthConfig, loadConfig } from '../../../lib/config';
+import { formatOutput } from '../../../lib/formatter';
+import { HttpClient } from '../../../lib/http';
 
 export const accountFlexCloseCommand = defineCommand({
-  name: 'flex-close',
+  name: 'close',
   description: 'Close a flexible investment',
-  options: {
-    id: option(z.coerce.number().int().positive(), {
-      description: 'Investment ID',
-    }),
-  },
-  handler: async ({ flags }) => {
+  handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
+
+    const id = parseArg(
+      positional[0],
+      z.coerce.number().int().positive(),
+      'ID',
+      'whitebit earn flex close <id>',
+    );
 
     const client = new HttpClient({
       apiUrl: config.apiUrl,
@@ -25,7 +27,7 @@ export const accountFlexCloseCommand = defineCommand({
     });
     const api = new AccountApi(client);
 
-    const response = await api.flexClose({ id: flags.id });
+    const response = await api.flexClose({ id });
 
     if (runtimeConfig.dryRun) {
       return;

@@ -1,26 +1,30 @@
-import { defineCommand, option } from '@bunli/core';
+import { defineCommand } from '@bunli/core';
 import { z } from 'zod';
-
-import { AccountApi } from '../../lib/api/account';
-import { loadAuthConfig, loadConfig } from '../../lib/config';
-import { formatOutput } from '../../lib/formatter';
-import { HttpClient } from '../../lib/http';
+import { AccountApi } from '../../../lib/api/account';
+import { parseArg } from '../../../lib/cli-helpers';
+import { loadAuthConfig, loadConfig } from '../../../lib/config';
+import { formatOutput } from '../../../lib/formatter';
+import { HttpClient } from '../../../lib/http';
 
 export const accountFlexWithdrawCommand = defineCommand({
-  name: 'flex-withdraw',
+  name: 'withdraw',
   description: 'Withdraw from flexible investment',
-  options: {
-    id: option(z.coerce.number().int().positive(), {
-      description: 'Investment ID',
-    }),
-    amount: option(z.string().min(1), {
-      short: 'a',
-      description: 'Amount to withdraw',
-    }),
-  },
-  handler: async ({ flags }) => {
+  handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
+
+    const id = parseArg(
+      positional[0],
+      z.coerce.number().int().positive(),
+      'ID',
+      'whitebit earn flex withdraw <id> <amount>',
+    );
+    const amount = parseArg(
+      positional[1],
+      z.string().min(1),
+      'AMOUNT',
+      'whitebit earn flex withdraw <id> <amount>',
+    );
 
     const client = new HttpClient({
       apiUrl: config.apiUrl,
@@ -30,8 +34,8 @@ export const accountFlexWithdrawCommand = defineCommand({
     const api = new AccountApi(client);
 
     const response = await api.flexWithdraw({
-      id: flags.id,
-      amount: flags.amount,
+      id,
+      amount,
     });
 
     if (runtimeConfig.dryRun) {
