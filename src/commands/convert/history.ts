@@ -3,18 +3,18 @@ import { z } from 'zod';
 
 import { ConvertApi } from '../../lib/api/convert';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
-import { formatOutput } from '../../lib/formatter';
+import { formatOutput, unwrapTableData } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
 
 export const convertHistoryCommand = defineCommand({
   name: 'history',
   description: 'Get conversion history',
   options: {
-    limit: option(z.number().min(1).max(500), {
+    limit: option(z.number().min(1).max(500).optional(), {
       short: 'l',
       description: 'Number of records to fetch (default: 50)',
     }),
-    offset: option(z.number().min(0), {
+    offset: option(z.number().min(0).optional(), {
       short: 'o',
       description: 'Pagination offset (default: 0)',
     }),
@@ -38,6 +38,7 @@ export const convertHistoryCommand = defineCommand({
       return;
     }
 
-    formatOutput(result, { format: runtimeConfig.format });
+    const data = runtimeConfig.format === 'table' ? unwrapTableData(result) : result;
+    formatOutput(data, { format: runtimeConfig.format });
   },
 });

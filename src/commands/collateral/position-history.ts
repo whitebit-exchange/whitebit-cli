@@ -2,7 +2,7 @@ import { defineCommand, option } from '@bunli/core';
 import { z } from 'zod';
 
 import { loadAuthConfig, loadConfig } from '../../lib/config';
-import { formatOutput } from '../../lib/formatter';
+import { formatOutput, unwrapTableData } from '../../lib/formatter';
 import { authenticatedPost } from '../../lib/http';
 
 export const collateralPositionHistoryCommand = defineCommand({
@@ -30,11 +30,16 @@ export const collateralPositionHistoryCommand = defineCommand({
       ...(flags.limit !== undefined && { limit: flags.limit }),
       ...(flags.offset !== undefined && { offset: flags.offset }),
     };
-    const response = await authenticatedPost('/api/v4/collateral-positions-history', body, config);
+    const response = await authenticatedPost(
+      '/api/v4/collateral-account/positions/history',
+      body,
+      config,
+    );
     if (runtimeConfig.dryRun) {
       return;
     }
 
-    formatOutput(response, { format: runtimeConfig.format });
+    const data = runtimeConfig.format === 'table' ? unwrapTableData(response) : response;
+    formatOutput(data, { format: runtimeConfig.format });
   },
 });

@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { SubAccountApi } from '../../lib/api/sub-account';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
-import { formatOutput } from '../../lib/formatter';
+import { formatOutput, unwrapTableData } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
 
 export const transferHistoryCommand = defineCommand({
@@ -37,6 +37,7 @@ export const transferHistoryCommand = defineCommand({
       return;
     }
 
-    formatOutput(result, { format: runtimeConfig.format });
+    const data = runtimeConfig.format === 'table' ? unwrapTableData(result) : result;
+    formatOutput(data, { format: runtimeConfig.format });
   },
 });
