@@ -1,7 +1,8 @@
-import { defineCommand, option } from '@bunli/core';
+import { defineCommand } from '@bunli/core';
 import { z } from 'zod';
 
 import { SubAccountApi } from '../../lib/api/sub-account';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
@@ -9,23 +10,31 @@ import { HttpClient } from '../../lib/http';
 export const apiKeyCreateCommand = defineCommand({
   name: 'api-key-create',
   description: 'Create API key for sub-account',
-  options: {
-    subAccountId: option(z.string().min(1), {
-      short: 's',
-      description: 'Sub-account ID',
-    }),
-    label: option(z.string().min(1), {
-      short: 'l',
-      description: 'API key label',
-    }),
-    permissions: option(z.string().min(1), {
-      short: 'p',
-      description: 'Comma-separated permissions (e.g., trade,withdraw)',
-    }),
-  },
-  handler: async ({ flags }) => {
+  handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
+
+    const subAccountId = parseArg(
+      positional[0],
+      z.string().min(1),
+      'SUB_ACCOUNT_ID',
+      'whitebit sub-account api-key-create <sub_account_id> <label> <permissions>',
+    );
+
+    const label = parseArg(
+      positional[1],
+      z.string().min(1),
+      'LABEL',
+      'whitebit sub-account api-key-create <sub_account_id> <label> <permissions>',
+    );
+
+    const permissionsString = parseArg(
+      positional[2],
+      z.string().min(1),
+      'PERMISSIONS',
+      'whitebit sub-account api-key-create <sub_account_id> <label> <permissions>',
+    );
+
     const httpClient = new HttpClient({
       apiUrl: config.apiUrl,
       apiKey: config.apiKey,
@@ -33,9 +42,9 @@ export const apiKeyCreateCommand = defineCommand({
     });
     const api = new SubAccountApi(httpClient);
     const result = await api.apiKeyCreate({
-      subAccountId: flags.subAccountId,
-      label: flags.label,
-      permissions: flags.permissions.split(',').map((p) => p.trim()),
+      subAccountId,
+      label,
+      permissions: permissionsString.split(',').map((p) => p.trim()),
     });
 
     if (runtimeConfig.dryRun) {

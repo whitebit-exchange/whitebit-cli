@@ -2,6 +2,7 @@ import { defineCommand, option } from '@bunli/core';
 import { z } from 'zod';
 
 import { SubAccountApi } from '../../lib/api/sub-account';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
@@ -10,14 +11,6 @@ export const transferCommand = defineCommand({
   name: 'transfer',
   description: 'Transfer funds to/from sub-account',
   options: {
-    ticker: option(z.string().min(1), {
-      short: 't',
-      description: 'Asset ticker (e.g., BTC)',
-    }),
-    amount: option(z.string().min(1), {
-      short: 'a',
-      description: 'Amount to transfer',
-    }),
     fromId: option(z.string().min(1).optional(), {
       short: 'f',
       description: 'Source sub-account ID (omit for main account)',
@@ -27,9 +20,24 @@ export const transferCommand = defineCommand({
       description: 'Destination sub-account ID (omit for main account)',
     }),
   },
-  handler: async ({ flags }) => {
+  handler: async ({ positional, flags }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
+
+    const ticker = parseArg(
+      positional[0],
+      z.string().min(1),
+      'ASSET',
+      'whitebit sub-account transfer <asset> <amount>',
+    );
+
+    const amount = parseArg(
+      positional[1],
+      z.string().min(1),
+      'AMOUNT',
+      'whitebit sub-account transfer <asset> <amount>',
+    );
+
     const httpClient = new HttpClient({
       apiUrl: config.apiUrl,
       apiKey: config.apiKey,
@@ -37,8 +45,8 @@ export const transferCommand = defineCommand({
     });
     const api = new SubAccountApi(httpClient);
     const result = await api.transfer({
-      ticker: flags.ticker,
-      amount: flags.amount,
+      ticker,
+      amount,
       fromId: flags.fromId,
       toId: flags.toId,
     });

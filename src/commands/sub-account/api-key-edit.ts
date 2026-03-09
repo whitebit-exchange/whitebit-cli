@@ -2,6 +2,7 @@ import { defineCommand, option } from '@bunli/core';
 import { z } from 'zod';
 
 import { SubAccountApi } from '../../lib/api/sub-account';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
@@ -10,14 +11,6 @@ export const apiKeyEditCommand = defineCommand({
   name: 'api-key-edit',
   description: 'Edit sub-account API key',
   options: {
-    subAccountId: option(z.string().min(1), {
-      short: 's',
-      description: 'Sub-account ID',
-    }),
-    apiKeyId: option(z.string().min(1), {
-      short: 'k',
-      description: 'API key ID',
-    }),
     label: option(z.string().min(1).optional(), {
       short: 'l',
       description: 'New API key label',
@@ -27,9 +20,24 @@ export const apiKeyEditCommand = defineCommand({
       description: 'Comma-separated permissions (e.g., trade,withdraw)',
     }),
   },
-  handler: async ({ flags }) => {
+  handler: async ({ positional, flags }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
+
+    const subAccountId = parseArg(
+      positional[0],
+      z.string().min(1),
+      'SUB_ACCOUNT_ID',
+      'whitebit sub-account api-key-edit <sub_account_id> <api_key_id>',
+    );
+
+    const apiKeyId = parseArg(
+      positional[1],
+      z.string().min(1),
+      'API_KEY_ID',
+      'whitebit sub-account api-key-edit <sub_account_id> <api_key_id>',
+    );
+
     const httpClient = new HttpClient({
       apiUrl: config.apiUrl,
       apiKey: config.apiKey,
@@ -37,8 +45,8 @@ export const apiKeyEditCommand = defineCommand({
     });
     const api = new SubAccountApi(httpClient);
     const result = await api.apiKeyEdit({
-      subAccountId: flags.subAccountId,
-      apiKeyId: flags.apiKeyId,
+      subAccountId,
+      apiKeyId,
       label: flags.label,
       permissions: flags.permissions
         ? flags.permissions.split(',').map((p) => p.trim())
