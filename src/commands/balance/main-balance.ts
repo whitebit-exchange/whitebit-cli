@@ -1,21 +1,15 @@
-import { defineCommand, option } from '@bunli/core';
-import { z } from 'zod';
+import { defineCommand } from '@bunli/core';
 
 import { AccountApi } from '../../lib/api/account';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
+import { recordToRows } from '../market/helpers';
 
 export const accountMainBalanceCommand = defineCommand({
-  name: 'main-balance',
+  name: 'main',
   description: 'Get main account balance',
-  options: {
-    ticker: option(z.string().min(1).optional(), {
-      short: 't',
-      description: 'Optional ticker filter (e.g., BTC)',
-    }),
-  },
-  handler: async ({ flags }) => {
+  handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
 
@@ -26,12 +20,23 @@ export const accountMainBalanceCommand = defineCommand({
     });
     const api = new AccountApi(client);
 
-    const response = await api.mainBalance(flags.ticker ? { ticker: flags.ticker } : undefined);
+    const ticker = positional[0];
+    const response = await api.mainBalance(ticker ? { ticker } : undefined);
 
     if (runtimeConfig.dryRun) {
       return;
     }
 
-    formatOutput(response, { format: runtimeConfig.format });
+    let data: unknown = response;
+    if (runtimeConfig.format === 'table') {
+      if (ticker && typeof response === 'object' && response !== null && !Array.isArray(response)) {
+        // Single-asset response is flat: { main_balance }
+        // Wrap it to match multi-asset table structure: { TICKER: { main_balance } }
+        data = recordToRows({ [ticker.toUpperCase()]: response }, 'asset');
+      } else {
+        data = recordToRows(response, 'asset');
+      }
+    }
+    formatOutput(data, { format: runtimeConfig.format });
   },
 });

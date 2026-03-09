@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from 'bun:test';
 
-import { accountMainBalanceCommand } from '../../../src/commands/account/main-balance';
+import { accountMainBalanceCommand } from '../../../src/commands/balance/main-balance';
 import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
 const createMockFetch =
@@ -42,6 +42,7 @@ describe('account main-balance command', () => {
 
     try {
       await accountMainBalanceCommand.handler({
+        positional: [],
         flags: {},
       } as never);
 
@@ -68,9 +69,8 @@ describe('account main-balance command', () => {
 
     try {
       await accountMainBalanceCommand.handler({
-        flags: {
-          ticker: 'BTC',
-        },
+        positional: ['BTC'],
+        flags: {},
       } as never);
 
       expect(capturedOutput).toContain('1.5');
@@ -86,6 +86,7 @@ describe('account main-balance command', () => {
 
     try {
       await accountMainBalanceCommand.handler({
+        positional: [],
         flags: {},
       } as never);
       expect.unreachable();
