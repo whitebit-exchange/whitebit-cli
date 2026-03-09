@@ -54,12 +54,8 @@ describe('trade limit-order command', () => {
 
     try {
       await tradeLimitOrderCommand.handler({
-        flags: {
-          market: 'BTC_USDT',
-          side: 'buy',
-          amount: '0.01',
-          price: '50000',
-        },
+        positional: ['BTC_USDT', 'buy', '0.01', '50000'],
+        flags: {},
       } as never);
 
       expect(capturedOutput).toContain('123456');
@@ -75,12 +71,8 @@ describe('trade limit-order command', () => {
 
     try {
       await tradeLimitOrderCommand.handler({
-        flags: {
-          market: 'BTC_USDT',
-          side: 'buy',
-          amount: '0.01',
-          price: '50000',
-        },
+        positional: ['BTC_USDT', 'buy', '0.01', '50000'],
+        flags: {},
       } as never);
       expect.unreachable();
     } catch (error) {

@@ -54,10 +54,8 @@ describe('trade cancel command', () => {
 
     try {
       await tradeCancelCommand.handler({
-        flags: {
-          market: 'BTC_USDT',
-          orderId: 123456,
-        },
+        positional: ['BTC_USDT', '123456'],
+        flags: {},
       } as never);
 
       expect(capturedOutput).toContain('123456');
@@ -73,10 +71,8 @@ describe('trade cancel command', () => {
 
     try {
       await tradeCancelCommand.handler({
-        flags: {
-          market: 'BTC_USDT',
-          orderId: 999999,
-        },
+        positional: ['BTC_USDT', '999999'],
+        flags: {},
       } as never);
       expect.unreachable();
     } catch (error) {

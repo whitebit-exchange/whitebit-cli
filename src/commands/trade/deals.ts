@@ -2,6 +2,7 @@ import { defineCommand, option } from '@bunli/core';
 import { z } from 'zod';
 
 import { TradeApi } from '../../lib/api/trade';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
@@ -10,10 +11,6 @@ export const tradeDealsCommand = defineCommand({
   name: 'deals',
   description: 'Get executed deals for a specific order',
   options: {
-    orderId: option(z.number().int().positive(), {
-      short: 'i',
-      description: 'Order ID',
-    }),
     limit: option(z.number().int().positive().optional(), {
       short: 'l',
       description: 'Maximum number of deals to return',
@@ -23,7 +20,7 @@ export const tradeDealsCommand = defineCommand({
       description: 'Offset for pagination',
     }),
   },
-  handler: async ({ flags }) => {
+  handler: async ({ positional, flags }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
 
@@ -34,8 +31,15 @@ export const tradeDealsCommand = defineCommand({
     });
     const api = new TradeApi(client);
 
+    const orderId = parseArg(
+      positional[0],
+      z.coerce.number().int().positive(),
+      'ORDER_ID',
+      'whitebit trade spot deals <order_id>',
+    );
+
     const response = await api.executedDeals({
-      orderId: flags.orderId,
+      orderId,
       limit: flags.limit,
       offset: flags.offset,
     });

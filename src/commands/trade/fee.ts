@@ -1,7 +1,8 @@
-import { defineCommand, option } from '@bunli/core';
+import { defineCommand } from '@bunli/core';
 import { z } from 'zod';
 
 import { TradeApi } from '../../lib/api/trade';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
@@ -9,13 +10,7 @@ import { HttpClient } from '../../lib/http';
 export const tradeFeeCommand = defineCommand({
   name: 'fee',
   description: 'Get trading fee for a specific market',
-  options: {
-    market: option(z.string().min(1), {
-      short: 'm',
-      description: 'Market symbol (e.g., BTC_USDT)',
-    }),
-  },
-  handler: async ({ flags }) => {
+  handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
 
@@ -26,8 +21,15 @@ export const tradeFeeCommand = defineCommand({
     });
     const api = new TradeApi(client);
 
+    const market = parseArg(
+      positional[0],
+      z.string().min(1),
+      'PAIR',
+      'whitebit trade spot fee <pair>',
+    );
+
     const response = await api.marketFee({
-      market: flags.market,
+      market,
     });
 
     if (runtimeConfig.dryRun) {

@@ -1,7 +1,8 @@
-import { defineCommand, option } from '@bunli/core';
+import { defineCommand } from '@bunli/core';
 import { z } from 'zod';
 
 import { TradeApi } from '../../lib/api/trade';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
@@ -9,17 +10,7 @@ import { HttpClient } from '../../lib/http';
 export const tradeCancelCommand = defineCommand({
   name: 'cancel',
   description: 'Cancel a specific order',
-  options: {
-    market: option(z.string().min(1), {
-      short: 'm',
-      description: 'Market symbol (e.g., BTC_USDT)',
-    }),
-    orderId: option(z.number().int().positive(), {
-      short: 'i',
-      description: 'Order ID to cancel',
-    }),
-  },
-  handler: async ({ flags }) => {
+  handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
 
@@ -30,9 +21,22 @@ export const tradeCancelCommand = defineCommand({
     });
     const api = new TradeApi(client);
 
+    const market = parseArg(
+      positional[0],
+      z.string().min(1),
+      'PAIR',
+      'whitebit trade spot cancel <pair> <order_id>',
+    );
+    const orderId = parseArg(
+      positional[1],
+      z.coerce.number().int().positive(),
+      'ORDER_ID',
+      'whitebit trade spot cancel <pair> <order_id>',
+    );
+
     const response = await api.cancelOrder({
-      market: flags.market,
-      orderId: flags.orderId,
+      market,
+      orderId,
     });
 
     if (runtimeConfig.dryRun) {

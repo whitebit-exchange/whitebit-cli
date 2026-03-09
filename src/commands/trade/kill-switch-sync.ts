@@ -1,7 +1,8 @@
-import { defineCommand, option } from '@bunli/core';
+import { defineCommand } from '@bunli/core';
 import { z } from 'zod';
 
 import { TradeApi } from '../../lib/api/trade';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
@@ -9,17 +10,7 @@ import { HttpClient } from '../../lib/http';
 export const tradeKillSwitchSyncCommand = defineCommand({
   name: 'kill-switch-sync',
   description: 'Sync kill switch timer',
-  options: {
-    market: option(z.string().min(1), {
-      short: 'm',
-      description: 'Market symbol (e.g., BTC_USDT)',
-    }),
-    timeout: option(z.number().int().positive(), {
-      short: 't',
-      description: 'Timeout in seconds',
-    }),
-  },
-  handler: async ({ flags }) => {
+  handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
 
@@ -30,9 +21,22 @@ export const tradeKillSwitchSyncCommand = defineCommand({
     });
     const api = new TradeApi(client);
 
+    const market = parseArg(
+      positional[0],
+      z.string().min(1),
+      'PAIR',
+      'whitebit trade spot kill-switch-sync <pair> <timeout>',
+    );
+    const timeout = parseArg(
+      positional[1],
+      z.coerce.number().int().positive(),
+      'TIMEOUT',
+      'whitebit trade spot kill-switch-sync <pair> <timeout>',
+    );
+
     const response = await api.killSwitchSync({
-      market: flags.market,
-      timeout: flags.timeout,
+      market,
+      timeout,
     });
 
     if (runtimeConfig.dryRun) {

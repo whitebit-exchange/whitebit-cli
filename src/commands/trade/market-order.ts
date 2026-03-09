@@ -2,6 +2,7 @@ import { defineCommand, option } from '@bunli/core';
 import { z } from 'zod';
 
 import { TradeApi } from '../../lib/api/trade';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
@@ -10,24 +11,12 @@ export const tradeMarketOrderCommand = defineCommand({
   name: 'market-order',
   description: 'Create a market order',
   options: {
-    market: option(z.string().min(1), {
-      short: 'm',
-      description: 'Market symbol (e.g., BTC_USDT)',
-    }),
-    side: option(z.enum(['buy', 'sell']), {
-      short: 's',
-      description: 'Order side: buy or sell',
-    }),
-    amount: option(z.string().min(1), {
-      short: 'a',
-      description: 'Order amount',
-    }),
     clientOrderId: option(z.string().optional(), {
       short: 'c',
       description: 'Optional client order ID',
     }),
   },
-  handler: async ({ flags }) => {
+  handler: async ({ positional, flags }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
 
@@ -38,10 +27,29 @@ export const tradeMarketOrderCommand = defineCommand({
     });
     const api = new TradeApi(client);
 
+    const market = parseArg(
+      positional[0],
+      z.string().min(1),
+      'PAIR',
+      'whitebit trade spot market-order <pair> <side> <amount>',
+    );
+    const side = parseArg(
+      positional[1],
+      z.enum(['buy', 'sell']),
+      'SIDE',
+      'whitebit trade spot market-order <pair> <side> <amount>',
+    );
+    const amount = parseArg(
+      positional[2],
+      z.string().min(1),
+      'AMOUNT',
+      'whitebit trade spot market-order <pair> <side> <amount>',
+    );
+
     const response = await api.createMarketOrder({
-      market: flags.market,
-      side: flags.side,
-      amount: flags.amount,
+      market,
+      side,
+      amount,
       clientOrderId: flags.clientOrderId,
     });
 

@@ -2,6 +2,7 @@ import { defineCommand, option } from '@bunli/core';
 import { z } from 'zod';
 
 import { TradeApi } from '../../lib/api/trade';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
@@ -10,14 +11,6 @@ export const tradeModifyCommand = defineCommand({
   name: 'modify',
   description: 'Modify an existing order',
   options: {
-    market: option(z.string().min(1), {
-      short: 'm',
-      description: 'Market symbol (e.g., BTC_USDT)',
-    }),
-    orderId: option(z.number().int().positive(), {
-      short: 'i',
-      description: 'Order ID to modify',
-    }),
     price: option(z.string().optional(), {
       short: 'p',
       description: 'New order price',
@@ -27,7 +20,7 @@ export const tradeModifyCommand = defineCommand({
       description: 'New order amount',
     }),
   },
-  handler: async ({ flags }) => {
+  handler: async ({ positional, flags }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
 
@@ -42,9 +35,22 @@ export const tradeModifyCommand = defineCommand({
     });
     const api = new TradeApi(client);
 
+    const market = parseArg(
+      positional[0],
+      z.string().min(1),
+      'PAIR',
+      'whitebit trade spot modify <pair> <order_id>',
+    );
+    const orderId = parseArg(
+      positional[1],
+      z.coerce.number().int().positive(),
+      'ORDER_ID',
+      'whitebit trade spot modify <pair> <order_id>',
+    );
+
     const response = await api.modifyOrder({
-      market: flags.market,
-      orderId: flags.orderId,
+      market,
+      orderId,
       price: flags.price,
       amount: flags.amount,
     });
