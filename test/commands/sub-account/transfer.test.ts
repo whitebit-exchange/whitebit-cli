@@ -39,9 +39,8 @@ describe('sub-account transfer command', () => {
 
     try {
       await transferCommand.handler({
+        positional: ['BTC', '0.5'],
         flags: {
-          ticker: 'BTC',
-          amount: '0.5',
           toId: 'sub-1',
         },
       } as never);
@@ -66,9 +65,8 @@ describe('sub-account transfer command', () => {
 
     try {
       await transferCommand.handler({
+        positional: ['ETH', '1.0'],
         flags: {
-          ticker: 'ETH',
-          amount: '1.0',
           fromId: 'sub-1',
         },
       } as never);
@@ -85,9 +83,8 @@ describe('sub-account transfer command', () => {
 
     try {
       await transferCommand.handler({
+        positional: ['BTC', '100'],
         flags: {
-          ticker: 'BTC',
-          amount: '100',
           fromId: 'sub-1',
         },
       } as never);

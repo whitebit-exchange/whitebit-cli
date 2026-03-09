@@ -44,9 +44,7 @@ describe('sub-account create command', () => {
 
     try {
       await createCommand.handler({
-        flags: {
-          alias: 'New Trading Bot',
-        },
+        positional: ['New Trading Bot'],
       } as never);
 
       expect(capturedOutput).toContain('sub-123');
@@ -68,9 +66,7 @@ describe('sub-account create command', () => {
 
     try {
       await createCommand.handler({
-        flags: {
-          alias: 'Duplicate',
-        },
+        positional: ['Duplicate'],
       } as never);
       expect.unreachable();
     } catch (error) {
