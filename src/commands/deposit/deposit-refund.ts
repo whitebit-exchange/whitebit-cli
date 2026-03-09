@@ -1,20 +1,16 @@
-import { defineCommand, option } from '@bunli/core';
+import { defineCommand } from '@bunli/core';
 import { z } from 'zod';
 
 import { AccountApi } from '../../lib/api/account';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
 
 export const accountDepositRefundCommand = defineCommand({
-  name: 'deposit-refund',
+  name: 'refund',
   description: 'Request deposit refund',
-  options: {
-    id: option(z.coerce.number().int().positive(), {
-      description: 'Deposit transaction ID',
-    }),
-  },
-  handler: async ({ flags }) => {
+  handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
 
@@ -25,7 +21,14 @@ export const accountDepositRefundCommand = defineCommand({
     });
     const api = new AccountApi(client);
 
-    const response = await api.depositRefund({ id: flags.id });
+    const id = parseArg(
+      positional[0],
+      z.coerce.number().int().positive(),
+      'HASH',
+      'whitebit deposit refund <hash>',
+    );
+
+    const response = await api.depositRefund({ id });
 
     if (runtimeConfig.dryRun) {
       return;

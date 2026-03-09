@@ -1,29 +1,16 @@
-import { defineCommand, option } from '@bunli/core';
+import { defineCommand } from '@bunli/core';
 import { z } from 'zod';
 
 import { AccountApi } from '../../lib/api/account';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
 
 export const accountWithdrawFiatCommand = defineCommand({
-  name: 'withdraw-fiat',
+  name: 'fiat',
   description: 'Withdraw fiat currency',
-  options: {
-    ticker: option(z.string().min(1), {
-      short: 't',
-      description: 'Fiat currency ticker (e.g., USD)',
-    }),
-    amount: option(z.string().min(1), {
-      short: 'a',
-      description: 'Amount to withdraw',
-    }),
-    provider: option(z.string().min(1), {
-      short: 'p',
-      description: 'Payment provider identifier',
-    }),
-  },
-  handler: async ({ flags }) => {
+  handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
 
@@ -34,10 +21,29 @@ export const accountWithdrawFiatCommand = defineCommand({
     });
     const api = new AccountApi(client);
 
+    const ticker = parseArg(
+      positional[0],
+      z.string().min(1),
+      'CURRENCY',
+      'whitebit withdraw fiat <currency> <amount> <provider>',
+    );
+    const amount = parseArg(
+      positional[1],
+      z.string().min(1),
+      'AMOUNT',
+      'whitebit withdraw fiat <currency> <amount> <provider>',
+    );
+    const provider = parseArg(
+      positional[2],
+      z.string().min(1),
+      'PROVIDER',
+      'whitebit withdraw fiat <currency> <amount> <provider>',
+    );
+
     const response = await api.withdrawFiat({
-      ticker: flags.ticker,
-      amount: flags.amount,
-      provider: flags.provider,
+      ticker,
+      amount,
+      provider,
     });
 
     if (runtimeConfig.dryRun) {

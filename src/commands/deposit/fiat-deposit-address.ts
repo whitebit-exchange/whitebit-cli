@@ -1,25 +1,16 @@
-import { defineCommand, option } from '@bunli/core';
+import { defineCommand } from '@bunli/core';
 import { z } from 'zod';
 
 import { AccountApi } from '../../lib/api/account';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
 
 export const accountFiatDepositAddressCommand = defineCommand({
-  name: 'fiat-deposit-address',
+  name: 'fiat-address',
   description: 'Get fiat deposit URL',
-  options: {
-    ticker: option(z.string().min(1), {
-      short: 't',
-      description: 'Fiat currency ticker (e.g., USD)',
-    }),
-    provider: option(z.string().min(1), {
-      short: 'p',
-      description: 'Payment provider identifier',
-    }),
-  },
-  handler: async ({ flags }) => {
+  handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
 
@@ -30,9 +21,22 @@ export const accountFiatDepositAddressCommand = defineCommand({
     });
     const api = new AccountApi(client);
 
+    const provider = parseArg(
+      positional[0],
+      z.string().min(1),
+      'PROVIDER',
+      'whitebit deposit fiat-address <provider> <currency>',
+    );
+    const ticker = parseArg(
+      positional[1],
+      z.string().min(1),
+      'CURRENCY',
+      'whitebit deposit fiat-address <provider> <currency>',
+    );
+
     const response = await api.fiatDepositAddress({
-      ticker: flags.ticker,
-      provider: flags.provider,
+      ticker,
+      provider,
     });
 
     if (runtimeConfig.dryRun) {
