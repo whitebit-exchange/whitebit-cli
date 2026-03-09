@@ -1,10 +1,10 @@
 import { defineCommand, option } from '@bunli/core';
 import { z } from 'zod';
 
-import { AccountApi } from '../../lib/api/account';
-import { loadAuthConfig, loadConfig } from '../../lib/config';
-import { formatOutput, unwrapTableData } from '../../lib/formatter';
-import { HttpClient } from '../../lib/http';
+import { AccountApi } from '../../../lib/api/account';
+import { loadAuthConfig, loadConfig } from '../../../lib/config';
+import { formatOutput, unwrapTableData } from '../../../lib/formatter';
+import { HttpClient } from '../../../lib/http';
 
 export const accountInvestmentsHistoryCommand = defineCommand({
   name: 'investments-history',

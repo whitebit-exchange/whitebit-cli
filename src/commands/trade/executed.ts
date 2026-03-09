@@ -5,6 +5,7 @@ import { TradeApi } from '../../lib/api/trade';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
+import { recordOfArraysToRows } from '../market/helpers';
 
 export const tradeExecutedCommand = defineCommand({
   name: 'executed',
@@ -44,6 +45,8 @@ export const tradeExecutedCommand = defineCommand({
       return;
     }
 
-    formatOutput(response, { format: runtimeConfig.format });
+    const data =
+      runtimeConfig.format === 'table' ? recordOfArraysToRows(response, 'market') : response;
+    formatOutput(data, { format: runtimeConfig.format });
   },
 });

@@ -10,7 +10,7 @@ export const collateralHedgeModeCommand = defineCommand({
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
-    const response = await authenticatedPost('/api/v4/collateral-hedge-mode', {}, config);
+    const response = await authenticatedPost('/api/v4/collateral-account/hedge-mode', {}, config);
     if (runtimeConfig.dryRun) {
       return;
     }

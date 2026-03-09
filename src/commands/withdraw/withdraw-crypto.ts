@@ -2,25 +2,15 @@ import { defineCommand, option } from '@bunli/core';
 import { z } from 'zod';
 
 import { AccountApi } from '../../lib/api/account';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
 
 export const accountWithdrawCryptoCommand = defineCommand({
-  name: 'withdraw-crypto',
+  name: 'crypto',
   description: 'Withdraw cryptocurrency',
   options: {
-    ticker: option(z.string().min(1), {
-      short: 't',
-      description: 'Cryptocurrency ticker (e.g., BTC)',
-    }),
-    amount: option(z.string().min(1), {
-      short: 'a',
-      description: 'Amount to withdraw',
-    }),
-    address: option(z.string().min(1), {
-      description: 'Destination address',
-    }),
     network: option(z.string().min(1).optional(), {
       short: 'n',
       description: 'Network identifier (e.g., ERC20)',
@@ -30,7 +20,7 @@ export const accountWithdrawCryptoCommand = defineCommand({
       description: 'Memo/tag if required by the network',
     }),
   },
-  handler: async ({ flags }) => {
+  handler: async ({ positional, flags }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
 
@@ -41,10 +31,29 @@ export const accountWithdrawCryptoCommand = defineCommand({
     });
     const api = new AccountApi(client);
 
+    const ticker = parseArg(
+      positional[0],
+      z.string().min(1),
+      'TICKER',
+      'whitebit withdraw crypto <ticker> <amount> <address>',
+    );
+    const amount = parseArg(
+      positional[1],
+      z.string().min(1),
+      'AMOUNT',
+      'whitebit withdraw crypto <ticker> <amount> <address>',
+    );
+    const address = parseArg(
+      positional[2],
+      z.string().min(1),
+      'ADDRESS',
+      'whitebit withdraw crypto <ticker> <amount> <address>',
+    );
+
     const response = await api.withdrawCrypto({
-      ticker: flags.ticker,
-      amount: flags.amount,
-      address: flags.address,
+      ticker,
+      amount,
+      address,
       network: flags.network,
       memo: flags.memo,
     });

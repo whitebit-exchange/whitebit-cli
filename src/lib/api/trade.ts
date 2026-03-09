@@ -172,7 +172,7 @@ export class TradeApi {
 
   async executedOrders(params: ExecutedOrdersParams = {}): Promise<Order[]> {
     const response = await this.httpClient.post<Order[]>(
-      '/api/v4/orders',
+      '/api/v4/trade-account/order/history',
       params as Record<string, unknown>,
       {
         category: 'trading-query',
@@ -188,7 +188,7 @@ export class TradeApi {
 
   async unexecutedOrders(params: UnexecutedOrdersParams = {}): Promise<Order[]> {
     const response = await this.httpClient.post<Order[]>(
-      '/api/v4/orders/open',
+      '/api/v4/orders',
       params as Record<string, unknown>,
       {
         category: 'trading-query',
@@ -204,7 +204,7 @@ export class TradeApi {
 
   async executedDeals(params: ExecutedDealsParams): Promise<Trade[]> {
     const response = await this.httpClient.post<Trade[]>(
-      '/api/v4/order/deals',
+      '/api/v4/trade-account/order',
       params as Record<string, unknown>,
       {
         category: 'trading-query',
@@ -220,7 +220,7 @@ export class TradeApi {
 
   async tradesHistory(params: TradesHistoryParams = {}): Promise<Trade[]> {
     const response = await this.httpClient.post<Trade[]>(
-      '/api/v4/trade-history',
+      '/api/v4/trade-account/executed-history',
       params as Record<string, unknown>,
       {
         category: 'trading-query',
@@ -236,7 +236,7 @@ export class TradeApi {
 
   async tradeBalance(): Promise<Balance> {
     const response = await this.httpClient.post<Balance>(
-      '/api/v4/trade-balance',
+      '/api/v4/trade-account/balance',
       {},
       {
         category: 'account',
@@ -268,7 +268,7 @@ export class TradeApi {
 
   async allFees(): Promise<AllFeesResponse> {
     const response = await this.httpClient.post<AllFeesResponse>(
-      '/api/v4/market/fees',
+      '/api/v4/market/fee',
       {},
       {
         category: 'account',

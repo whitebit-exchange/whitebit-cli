@@ -1,5 +1,5 @@
 import { createAuthHeadersFromPayload, createSignedPayload } from './auth';
-import { loadConfig, maskSecret } from './config';
+import { getGlobalConfigOverrides, loadConfig, maskSecret } from './config';
 import { type RateLimitCategory, RateLimiter } from './rate-limiter';
 import { withRetry } from './retry';
 import type { ApiRequestBody, ApiResponse, AuthConfig, PublicConfig } from './types';
@@ -33,6 +33,7 @@ export interface HttpClientOptions {
   retryMaxRetries?: number;
   retrySleep?: (ms: number) => Promise<void>;
   userAgent?: string;
+  runtimeLogging?: boolean;
 }
 
 export interface HttpRequestOptions {
@@ -263,6 +264,14 @@ const writeVerboseResponse = (response: NormalizedApiResponse<unknown>): void =>
   process.stderr.write(`${JSON.stringify(response, null, 2)}\n`);
 };
 
+const resolveRuntimeFlags = (): { verbose: boolean; dryRun: boolean } => {
+  const overrides = getGlobalConfigOverrides();
+  return {
+    verbose: overrides.verbose === true,
+    dryRun: overrides.dryRun === true,
+  };
+};
+
 export class HttpClient {
   private readonly apiUrl: string;
 
@@ -282,6 +291,8 @@ export class HttpClient {
 
   private readonly userAgent: string;
 
+  private readonly runtimeLogging: boolean;
+
   constructor(options: HttpClientOptions) {
     this.apiUrl = normalizeApiUrl(options.apiUrl);
     this.apiKey = options.apiKey;
@@ -291,6 +302,7 @@ export class HttpClient {
     this.retryMaxRetries = options.retryMaxRetries ?? 3;
     this.retrySleep = options.retrySleep;
     this.userAgent = options.userAgent ?? DEFAULT_USER_AGENT;
+    this.runtimeLogging = options.runtimeLogging ?? true;
   }
 
   get<T = ApiResponse>(
@@ -325,12 +337,47 @@ export class HttpClient {
 
   private async request<T>(options: InternalRequestOptions): Promise<NormalizedApiResponse<T>> {
     const url = resolveUrl(this.apiUrl, options.endpointPath, options.params);
+    const runtimeFlags = this.runtimeLogging
+      ? resolveRuntimeFlags()
+      : {
+          verbose: false,
+          dryRun: false,
+        };
+
+    if (runtimeFlags.dryRun) {
+      const requestData = this.buildRequestData(options);
+      writeDryRunPreview({
+        method: options.method,
+        url,
+        headers: requestData.headers,
+        body: requestData.body,
+      });
+
+      return {
+        success: true,
+        data: {
+          dry_run: true,
+          method: options.method,
+          url,
+        } as T,
+      };
+    }
 
     try {
       const responseBody = await withRetry(
         async () => {
           await this.rateLimiter.acquire(options.category);
           const requestData = this.buildRequestData(options);
+
+          if (runtimeFlags.verbose) {
+            writeVerboseRequest({
+              method: options.method,
+              url,
+              headers: requestData.headers,
+              body: requestData.body,
+            });
+          }
+
           const response = await this.fetchFn(url, {
             method: options.method,
             headers: requestData.headers,
@@ -351,39 +398,69 @@ export class HttpClient {
       );
 
       if (isPublicErrorPayload(responseBody) || isPrivateErrorPayload(responseBody)) {
-        return {
+        const result = {
           success: false,
           error: normalizeError(responseBody),
         };
+
+        if (runtimeFlags.verbose) {
+          writeVerboseResponse(result);
+        }
+
+        return result;
       }
 
-      return {
+      const result = {
         success: true,
         data: responseBody as T,
       };
+
+      if (runtimeFlags.verbose) {
+        writeVerboseResponse(result as NormalizedApiResponse<unknown>);
+      }
+
+      return result;
     } catch (error) {
       if (error instanceof HttpResponseError) {
-        return {
+        const result = {
           success: false,
           error: normalizeError(error.responseBody, error.status, error.message),
         };
+
+        if (runtimeFlags.verbose) {
+          writeVerboseResponse(result);
+        }
+
+        return result;
       }
 
       if (error instanceof Error) {
-        return {
+        const result = {
           success: false,
           error: {
             message: error.message,
           },
         };
+
+        if (runtimeFlags.verbose) {
+          writeVerboseResponse(result);
+        }
+
+        return result;
       }
 
-      return {
+      const result = {
         success: false,
         error: {
           message: 'Unknown request failure',
         },
       };
+
+      if (runtimeFlags.verbose) {
+        writeVerboseResponse(result);
+      }
+
+      return result;
     }
   }
 
@@ -450,6 +527,7 @@ export const publicGet = async (
     apiUrl: config.apiUrl,
     retryMaxRetries: runtimeConfig.retry ? undefined : 0,
     userAgent: DEFAULT_USER_AGENT,
+    runtimeLogging: false,
   });
 
   const response = await client.get<ApiResponse>(endpointPath);
@@ -504,6 +582,7 @@ export const authenticatedPost = async (
     apiSecret: config.apiSecret,
     retryMaxRetries: runtimeConfig.retry ? undefined : 0,
     userAgent: DEFAULT_USER_AGENT,
+    runtimeLogging: false,
   });
 
   const response = await client.post<ApiResponse>(endpointPath, body);

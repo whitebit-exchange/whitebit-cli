@@ -45,7 +45,11 @@ export const collateralTriggerMarketCommand = defineCommand({
       ...(flags.leverage !== undefined && { leverage: flags.leverage }),
       ...(flags.clientOrderId && { clientOrderId: flags.clientOrderId }),
     };
-    const response = await authenticatedPost('/api/v4/collateral-trigger-market', body, config);
+    const response = await authenticatedPost(
+      '/api/v4/order/collateral/trigger-market',
+      body,
+      config,
+    );
     if (runtimeConfig.dryRun) {
       return;
     }

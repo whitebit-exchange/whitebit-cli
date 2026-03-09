@@ -18,7 +18,7 @@ export const collateralOpenPositionsCommand = defineCommand({
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
     const body = flags.market ? { market: flags.market } : {};
-    const response = await authenticatedPost('/api/v4/collateral-positions', body, config);
+    const response = await authenticatedPost('/api/v4/collateral-account/positions', body, config);
     if (runtimeConfig.dryRun) {
       return;
     }

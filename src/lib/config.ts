@@ -58,7 +58,7 @@ interface TomlProfile {
 
 const DEFAULT_API_URL = 'https://whitebit.com';
 const DEFAULT_PROFILE = 'default';
-const DEFAULT_FORMAT: OutputFormat = 'json';
+const DEFAULT_FORMAT: OutputFormat = 'table';
 const CONFIG_DIRECTORY_MODE = 0o700;
 const CONFIG_FILE_MODE = 0o600;
 
@@ -334,8 +334,8 @@ export const loadAuthConfig = (options?: LoadConfigOptions): AuthConfig => {
   }
 
   return {
-    apiKey: config.apiKey,
-    apiSecret: config.apiSecret,
+    apiKey: config.apiKey.trim(),
+    apiSecret: config.apiSecret.trim(),
     apiUrl: config.apiUrl,
   };
 };

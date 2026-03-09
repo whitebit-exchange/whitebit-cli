@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from 'bun:test';
 
-import { accountWithdrawCryptoCommand } from '../../../src/commands/account/withdraw-crypto';
+import { accountWithdrawCryptoCommand } from '../../../src/commands/withdraw/withdraw-crypto';
 import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
 const createMockFetch =
@@ -42,11 +42,8 @@ describe('account withdraw-crypto command', () => {
 
     try {
       await accountWithdrawCryptoCommand.handler({
-        flags: {
-          ticker: 'BTC',
-          amount: '0.1',
-          address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
-        },
+        positional: ['BTC', '0.1', '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'],
+        flags: {},
       } as never);
 
       expect(capturedOutput).toContain('12345');
@@ -72,12 +69,8 @@ describe('account withdraw-crypto command', () => {
 
     try {
       await accountWithdrawCryptoCommand.handler({
-        flags: {
-          ticker: 'XRP',
-          amount: '100',
-          address: 'rN7n7otQDd6FczFgLdlqtyMVrn3PvNvMGmm',
-          memo: '123456',
-        },
+        positional: ['XRP', '100', 'rN7n7otQDd6FczFgLdlqtyMVrn3PvNvMGmm'],
+        flags: { memo: '123456' },
       } as never);
 
       expect(capturedOutput).toContain('67890');
@@ -92,11 +85,8 @@ describe('account withdraw-crypto command', () => {
 
     try {
       await accountWithdrawCryptoCommand.handler({
-        flags: {
-          ticker: 'BTC',
-          amount: '1000',
-          address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
-        },
+        positional: ['BTC', '1000', '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'],
+        flags: {},
       } as never);
       expect.unreachable();
     } catch (error) {

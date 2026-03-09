@@ -2,22 +2,15 @@ import { defineCommand, option } from '@bunli/core';
 import { z } from 'zod';
 
 import { AccountApi } from '../../lib/api/account';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
 
 export const accountCreateCodeCommand = defineCommand({
-  name: 'create-code',
+  name: 'create',
   description: 'Create a new voucher code',
   options: {
-    ticker: option(z.string().min(1), {
-      short: 't',
-      description: 'Currency ticker (e.g., BTC)',
-    }),
-    amount: option(z.string().min(1), {
-      short: 'a',
-      description: 'Amount for the voucher',
-    }),
     passphrase: option(z.string().min(1).optional(), {
       short: 'p',
       description: 'Optional passphrase protection',
@@ -27,7 +20,7 @@ export const accountCreateCodeCommand = defineCommand({
       description: 'Optional description',
     }),
   },
-  handler: async ({ flags }) => {
+  handler: async ({ positional, flags }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
 
@@ -38,9 +31,22 @@ export const accountCreateCodeCommand = defineCommand({
     });
     const api = new AccountApi(client);
 
+    const ticker = parseArg(
+      positional[0],
+      z.string().min(1),
+      'ASSET',
+      'whitebit codes create <asset> <amount>',
+    );
+    const amount = parseArg(
+      positional[1],
+      z.string().min(1),
+      'AMOUNT',
+      'whitebit codes create <asset> <amount>',
+    );
+
     const response = await api.createCode({
-      ticker: flags.ticker,
-      amount: flags.amount,
+      ticker,
+      amount,
       passphrase: flags.passphrase,
       description: flags.description,
     });

@@ -40,7 +40,7 @@ export const collateralMarketOrderCommand = defineCommand({
       ...(flags.leverage !== undefined && { leverage: flags.leverage }),
       ...(flags.clientOrderId && { clientOrderId: flags.clientOrderId }),
     };
-    const response = await authenticatedPost('/api/v4/collateral-market', body, config);
+    const response = await authenticatedPost('/api/v4/order/collateral/market', body, config);
     if (runtimeConfig.dryRun) {
       return;
     }

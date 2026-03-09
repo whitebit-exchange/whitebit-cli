@@ -1,43 +1,15 @@
 import { createCLI, defineGroup } from '@bunli/core';
-
-import { accountApplyCodeCommand } from './commands/account/apply-code';
-import { accountBalanceCommand } from './commands/account/balance';
-import { accountCloseInvestmentCommand } from './commands/account/close-investment';
-import { accountCodesHistoryCommand } from './commands/account/codes-history';
-import { accountCreateAddressCommand } from './commands/account/create-address';
-import { accountCreateCodeCommand } from './commands/account/create-code';
 import { accountCreditLinesCommand } from './commands/account/credit-lines';
-import { accountDepositAddressCommand } from './commands/account/deposit-address';
-import { accountDepositRefundCommand } from './commands/account/deposit-refund';
-import { accountFeeCommand } from './commands/account/fee';
-import { accountFiatDepositAddressCommand } from './commands/account/fiat-deposit-address';
-import { accountFlexAutoReinvestCommand } from './commands/account/flex-auto-reinvest';
-import { accountFlexCloseCommand } from './commands/account/flex-close';
-import { accountFlexInvestCommand } from './commands/account/flex-invest';
-import { accountFlexInvestmentHistoryCommand } from './commands/account/flex-investment-history';
-import { accountFlexInvestmentsCommand } from './commands/account/flex-investments';
-import { accountFlexPaymentHistoryCommand } from './commands/account/flex-payment-history';
-import { accountFlexPlansCommand } from './commands/account/flex-plans';
-import { accountFlexWithdrawCommand } from './commands/account/flex-withdraw';
-import { accountInterestHistoryCommand } from './commands/account/interest-history';
-import { accountInvestCommand } from './commands/account/invest';
-import { accountInvestmentsHistoryCommand } from './commands/account/investments-history';
-import { accountIssueJwtTokenCommand } from './commands/account/issue-jwt-token';
-import { accountMainBalanceCommand } from './commands/account/main-balance';
-import { accountMiningHashrateCommand } from './commands/account/mining-hashrate';
-import { accountMyCodesCommand } from './commands/account/my-codes';
-import { accountOverviewCommand } from './commands/account/overview';
-import { accountPlansCommand } from './commands/account/plans';
-import { accountRewardsCommand } from './commands/account/rewards';
-import { accountTransferCommand } from './commands/account/transfer';
-import { accountTransferHistoryCommand } from './commands/account/transfer-history';
-import { accountWithdrawCryptoCommand } from './commands/account/withdraw-crypto';
-import { accountWithdrawCryptoAmountCommand } from './commands/account/withdraw-crypto-amount';
-import { accountWithdrawFiatCommand } from './commands/account/withdraw-fiat';
-import { accountWithdrawHistoryCommand } from './commands/account/withdraw-history';
 import { accountWsTokenCommand } from './commands/account/ws-token';
+import { balanceGroup } from './commands/balance';
+import { codesGroup } from './commands/codes';
+import { completionCommand } from './commands/completion';
 import { configSetCommand } from './commands/config/set';
 import { configShowCommand } from './commands/config/show';
+import { depositGroup } from './commands/deposit';
+import { earnGroup } from './commands/earn';
+import { helpCommand } from './commands/help';
+import { loginCommand } from './commands/login';
 import { activityCommand } from './commands/market/activity';
 import { assetStatusCommand } from './commands/market/asset-status';
 import { collateralMarketsCommand } from './commands/market/collateral-markets';
@@ -48,6 +20,7 @@ import { futuresMarketsCommand } from './commands/market/futures-markets';
 import { klineCommand } from './commands/market/kline';
 import { listCommand } from './commands/market/list';
 import { marketStatusCommand } from './commands/market/market-status';
+import { accountMiningHashrateCommand } from './commands/market/mining-hashrate';
 import { miningPoolCommand } from './commands/market/mining-pool';
 import { serverTimeCommand } from './commands/market/server-time';
 import { statusCommand } from './commands/market/status';
@@ -55,6 +28,8 @@ import { marketTickersCommand } from './commands/market/tickers';
 import { tradesCommand } from './commands/market/trades';
 import { subAccountGroup } from './commands/sub-account';
 import { tradeGroup } from './commands/trade';
+import { transferGroup } from './commands/transfer';
+import { withdrawGroup } from './commands/withdraw';
 import { type LoadConfigOptions, setGlobalConfigOverrides } from './lib/config';
 import { CLI_VERSION } from './lib/version';
 
@@ -179,10 +154,8 @@ const parseGlobalOptions = (
 
 const marketGroup = defineGroup({
   name: 'market',
-  description: 'Public market data commands',
+  description: 'Market data and platform status',
   commands: [
-    serverTimeCommand,
-    statusCommand,
     listCommand,
     marketStatusCommand,
     assetStatusCommand,
@@ -194,51 +167,11 @@ const marketGroup = defineGroup({
     klineCommand,
     feeCommand,
     fundingHistoryCommand,
-    miningPoolCommand,
     activityCommand,
-  ],
-});
-
-const accountGroup = defineGroup({
-  name: 'account',
-  description: 'Authenticated account commands',
-  commands: [
-    accountMainBalanceCommand,
-    accountOverviewCommand,
-    accountBalanceCommand,
-    accountFeeCommand,
-    accountDepositAddressCommand,
-    accountFiatDepositAddressCommand,
-    accountCreateAddressCommand,
-    accountWithdrawCryptoCommand,
-    accountWithdrawCryptoAmountCommand,
-    accountWithdrawFiatCommand,
-    accountDepositRefundCommand,
-    accountWithdrawHistoryCommand,
-    accountTransferHistoryCommand,
-    accountTransferCommand,
-    accountCreateCodeCommand,
-    accountApplyCodeCommand,
-    accountCodesHistoryCommand,
-    accountMyCodesCommand,
-    accountPlansCommand,
-    accountInvestCommand,
-    accountInvestmentsHistoryCommand,
-    accountCloseInvestmentCommand,
-    accountFlexPlansCommand,
-    accountFlexInvestCommand,
-    accountFlexInvestmentsCommand,
-    accountFlexInvestmentHistoryCommand,
-    accountFlexPaymentHistoryCommand,
-    accountFlexWithdrawCommand,
-    accountFlexCloseCommand,
-    accountFlexAutoReinvestCommand,
-    accountRewardsCommand,
+    serverTimeCommand,
+    statusCommand,
+    miningPoolCommand,
     accountMiningHashrateCommand,
-    accountInterestHistoryCommand,
-    accountCreditLinesCommand,
-    accountIssueJwtTokenCommand,
-    accountWsTokenCommand,
   ],
 });
 
@@ -267,9 +200,19 @@ const cli = await createCLI({
 });
 
 cli.command(marketGroup);
-cli.command(accountGroup);
+cli.command(balanceGroup);
+cli.command(depositGroup);
+cli.command(withdrawGroup);
+cli.command(transferGroup);
+cli.command(codesGroup);
+cli.command(earnGroup);
+cli.command(accountCreditLinesCommand);
+cli.command(accountWsTokenCommand);
 cli.command(configGroup);
 cli.command(tradeGroup);
 cli.command(subAccountGroup);
+cli.command(completionCommand);
+cli.command(loginCommand);
+cli.command(helpCommand);
 
 await cli.run(parsedArgs.cleanedArgv);

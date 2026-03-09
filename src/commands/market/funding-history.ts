@@ -1,6 +1,8 @@
 import { defineCommand, option } from '@bunli/core';
+import { z } from 'zod';
 
 import { MarketApi } from '../../lib/api/market';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadConfig, loadPublicConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 
@@ -8,30 +10,29 @@ export const fundingHistoryCommand = defineCommand({
   name: 'funding-history',
   description: 'Get funding rate history for futures markets',
   options: {
-    market: option({
-      type: 'string',
-      description: 'Futures market pair (e.g., BTC_USDT_PERP)',
-      required: true,
-    }),
-    limit: option({
-      type: 'number',
+    limit: option(z.coerce.number().int().positive().optional(), {
       description: 'Number of records to return',
-      required: false,
     }),
-    offset: option({
-      type: 'number',
+    offset: option(z.coerce.number().int().min(0).optional(), {
       description: 'Offset for pagination',
-      required: false,
     }),
   },
-  handler: async ({ options }) => {
+  handler: async ({ positional, flags }) => {
     const runtimeConfig = loadConfig();
     const config = loadPublicConfig();
     const api = new MarketApi({ apiUrl: config.apiUrl });
+
+    const market = parseArg(
+      positional[0],
+      z.string().min(1),
+      'PAIR',
+      'whitebit market funding-history <pair>',
+    );
+
     const response = await api.fundingHistory({
-      market: options.market,
-      limit: options.limit,
-      offset: options.offset,
+      market,
+      limit: flags.limit,
+      offset: flags.offset,
     });
 
     if (runtimeConfig.dryRun) {

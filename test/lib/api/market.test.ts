@@ -8,7 +8,6 @@ import type {
   KlineRecord,
   MarketActivityData,
   MarketInfo,
-  MarketStatus,
   MiningPoolData,
   OrderbookDepth,
   ServerStatus,
@@ -85,8 +84,8 @@ describe('MarketApi', () => {
 
   describe('markets', () => {
     test('returns markets info', async () => {
-      const mockData: Record<string, MarketInfo> = {
-        BTC_USDT: {
+      const mockData: MarketInfo[] = [
+        {
           name: 'BTC_USDT',
           stock: 'BTC',
           money: 'USDT',
@@ -99,7 +98,7 @@ describe('MarketApi', () => {
           minTotal: '10',
           tradesEnabled: true,
         },
-      };
+      ];
       api = new MarketApi({
         apiUrl: API_URL,
         fetch: createMockFetch(mockData),
@@ -108,16 +107,40 @@ describe('MarketApi', () => {
       const result = await api.markets();
 
       expect(result.success).toBe(true);
-      expect(result.data).toHaveProperty('BTC_USDT');
-      expect(result.data?.BTC_USDT.stock).toBe('BTC');
+      expect(result.data?.length).toBe(1);
+      expect(result.data?.[0]?.stock).toBe('BTC');
     });
   });
 
   describe('marketStatus', () => {
     test('returns market status list', async () => {
-      const mockData: MarketStatus[] = [
-        { market: 'BTC_USDT', status: 'operational' },
-        { market: 'ETH_USDT', status: 'operational' },
+      const mockData: MarketInfo[] = [
+        {
+          name: 'BTC_USDT',
+          stock: 'BTC',
+          money: 'USDT',
+          stockPrec: '8',
+          moneyPrec: '2',
+          feePrec: '4',
+          makerFee: '0.001',
+          takerFee: '0.001',
+          minAmount: '0.0001',
+          minTotal: '10',
+          tradesEnabled: true,
+        },
+        {
+          name: 'ETH_USDT',
+          stock: 'ETH',
+          money: 'USDT',
+          stockPrec: '8',
+          moneyPrec: '2',
+          feePrec: '4',
+          makerFee: '0.001',
+          takerFee: '0.001',
+          minAmount: '0.0001',
+          minTotal: '10',
+          tradesEnabled: false,
+        },
       ];
       api = new MarketApi({
         apiUrl: API_URL,
@@ -129,6 +152,8 @@ describe('MarketApi', () => {
       expect(result.success).toBe(true);
       expect(result.data?.length).toBe(2);
       expect(result.data?.[0].market).toBe('BTC_USDT');
+      expect(result.data?.[0].status).toBe('active');
+      expect(result.data?.[1].status).toBe('inactive');
     });
   });
 

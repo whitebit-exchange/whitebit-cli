@@ -10,7 +10,7 @@ export const collateralSummaryCommand = defineCommand({
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
-    const response = await authenticatedPost('/api/v4/collateral-summary', {}, config);
+    const response = await authenticatedPost('/api/v4/collateral-account/summary', {}, config);
     if (runtimeConfig.dryRun) {
       return;
     }

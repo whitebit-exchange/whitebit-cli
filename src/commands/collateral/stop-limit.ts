@@ -50,7 +50,7 @@ export const collateralStopLimitCommand = defineCommand({
       ...(flags.leverage !== undefined && { leverage: flags.leverage }),
       ...(flags.clientOrderId && { clientOrderId: flags.clientOrderId }),
     };
-    const response = await authenticatedPost('/api/v4/collateral-stop-limit', body, config);
+    const response = await authenticatedPost('/api/v4/order/collateral/stop-limit', body, config);
     if (runtimeConfig.dryRun) {
       return;
     }

@@ -53,7 +53,7 @@ export const collateralLimitOrderCommand = defineCommand({
       ...(flags.postOnly !== undefined && { postOnly: flags.postOnly }),
       ...(flags.ioc !== undefined && { ioc: flags.ioc }),
     };
-    const response = await authenticatedPost('/api/v4/collateral-limit', body, config);
+    const response = await authenticatedPost('/api/v4/order/collateral/limit', body, config);
     if (runtimeConfig.dryRun) {
       return;
     }

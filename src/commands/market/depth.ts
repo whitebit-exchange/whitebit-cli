@@ -1,6 +1,8 @@
 import { defineCommand, option } from '@bunli/core';
+import { z } from 'zod';
 
 import { MarketApi } from '../../lib/api/market';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadConfig, loadPublicConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 
@@ -8,24 +10,25 @@ export const depthCommand = defineCommand({
   name: 'depth',
   description: 'Get order book depth within ±2% of market price',
   options: {
-    market: option({
-      type: 'string',
-      description: 'Market pair (e.g., BTC_USDT)',
-      required: true,
-    }),
-    limit: option({
-      type: 'number',
+    limit: option(z.coerce.number().int().positive().optional(), {
       description: 'Number of price levels to return',
-      required: false,
     }),
   },
-  handler: async ({ options }) => {
+  handler: async ({ positional, flags }) => {
     const runtimeConfig = loadConfig();
     const config = loadPublicConfig();
     const api = new MarketApi({ apiUrl: config.apiUrl });
+
+    const market = parseArg(
+      positional[0],
+      z.string().min(1),
+      'PAIR',
+      'whitebit market depth <pair>',
+    );
+
     const response = await api.depth({
-      market: options.market,
-      limit: options.limit,
+      market,
+      limit: flags.limit,
     });
 
     if (runtimeConfig.dryRun) {

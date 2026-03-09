@@ -36,10 +36,6 @@ import type {
   MainBalanceResponse,
   MiningHashrateResponse,
   MyCodesParams,
-  OverviewResponse,
-  RewardsResponse,
-  TransferHistoryParams,
-  TransferHistoryResponse,
   TransferParams,
   TransferResponse,
   WebsocketProfileTokenResponse,
@@ -70,18 +66,6 @@ export class AccountApi {
     return response.data;
   }
 
-  async overview(): Promise<OverviewResponse> {
-    const response = await this.httpClient.post<OverviewResponse>(
-      '/api/v4/main-account/overview',
-      {},
-      { category: 'account' },
-    );
-    if (!response.success || !response.data) {
-      throw new Error(response.error?.message ?? 'Failed to fetch overview');
-    }
-    return response.data;
-  }
-
   async balance(): Promise<BalanceResponse> {
     const response = await this.httpClient.post<BalanceResponse>(
       '/api/v4/trade-account/balance',
@@ -96,7 +80,7 @@ export class AccountApi {
 
   async fee(): Promise<FeeResponse> {
     const response = await this.httpClient.post<FeeResponse>(
-      '/api/v4/trade-account/fee',
+      '/api/v4/main-account/fee',
       {},
       { category: 'account' },
     );
@@ -261,28 +245,6 @@ export class AccountApi {
     return response.data;
   }
 
-  async transferHistory(params?: TransferHistoryParams): Promise<TransferHistoryResponse> {
-    const body: Record<string, unknown> = {};
-    if (params?.limit !== undefined) {
-      body.limit = params.limit;
-    }
-    if (params?.offset !== undefined) {
-      body.offset = params.offset;
-    }
-    if (params?.transactionMethod !== undefined) {
-      body.transactionMethod = params.transactionMethod;
-    }
-    const response = await this.httpClient.post<TransferHistoryResponse>(
-      '/api/v4/main-account/transfer-history',
-      body,
-      { category: 'account' },
-    );
-    if (!response.success || !response.data) {
-      throw new Error(response.error?.message ?? 'Failed to fetch transfer history');
-    }
-    return response.data;
-  }
-
   async transfer(params: TransferParams): Promise<TransferResponse> {
     const response = await this.httpClient.post<TransferResponse>(
       '/api/v4/main-account/transfer',
@@ -347,7 +309,7 @@ export class AccountApi {
       body.offset = params.offset;
     }
     const response = await this.httpClient.post<CodesHistoryResponse>(
-      '/api/v4/main-account/codes-history',
+      '/api/v4/main-account/codes/history',
       body,
       { category: 'account' },
     );
@@ -366,7 +328,7 @@ export class AccountApi {
       body.offset = params.offset;
     }
     const response = await this.httpClient.post<CodesHistoryResponse>(
-      '/api/v4/main-account/codes-my',
+      '/api/v4/main-account/codes/my',
       body,
       { category: 'account' },
     );
@@ -378,7 +340,7 @@ export class AccountApi {
 
   async plans(): Promise<InvestmentPlan[]> {
     const response = await this.httpClient.post<InvestmentPlan[]>(
-      '/api/v4/main-account/investment/plans',
+      '/api/v4/main-account/smart/plans',
       {},
       { category: 'account' },
     );
@@ -390,7 +352,7 @@ export class AccountApi {
 
   async invest(params: InvestParams): Promise<InvestmentResponse> {
     const response = await this.httpClient.post<InvestmentResponse>(
-      '/api/v4/main-account/investment/invest',
+      '/api/v4/main-account/smart/investment',
       {
         planId: params.planId,
         amount: params.amount,
@@ -412,7 +374,7 @@ export class AccountApi {
       body.offset = params.offset;
     }
     const response = await this.httpClient.post<InvestmentsHistoryResponse>(
-      '/api/v4/main-account/investment/history',
+      '/api/v4/main-account/smart/investments',
       body,
       { category: 'account' },
     );
@@ -424,7 +386,7 @@ export class AccountApi {
 
   async closeInvestment(params: CloseInvestmentParams): Promise<InvestmentResponse> {
     const response = await this.httpClient.post<InvestmentResponse>(
-      '/api/v4/main-account/investment/close',
+      '/api/v4/main-account/smart/investment/close',
       { id: params.id },
       { category: 'account' },
     );
@@ -436,7 +398,7 @@ export class AccountApi {
 
   async flexPlans(): Promise<FlexibleInvestmentPlan[]> {
     const response = await this.httpClient.post<FlexibleInvestmentPlan[]>(
-      '/api/v4/main-account/flexible-investment/plans',
+      '/api/v4/main-account/smart-flex/plans',
       {},
       { category: 'account' },
     );
@@ -448,7 +410,7 @@ export class AccountApi {
 
   async flexInvest(params: FlexInvestParams): Promise<InvestmentResponse> {
     const response = await this.httpClient.post<InvestmentResponse>(
-      '/api/v4/main-account/flexible-investment/invest',
+      '/api/v4/main-account/smart-flex/investments/invest',
       {
         planId: params.planId,
         amount: params.amount,
@@ -463,7 +425,7 @@ export class AccountApi {
 
   async flexInvestments(): Promise<FlexInvestment[]> {
     const response = await this.httpClient.post<FlexInvestment[]>(
-      '/api/v4/main-account/flexible-investment/investments',
+      '/api/v4/main-account/smart-flex/investments',
       {},
       { category: 'account' },
     );
@@ -484,7 +446,7 @@ export class AccountApi {
       body.offset = params.offset;
     }
     const response = await this.httpClient.post<FlexInvestmentHistoryResponse>(
-      '/api/v4/main-account/flexible-investment/history',
+      '/api/v4/main-account/smart-flex/investments/history',
       body,
       { category: 'account' },
     );
@@ -505,7 +467,7 @@ export class AccountApi {
       body.offset = params.offset;
     }
     const response = await this.httpClient.post<FlexInvestmentHistoryResponse>(
-      '/api/v4/main-account/flexible-investment/payment-history',
+      '/api/v4/main-account/smart-flex/investments/payment-history',
       body,
       { category: 'account' },
     );
@@ -517,7 +479,7 @@ export class AccountApi {
 
   async flexWithdraw(params: FlexWithdrawParams): Promise<InvestmentResponse> {
     const response = await this.httpClient.post<InvestmentResponse>(
-      '/api/v4/main-account/flexible-investment/withdraw',
+      '/api/v4/main-account/smart-flex/investments/withdraw',
       {
         id: params.id,
         amount: params.amount,
@@ -532,7 +494,7 @@ export class AccountApi {
 
   async flexClose(params: FlexCloseParams): Promise<InvestmentResponse> {
     const response = await this.httpClient.post<InvestmentResponse>(
-      '/api/v4/main-account/flexible-investment/close',
+      '/api/v4/main-account/smart-flex/investments/close',
       { id: params.id },
       { category: 'account' },
     );
@@ -544,7 +506,7 @@ export class AccountApi {
 
   async flexAutoReinvest(params: FlexAutoReinvestParams): Promise<InvestmentResponse> {
     const response = await this.httpClient.post<InvestmentResponse>(
-      '/api/v4/main-account/flexible-investment/auto-reinvest',
+      '/api/v4/main-account/smart-flex/investments/auto-invest',
       {
         id: params.id,
         enabled: params.enabled,
@@ -557,21 +519,9 @@ export class AccountApi {
     return response.data;
   }
 
-  async rewards(): Promise<RewardsResponse> {
-    const response = await this.httpClient.post<RewardsResponse>(
-      '/api/v4/main-account/rewards',
-      {},
-      { category: 'account' },
-    );
-    if (!response.success || !response.data) {
-      throw new Error(response.error?.message ?? 'Failed to fetch rewards');
-    }
-    return response.data;
-  }
-
   async miningHashrate(): Promise<MiningHashrateResponse> {
     const response = await this.httpClient.post<MiningHashrateResponse>(
-      '/api/v4/main-account/mining/hashrate',
+      '/api/v4/mining/hashrate',
       {},
       { category: 'account' },
     );
@@ -592,7 +542,7 @@ export class AccountApi {
       body.offset = params.offset;
     }
     const response = await this.httpClient.post<InterestPaymentsHistoryResponse>(
-      '/api/v4/main-account/interest-payments-history',
+      '/api/v4/main-account/smart/interest-payment-history',
       body,
       { category: 'account' },
     );
@@ -604,7 +554,7 @@ export class AccountApi {
 
   async creditLines(): Promise<CreditLinesResponse> {
     const response = await this.httpClient.post<CreditLinesResponse>(
-      '/api/v4/main-account/credit-lines',
+      '/api/v4/credit-line/loans/info',
       {},
       { category: 'account' },
     );

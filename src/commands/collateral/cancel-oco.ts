@@ -25,7 +25,7 @@ export const collateralCancelOcoCommand = defineCommand({
       market: flags.market,
       orderId: flags.orderId,
     };
-    const response = await authenticatedPost('/api/v4/collateral-cancel-oco', body, config);
+    const response = await authenticatedPost('/api/v4/order/oco-cancel', body, config);
     if (runtimeConfig.dryRun) {
       return;
     }

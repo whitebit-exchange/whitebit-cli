@@ -25,6 +25,11 @@ describe('market depth command', () => {
   });
 
   test('fetches depth with required market param', async () => {
+    const handler = depthCommand.handler;
+    if (!handler) {
+      throw new Error('depth handler is not defined');
+    }
+
     const mockData: OrderbookDepth = {
       timestamp: 1631451591,
       asks: [
@@ -47,8 +52,9 @@ describe('market depth command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await depthCommand.handler({
-        options: { market: 'BTC_USDT' },
+      await handler({
+        positional: ['BTC_USDT'],
+        flags: {},
       } as never);
 
       expect(capturedOutput).toContain('asks');
@@ -60,6 +66,11 @@ describe('market depth command', () => {
   });
 
   test('fetches depth with optional limit param', async () => {
+    const handler = depthCommand.handler;
+    if (!handler) {
+      throw new Error('depth handler is not defined');
+    }
+
     const mockData: OrderbookDepth = {
       timestamp: 1631451591,
       asks: [['50001', '1.5']],
@@ -76,8 +87,9 @@ describe('market depth command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await depthCommand.handler({
-        options: { market: 'BTC_USDT', limit: 1 },
+      await handler({
+        positional: ['BTC_USDT'],
+        flags: { limit: 1 },
       } as never);
 
       expect(capturedOutput).toContain('50001');

@@ -7,7 +7,7 @@ import { formatOutput, unwrapTableData } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
 
 export const accountWithdrawHistoryCommand = defineCommand({
-  name: 'withdraw-history',
+  name: 'history',
   description: 'Get withdrawal history',
   options: {
     limit: option(z.coerce.number().int().positive().optional(), {

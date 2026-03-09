@@ -2,31 +2,21 @@ import { defineCommand, option } from '@bunli/core';
 import { z } from 'zod';
 
 import { AccountApi } from '../../lib/api/account';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
 
 export const accountWithdrawCryptoAmountCommand = defineCommand({
-  name: 'withdraw-crypto-amount',
+  name: 'crypto-amount',
   description: 'Withdraw cryptocurrency with exact amount',
   options: {
-    ticker: option(z.string().min(1), {
-      short: 't',
-      description: 'Cryptocurrency ticker (e.g., BTC)',
-    }),
-    amount: option(z.string().min(1), {
-      short: 'a',
-      description: 'Amount to withdraw',
-    }),
-    address: option(z.string().min(1), {
-      description: 'Destination address',
-    }),
     network: option(z.string().min(1).optional(), {
       short: 'n',
       description: 'Network identifier (e.g., ERC20)',
     }),
   },
-  handler: async ({ flags }) => {
+  handler: async ({ positional, flags }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
 
@@ -37,10 +27,29 @@ export const accountWithdrawCryptoAmountCommand = defineCommand({
     });
     const api = new AccountApi(client);
 
+    const ticker = parseArg(
+      positional[0],
+      z.string().min(1),
+      'TICKER',
+      'whitebit withdraw crypto-amount <ticker> <address> <amount>',
+    );
+    const address = parseArg(
+      positional[1],
+      z.string().min(1),
+      'ADDRESS',
+      'whitebit withdraw crypto-amount <ticker> <address> <amount>',
+    );
+    const amount = parseArg(
+      positional[2],
+      z.string().min(1),
+      'AMOUNT',
+      'whitebit withdraw crypto-amount <ticker> <address> <amount>',
+    );
+
     const response = await api.withdrawCryptoWithAmount({
-      ticker: flags.ticker,
-      amount: flags.amount,
-      address: flags.address,
+      ticker,
+      amount,
+      address,
       network: flags.network,
     });
 

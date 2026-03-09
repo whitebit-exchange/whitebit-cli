@@ -161,6 +161,16 @@ describe('config loader', () => {
     expect(() => loadAuthConfig()).toThrow('Missing WhiteBIT API credentials');
   });
 
+  test('trims surrounding whitespace from auth credentials', () => {
+    process.env.WHITEBIT_API_KEY = '  env-key  ';
+    process.env.WHITEBIT_API_SECRET = '\tenv-secret\n';
+
+    const auth = loadAuthConfig();
+
+    expect(auth.apiKey).toBe('env-key');
+    expect(auth.apiSecret).toBe('env-secret');
+  });
+
   test('creates config directory and config file with secure permissions', async () => {
     await saveConfigProfile({
       apiKey: 'new-key',
@@ -222,7 +232,7 @@ describe('config loader', () => {
     expect(config.apiKey).toBeUndefined();
     expect(config.apiSecret).toBeUndefined();
     expect(config.apiUrl).toBe('https://whitebit.com');
-    expect(config.format).toBe('json');
+    expect(config.format).toBe('table');
     expect(config.sources.apiKey).toBe('missing');
     expect(config.sources.apiSecret).toBe('missing');
   });

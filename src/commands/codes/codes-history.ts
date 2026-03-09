@@ -7,7 +7,7 @@ import { formatOutput, unwrapTableData } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
 
 export const accountCodesHistoryCommand = defineCommand({
-  name: 'codes-history',
+  name: 'history',
   description: 'Get voucher codes history (applied codes)',
   options: {
     limit: option(z.coerce.number().int().positive().optional(), {

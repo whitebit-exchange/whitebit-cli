@@ -16,6 +16,21 @@ import type {
   TradeRecord,
 } from '../types/market';
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const unwrapResult = <T>(value: unknown): T => {
+  if (isRecord(value) && 'result' in value) {
+    return value.result as T;
+  }
+
+  if (isRecord(value) && 'data' in value) {
+    return value.data as T;
+  }
+
+  return value as T;
+};
+
 export class MarketApi {
   private readonly httpClient: HttpClient;
 
@@ -35,16 +50,30 @@ export class MarketApi {
     });
   }
 
-  async markets(): Promise<NormalizedApiResponse<Record<string, MarketInfo>>> {
-    return this.httpClient.get<Record<string, MarketInfo>>('/api/v4/public/markets', undefined, {
+  async markets(): Promise<NormalizedApiResponse<MarketInfo[]>> {
+    return this.httpClient.get<MarketInfo[]>('/api/v4/public/markets', undefined, {
       category: 'public',
     });
   }
 
   async marketStatus(): Promise<NormalizedApiResponse<MarketStatus[]>> {
-    return this.httpClient.get<MarketStatus[]>('/api/v4/public/market-status', undefined, {
-      category: 'public',
-    });
+    const marketsResponse = await this.markets();
+    if (!marketsResponse.success) {
+      return {
+        success: false,
+        error: marketsResponse.error,
+      };
+    }
+
+    const statuses: MarketStatus[] = (marketsResponse.data ?? []).map((market) => ({
+      market: market.name,
+      status: market.tradesEnabled ? 'active' : 'inactive',
+    }));
+
+    return {
+      success: true,
+      data: statuses,
+    };
   }
 
   async assetStatus(): Promise<NormalizedApiResponse<Record<string, AssetStatus>>> {
@@ -54,19 +83,47 @@ export class MarketApi {
   }
 
   async availableFuturesMarkets(): Promise<NormalizedApiResponse<string[]>> {
-    return this.httpClient.get<string[]>('/api/v4/public/futures', undefined, {
+    const response = await this.httpClient.get<unknown>('/api/v4/public/futures', undefined, {
       category: 'public',
     });
+
+    if (!response.success) {
+      return {
+        success: false,
+        error: response.error,
+      };
+    }
+
+    return {
+      success: true,
+      data: unwrapResult<string[]>(response.data),
+    };
   }
 
   async collateralMarkets(): Promise<NormalizedApiResponse<string[]>> {
-    return this.httpClient.get<string[]>('/api/v4/public/collateral/markets', undefined, {
-      category: 'public',
-    });
+    const response = await this.httpClient.get<unknown>(
+      '/api/v4/public/collateral/markets',
+      undefined,
+      {
+        category: 'public',
+      },
+    );
+
+    if (!response.success) {
+      return {
+        success: false,
+        error: response.error,
+      };
+    }
+
+    return {
+      success: true,
+      data: unwrapResult<string[]>(response.data),
+    };
   }
 
   async tickers(): Promise<NormalizedApiResponse<Record<string, TickerData>>> {
-    return this.httpClient.get<Record<string, TickerData>>('/api/v4/public/tickers', undefined, {
+    return this.httpClient.get<Record<string, TickerData>>('/api/v4/public/ticker', undefined, {
       category: 'public',
     });
   }
@@ -101,6 +158,7 @@ export class MarketApi {
     limit?: number;
   }): Promise<NormalizedApiResponse<KlineRecord[]>> {
     const queryParams: Record<string, string | number> = {
+      market: params.market,
       interval: params.interval,
     };
 
@@ -114,13 +172,21 @@ export class MarketApi {
       queryParams.limit = params.limit;
     }
 
-    return this.httpClient.get<KlineRecord[]>(
-      `/api/v4/public/kline/${params.market}`,
-      queryParams,
-      {
-        category: 'public',
-      },
-    );
+    const response = await this.httpClient.get<unknown>('/api/v1/public/kline', queryParams, {
+      category: 'public',
+    });
+
+    if (!response.success) {
+      return {
+        success: false,
+        error: response.error,
+      };
+    }
+
+    return {
+      success: true,
+      data: unwrapResult<KlineRecord[]>(response.data),
+    };
   }
 
   async fee(): Promise<NormalizedApiResponse<FeeInfo[]>> {
@@ -134,9 +200,7 @@ export class MarketApi {
     limit?: number;
     offset?: number;
   }): Promise<NormalizedApiResponse<FundingRecord[]>> {
-    const queryParams: Record<string, string | number> = {
-      market: params.market,
-    };
+    const queryParams: Record<string, string | number> = {};
 
     if (params.limit !== undefined) {
       queryParams.limit = params.limit;
@@ -145,15 +209,31 @@ export class MarketApi {
       queryParams.offset = params.offset;
     }
 
-    return this.httpClient.get<FundingRecord[]>('/api/v4/public/funding-history', queryParams, {
-      category: 'public',
-    });
+    return this.httpClient.get<FundingRecord[]>(
+      `/api/v4/public/funding-history/${params.market}`,
+      queryParams,
+      {
+        category: 'public',
+      },
+    );
   }
 
   async miningPoolOverview(): Promise<NormalizedApiResponse<MiningPoolData>> {
-    return this.httpClient.get<MiningPoolData>('/api/v4/public/platform/mining-pool', undefined, {
+    const response = await this.httpClient.get<unknown>('/api/v4/public/mining-pool', undefined, {
       category: 'public',
     });
+
+    if (!response.success) {
+      return {
+        success: false,
+        error: response.error,
+      };
+    }
+
+    return {
+      success: true,
+      data: unwrapResult<MiningPoolData>(response.data),
+    };
   }
 
   async marketActivity(): Promise<NormalizedApiResponse<MarketActivityData>> {

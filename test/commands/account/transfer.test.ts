@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from 'bun:test';
 
-import { accountTransferCommand } from '../../../src/commands/account/transfer';
+import { accountTransferCommand } from '../../../src/commands/transfer/transfer';
 import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
 const createMockFetch =
@@ -42,12 +42,8 @@ describe('account transfer command', () => {
 
     try {
       await accountTransferCommand.handler({
-        flags: {
-          ticker: 'BTC',
-          amount: '0.1',
-          from: 'main',
-          to: 'trade',
-        },
+        positional: ['BTC', '0.1', 'main', 'trade'],
+        flags: {},
       } as never);
 
       expect(capturedOutput).toContain('98765');
@@ -73,12 +69,8 @@ describe('account transfer command', () => {
 
     try {
       await accountTransferCommand.handler({
-        flags: {
-          ticker: 'ETH',
-          amount: '5.0',
-          from: 'trade',
-          to: 'main',
-        },
+        positional: ['ETH', '5.0', 'trade', 'main'],
+        flags: {},
       } as never);
 
       expect(capturedOutput).toContain('54321');
@@ -93,12 +85,8 @@ describe('account transfer command', () => {
 
     try {
       await accountTransferCommand.handler({
-        flags: {
-          ticker: 'BTC',
-          amount: '100',
-          from: 'main',
-          to: 'trade',
-        },
+        positional: ['BTC', '100', 'main', 'trade'],
+        flags: {},
       } as never);
       expect.unreachable();
     } catch (error) {

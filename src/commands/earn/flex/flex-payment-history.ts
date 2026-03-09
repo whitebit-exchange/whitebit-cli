@@ -1,13 +1,13 @@
 import { defineCommand, option } from '@bunli/core';
 import { z } from 'zod';
 
-import { AccountApi } from '../../lib/api/account';
-import { loadAuthConfig, loadConfig } from '../../lib/config';
-import { formatOutput, unwrapTableData } from '../../lib/formatter';
-import { HttpClient } from '../../lib/http';
+import { AccountApi } from '../../../lib/api/account';
+import { loadAuthConfig, loadConfig } from '../../../lib/config';
+import { formatOutput, unwrapTableData } from '../../../lib/formatter';
+import { HttpClient } from '../../../lib/http';
 
 export const accountFlexPaymentHistoryCommand = defineCommand({
-  name: 'flex-payment-history',
+  name: 'payment-history',
   description: 'Get flexible investment payment history',
   options: {
     limit: option(z.coerce.number().int().positive().optional(), {

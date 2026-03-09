@@ -18,7 +18,7 @@ export const collateralOcoOrdersCommand = defineCommand({
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
     const body = flags.market ? { market: flags.market } : {};
-    const response = await authenticatedPost('/api/v4/collateral-oco-orders', body, config);
+    const response = await authenticatedPost('/api/v4/orders/oco', body, config);
     if (runtimeConfig.dryRun) {
       return;
     }

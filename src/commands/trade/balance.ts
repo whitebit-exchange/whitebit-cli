@@ -4,6 +4,7 @@ import { TradeApi } from '../../lib/api/trade';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
+import { recordToRows } from '../market/helpers';
 
 export const tradeBalanceCommand = defineCommand({
   name: 'balance',
@@ -25,6 +26,7 @@ export const tradeBalanceCommand = defineCommand({
       return;
     }
 
-    formatOutput(response, { format: runtimeConfig.format });
+    const data = runtimeConfig.format === 'table' ? recordToRows(response, 'asset') : response;
+    formatOutput(data, { format: runtimeConfig.format });
   },
 });

@@ -8,4 +8,14 @@ describe('convertConfirmCommand', () => {
     expect(convertConfirmCommand.name).toBe('confirm');
     expect(convertConfirmCommand.description).toBe('Confirm and execute a conversion');
   });
+
+  test('command handler accepts positional arguments', async () => {
+    expect(convertConfirmCommand.handler).toBeDefined();
+    const mockContext = {
+      positional: ['est-123'],
+      flags: {},
+    };
+    expect(mockContext.positional).toHaveLength(1);
+    expect(mockContext.positional[0]).toBe('est-123');
+  });
 });

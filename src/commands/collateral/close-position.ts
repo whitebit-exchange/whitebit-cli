@@ -25,7 +25,11 @@ export const collateralClosePositionCommand = defineCommand({
       market: flags.market,
       ...(flags.positionId !== undefined && { positionId: flags.positionId }),
     };
-    const response = await authenticatedPost('/api/v4/collateral-close-position', body, config);
+    const response = await authenticatedPost(
+      '/api/v4/collateral-account/position/close',
+      body,
+      config,
+    );
     if (runtimeConfig.dryRun) {
       return;
     }

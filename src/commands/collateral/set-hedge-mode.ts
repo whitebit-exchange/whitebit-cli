@@ -18,7 +18,11 @@ export const collateralSetHedgeModeCommand = defineCommand({
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
     const body = { enabled: flags.enabled };
-    const response = await authenticatedPost('/api/v4/collateral-hedge-mode-set', body, config);
+    const response = await authenticatedPost(
+      '/api/v4/collateral-account/hedge-mode/update',
+      body,
+      config,
+    );
     if (runtimeConfig.dryRun) {
       return;
     }

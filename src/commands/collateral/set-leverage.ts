@@ -25,7 +25,7 @@ export const collateralSetLeverageCommand = defineCommand({
       market: flags.market,
       leverage: flags.leverage,
     };
-    const response = await authenticatedPost('/api/v4/collateral-leverage', body, config);
+    const response = await authenticatedPost('/api/v4/collateral-account/leverage', body, config);
     if (runtimeConfig.dryRun) {
       return;
     }

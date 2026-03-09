@@ -25,7 +25,7 @@ export const collateralCancelOtoCommand = defineCommand({
       market: flags.market,
       orderId: flags.orderId,
     };
-    const response = await authenticatedPost('/api/v4/collateral-cancel-oto', body, config);
+    const response = await authenticatedPost('/api/v4/order/oto-cancel', body, config);
     if (runtimeConfig.dryRun) {
       return;
     }

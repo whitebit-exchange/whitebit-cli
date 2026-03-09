@@ -25,7 +25,7 @@ export const collateralCancelConditionalCommand = defineCommand({
       market: flags.market,
       orderId: flags.orderId,
     };
-    const response = await authenticatedPost('/api/v4/collateral-cancel-conditional', body, config);
+    const response = await authenticatedPost('/api/v4/order/conditional-cancel', body, config);
     if (runtimeConfig.dryRun) {
       return;
     }

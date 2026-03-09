@@ -12,14 +12,6 @@ export interface BalanceEntry {
 
 export type MainBalanceResponse = Record<string, BalanceEntry>;
 
-export interface OverviewResponse {
-  [ticker: string]: {
-    main_balance: string;
-    trade_balance: string;
-    [key: string]: unknown;
-  };
-}
-
 export interface BalanceResponse {
   [ticker: string]: {
     available: string;
@@ -117,12 +109,6 @@ export interface WithdrawHistoryResponse {
 }
 
 // Transfer types
-export interface TransferHistoryParams {
-  limit?: number;
-  offset?: number;
-  transactionMethod?: number;
-}
-
 export interface TransferParams {
   ticker: string;
   amount: string;
@@ -132,15 +118,6 @@ export interface TransferParams {
 
 export interface TransferResponse {
   [key: string]: unknown;
-}
-
-export interface TransferHistoryResponse {
-  limit: number;
-  offset: number;
-  records: Array<{
-    [key: string]: unknown;
-  }>;
-  total: number;
 }
 
 // Code / Voucher types
@@ -265,10 +242,6 @@ export interface FlexInvestmentHistoryResponse {
 }
 
 // Misc types
-export interface RewardsResponse {
-  [key: string]: unknown;
-}
-
 export interface MiningHashrateResponse {
   [key: string]: unknown;
 }

@@ -25,6 +25,11 @@ describe('market kline command', () => {
   });
 
   test('fetches kline with required params', async () => {
+    const handler = klineCommand.handler;
+    if (!handler) {
+      throw new Error('kline handler is not defined');
+    }
+
     const mockData: KlineRecord[] = [
       {
         time: 1631451600,
@@ -47,8 +52,9 @@ describe('market kline command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await klineCommand.handler({
-        options: { market: 'BTC_USDT', interval: '1h' },
+      await handler({
+        positional: ['BTC_USDT', '1h'],
+        flags: {},
       } as never);
 
       expect(capturedOutput).toContain('50000');
@@ -59,6 +65,11 @@ describe('market kline command', () => {
   });
 
   test('fetches kline with optional params', async () => {
+    const handler = klineCommand.handler;
+    if (!handler) {
+      throw new Error('kline handler is not defined');
+    }
+
     const mockData: KlineRecord[] = [
       {
         time: 1631451600,
@@ -81,10 +92,9 @@ describe('market kline command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await klineCommand.handler({
-        options: {
-          market: 'BTC_USDT',
-          interval: '1h',
+      await handler({
+        positional: ['BTC_USDT', '1h'],
+        flags: {
           start: 1631400000,
           end: 1631500000,
           limit: 100,

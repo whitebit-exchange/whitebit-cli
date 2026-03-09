@@ -50,7 +50,7 @@ export const collateralCreateOcoCommand = defineCommand({
       ...(flags.leverage !== undefined && { leverage: flags.leverage }),
       ...(flags.clientOrderId && { clientOrderId: flags.clientOrderId }),
     };
-    const response = await authenticatedPost('/api/v4/collateral-oco', body, config);
+    const response = await authenticatedPost('/api/v4/order/collateral/oco', body, config);
     if (runtimeConfig.dryRun) {
       return;
     }

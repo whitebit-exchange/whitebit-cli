@@ -2,24 +2,21 @@ import { defineCommand, option } from '@bunli/core';
 import { z } from 'zod';
 
 import { AccountApi } from '../../lib/api/account';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
 
 export const accountApplyCodeCommand = defineCommand({
-  name: 'apply-code',
+  name: 'apply',
   description: 'Apply a voucher code',
   options: {
-    code: option(z.string().min(1), {
-      short: 'c',
-      description: 'Voucher code to redeem',
-    }),
     passphrase: option(z.string().min(1).optional(), {
       short: 'p',
       description: 'Passphrase if required',
     }),
   },
-  handler: async ({ flags }) => {
+  handler: async ({ positional, flags }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
 
@@ -30,8 +27,10 @@ export const accountApplyCodeCommand = defineCommand({
     });
     const api = new AccountApi(client);
 
+    const code = parseArg(positional[0], z.string().min(1), 'CODE', 'whitebit codes apply <code>');
+
     const response = await api.applyCode({
-      code: flags.code,
+      code,
       passphrase: flags.passphrase,
     });
 

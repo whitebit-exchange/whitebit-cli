@@ -1,7 +1,8 @@
-import { defineCommand, option } from '@bunli/core';
+import { defineCommand } from '@bunli/core';
 import { z } from 'zod';
 
 import { ConvertApi } from '../../lib/api/convert';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
@@ -9,21 +10,7 @@ import { HttpClient } from '../../lib/http';
 export const convertEstimateCommand = defineCommand({
   name: 'estimate',
   description: 'Estimate conversion rate and amount',
-  options: {
-    from: option(z.string().min(1), {
-      short: 'f',
-      description: 'Source currency (e.g., BTC)',
-    }),
-    to: option(z.string().min(1), {
-      short: 't',
-      description: 'Target currency (e.g., USDT)',
-    }),
-    amount: option(z.string().min(1), {
-      short: 'a',
-      description: 'Amount to convert',
-    }),
-  },
-  handler: async ({ flags }) => {
+  handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
     const httpClient = new HttpClient({
@@ -33,10 +20,31 @@ export const convertEstimateCommand = defineCommand({
     });
     const api = new ConvertApi(httpClient);
 
+    const from = parseArg(
+      positional[0],
+      z.string().min(1),
+      'FROM',
+      'whitebit trade convert estimate <from> <to> <amount>',
+    );
+
+    const to = parseArg(
+      positional[1],
+      z.string().min(1),
+      'TO',
+      'whitebit trade convert estimate <from> <to> <amount>',
+    );
+
+    const amount = parseArg(
+      positional[2],
+      z.string().min(1),
+      'AMOUNT',
+      'whitebit trade convert estimate <from> <to> <amount>',
+    );
+
     const result = await api.estimate({
-      from: flags.from,
-      to: flags.to,
-      amount: flags.amount,
+      from,
+      to,
+      amount,
     });
 
     if (runtimeConfig.dryRun) {

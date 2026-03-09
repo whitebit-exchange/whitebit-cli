@@ -1,12 +1,12 @@
 import { defineCommand } from '@bunli/core';
 
-import { AccountApi } from '../../lib/api/account';
-import { loadAuthConfig, loadConfig } from '../../lib/config';
-import { formatOutput, unwrapTableData } from '../../lib/formatter';
-import { HttpClient } from '../../lib/http';
+import { AccountApi } from '../../../lib/api/account';
+import { loadAuthConfig, loadConfig } from '../../../lib/config';
+import { formatOutput, unwrapTableData } from '../../../lib/formatter';
+import { HttpClient } from '../../../lib/http';
 
 export const accountFlexPlansCommand = defineCommand({
-  name: 'flex-plans',
+  name: 'plans',
   description: 'Get available flexible investment plans',
   handler: async () => {
     const runtimeConfig = loadConfig();

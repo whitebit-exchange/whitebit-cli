@@ -36,7 +36,7 @@ export class CollateralApi {
 
   async balance(): Promise<CollateralBalance> {
     const response = await this.httpClient.post<CollateralBalance>(
-      '/api/v4/collateral-balance',
+      '/api/v4/collateral-account/balance',
       {},
       {
         category: 'collateral',
@@ -52,7 +52,7 @@ export class CollateralApi {
 
   async summary(): Promise<CollateralSummary> {
     const response = await this.httpClient.post<CollateralSummary>(
-      '/api/v4/collateral-summary',
+      '/api/v4/collateral-account/summary',
       {},
       {
         category: 'collateral',
@@ -68,7 +68,7 @@ export class CollateralApi {
 
   async balanceSummary(): Promise<CollateralBalanceSummary> {
     const response = await this.httpClient.post<CollateralBalanceSummary>(
-      '/api/v4/collateral-balance-summary',
+      '/api/v4/collateral-account/balance-summary',
       {},
       {
         category: 'collateral',
@@ -84,7 +84,7 @@ export class CollateralApi {
 
   async getHedgeMode(): Promise<HedgeModeStatus> {
     const response = await this.httpClient.post<HedgeModeStatus>(
-      '/api/v4/collateral-hedge-mode',
+      '/api/v4/collateral-account/hedge-mode',
       {},
       {
         category: 'collateral',
@@ -100,7 +100,7 @@ export class CollateralApi {
 
   async setHedgeMode(params: SetHedgeModeParams): Promise<{ result: string }> {
     const response = await this.httpClient.post<{ result: string }>(
-      '/api/v4/collateral-hedge-mode-set',
+      '/api/v4/collateral-account/hedge-mode/update',
       params,
       {
         category: 'account',
@@ -116,7 +116,7 @@ export class CollateralApi {
 
   async createLimitOrder(params: CreateLimitOrderParams): Promise<CollateralOrder> {
     const response = await this.httpClient.post<CollateralOrder>(
-      '/api/v4/collateral-limit',
+      '/api/v4/order/collateral/limit',
       params,
       {
         category: 'collateral-trading',
@@ -132,7 +132,7 @@ export class CollateralApi {
 
   async createMarketOrder(params: CreateMarketOrderParams): Promise<CollateralOrder> {
     const response = await this.httpClient.post<CollateralOrder>(
-      '/api/v4/collateral-market',
+      '/api/v4/order/collateral/market',
       params,
       {
         category: 'collateral-trading',
@@ -148,7 +148,7 @@ export class CollateralApi {
 
   async createBulkLimitOrders(params: CreateBulkOrdersParams): Promise<CollateralOrder[]> {
     const response = await this.httpClient.post<CollateralOrder[]>(
-      '/api/v4/collateral-bulk-limit',
+      '/api/v4/order/collateral/bulk',
       params,
       {
         category: 'collateral-trading',
@@ -164,7 +164,7 @@ export class CollateralApi {
 
   async createStopLimitOrder(params: CreateStopLimitOrderParams): Promise<CollateralOrder> {
     const response = await this.httpClient.post<CollateralOrder>(
-      '/api/v4/collateral-stop-limit',
+      '/api/v4/order/collateral/stop-limit',
       params,
       {
         category: 'collateral-trading',
@@ -180,7 +180,7 @@ export class CollateralApi {
 
   async createTriggerMarketOrder(params: CreateTriggerMarketOrderParams): Promise<CollateralOrder> {
     const response = await this.httpClient.post<CollateralOrder>(
-      '/api/v4/collateral-trigger-market',
+      '/api/v4/order/collateral/trigger-market',
       params,
       {
         category: 'collateral-trading',
@@ -196,7 +196,7 @@ export class CollateralApi {
 
   async setLeverage(params: SetLeverageParams): Promise<LeverageResult> {
     const response = await this.httpClient.post<LeverageResult>(
-      '/api/v4/collateral-leverage',
+      '/api/v4/collateral-account/leverage',
       params,
       {
         category: 'account',
@@ -212,7 +212,7 @@ export class CollateralApi {
 
   async closePosition(params: ClosePositionParams): Promise<{ result: string }> {
     const response = await this.httpClient.post<{ result: string }>(
-      '/api/v4/collateral-close-position',
+      '/api/v4/collateral-account/position/close',
       params,
       {
         category: 'collateral-trading',
@@ -228,7 +228,7 @@ export class CollateralApi {
 
   async openPositions(params: OpenPositionsParams = {}): Promise<Position[]> {
     const response = await this.httpClient.post<Position[]>(
-      '/api/v4/collateral-positions',
+      '/api/v4/collateral-account/positions',
       params,
       {
         category: 'collateral',
@@ -244,7 +244,7 @@ export class CollateralApi {
 
   async positionHistory(params: PositionHistoryParams = {}): Promise<PositionHistoryItem[]> {
     const response = await this.httpClient.post<PositionHistoryItem[]>(
-      '/api/v4/collateral-positions-history',
+      '/api/v4/collateral-account/positions/history',
       params,
       {
         category: 'collateral',
@@ -260,7 +260,7 @@ export class CollateralApi {
 
   async fundingHistory(params: FundingHistoryParams = {}): Promise<FundingHistoryItem[]> {
     const response = await this.httpClient.post<FundingHistoryItem[]>(
-      '/api/v4/collateral-funding-history',
+      '/api/v4/collateral-account/funding-history',
       params,
       {
         category: 'collateral',
@@ -278,7 +278,7 @@ export class CollateralApi {
     params: UnexecutedConditionalOrdersParams = {},
   ): Promise<ConditionalOrder[]> {
     const response = await this.httpClient.post<ConditionalOrder[]>(
-      '/api/v4/collateral-conditional-orders',
+      '/api/v4/orders/conditional',
       params,
       {
         category: 'collateral',
@@ -294,7 +294,7 @@ export class CollateralApi {
 
   async cancelConditionalOrder(params: CancelConditionalOrderParams): Promise<{ result: string }> {
     const response = await this.httpClient.post<{ result: string }>(
-      '/api/v4/collateral-cancel-conditional',
+      '/api/v4/order/conditional-cancel',
       params,
       {
         category: 'collateral-trading',
@@ -309,13 +309,9 @@ export class CollateralApi {
   }
 
   async unexecutedOcoOrders(params: UnexecutedOcoOrdersParams = {}): Promise<OcoOrder[]> {
-    const response = await this.httpClient.post<OcoOrder[]>(
-      '/api/v4/collateral-oco-orders',
-      params,
-      {
-        category: 'collateral',
-      },
-    );
+    const response = await this.httpClient.post<OcoOrder[]>('/api/v4/orders/oco', params, {
+      category: 'collateral',
+    });
 
     if (!response.success || !response.data) {
       throw new Error(response.error?.message ?? 'Failed to fetch OCO orders');
@@ -325,9 +321,13 @@ export class CollateralApi {
   }
 
   async createOcoOrder(params: CreateOcoOrderParams): Promise<CollateralOrder> {
-    const response = await this.httpClient.post<CollateralOrder>('/api/v4/collateral-oco', params, {
-      category: 'collateral-trading',
-    });
+    const response = await this.httpClient.post<CollateralOrder>(
+      '/api/v4/order/collateral/oco',
+      params,
+      {
+        category: 'collateral-trading',
+      },
+    );
 
     if (!response.success || !response.data) {
       throw new Error(response.error?.message ?? 'Failed to create OCO order');
@@ -337,9 +337,13 @@ export class CollateralApi {
   }
 
   async createOtoOrder(params: CreateOtoOrderParams): Promise<CollateralOrder> {
-    const response = await this.httpClient.post<CollateralOrder>('/api/v4/collateral-oto', params, {
-      category: 'collateral-trading',
-    });
+    const response = await this.httpClient.post<CollateralOrder>(
+      '/api/v4/order/collateral/oto',
+      params,
+      {
+        category: 'collateral-trading',
+      },
+    );
 
     if (!response.success || !response.data) {
       throw new Error(response.error?.message ?? 'Failed to create OTO order');
@@ -350,7 +354,7 @@ export class CollateralApi {
 
   async cancelOcoOrder(params: CancelOcoOrderParams): Promise<{ result: string }> {
     const response = await this.httpClient.post<{ result: string }>(
-      '/api/v4/collateral-cancel-oco',
+      '/api/v4/order/oco-cancel',
       params,
       {
         category: 'collateral-trading',
@@ -366,7 +370,7 @@ export class CollateralApi {
 
   async cancelOtoOrder(params: CancelOtoOrderParams): Promise<{ result: string }> {
     const response = await this.httpClient.post<{ result: string }>(
-      '/api/v4/collateral-cancel-oto',
+      '/api/v4/order/oto-cancel',
       params,
       {
         category: 'collateral-trading',

@@ -1,28 +1,33 @@
-import { defineCommand, option } from '@bunli/core';
-import { z } from 'zod';
+import { defineCommand } from '@bunli/core';
 
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { authenticatedPost } from '../../lib/http';
+import { recordToRows } from '../market/helpers';
 
 export const accountBalanceCommand = defineCommand({
-  name: 'balance',
+  name: 'trade',
   description: 'Fetch spot trading balance',
-  options: {
-    ticker: option(z.string().min(1).optional(), {
-      short: 't',
-      description: 'Optional market symbol (for example BTC)',
-    }),
-  },
-  handler: async ({ flags }) => {
+  handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
-    const body = flags.ticker ? { ticker: flags.ticker } : {};
-    const response = await authenticatedPost('/api/v4/trade-balance', body, config);
+    const ticker = positional[0];
+    const body = ticker ? { ticker } : {};
+    const response = await authenticatedPost('/api/v4/trade-account/balance', body, config);
     if (runtimeConfig.dryRun) {
       return;
     }
 
-    formatOutput(response, { format: runtimeConfig.format });
+    let data: unknown = response;
+    if (runtimeConfig.format === 'table') {
+      if (ticker && typeof response === 'object' && response !== null && !Array.isArray(response)) {
+        // Single-asset response is flat: { available, freeze }
+        // Wrap it to match multi-asset table structure: { TICKER: { available, freeze } }
+        data = recordToRows({ [ticker.toUpperCase()]: response }, 'asset');
+      } else {
+        data = recordToRows(response, 'asset');
+      }
+    }
+    formatOutput(data, { format: runtimeConfig.format });
   },
 });

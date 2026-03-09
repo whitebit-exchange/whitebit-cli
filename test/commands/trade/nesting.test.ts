@@ -1,10 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import {
-  collateralGroup,
-  convertGroup,
-  spotGroup,
-  tradeGroup,
-} from '../../../src/commands/trade';
+import { collateralGroup, convertGroup, spotGroup, tradeGroup } from '../../../src/commands/trade';
 
 describe('Trade Group Nesting', () => {
   test('tradeGroup has correct name', () => {
@@ -23,9 +18,7 @@ describe('Trade Group Nesting', () => {
   });
 
   test('tradeGroup contains collateral subgroup', () => {
-    const collateral = tradeGroup.commands.find(
-      (cmd: any) => cmd.name === 'collateral'
-    );
+    const collateral = tradeGroup.commands.find((cmd: any) => cmd.name === 'collateral');
     expect(collateral).toBeDefined();
     expect(collateral?.description).toBe('Collateral trading commands');
   });

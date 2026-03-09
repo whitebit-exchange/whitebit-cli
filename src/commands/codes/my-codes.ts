@@ -7,7 +7,7 @@ import { formatOutput, unwrapTableData } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
 
 export const accountMyCodesCommand = defineCommand({
-  name: 'my-codes',
+  name: 'list',
   description: 'Get my created voucher codes',
   options: {
     limit: option(z.coerce.number().int().positive().optional(), {

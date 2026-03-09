@@ -1,7 +1,8 @@
-import { defineCommand, option } from '@bunli/core';
+import { defineCommand } from '@bunli/core';
 import { z } from 'zod';
 
 import { ConvertApi } from '../../lib/api/convert';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
@@ -9,13 +10,7 @@ import { HttpClient } from '../../lib/http';
 export const convertConfirmCommand = defineCommand({
   name: 'confirm',
   description: 'Confirm and execute a conversion',
-  options: {
-    estimateId: option(z.string().min(1), {
-      short: 'e',
-      description: 'Estimate ID from convert estimate',
-    }),
-  },
-  handler: async ({ flags }) => {
+  handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
     const httpClient = new HttpClient({
@@ -25,8 +20,15 @@ export const convertConfirmCommand = defineCommand({
     });
     const api = new ConvertApi(httpClient);
 
+    const estimateId = parseArg(
+      positional[0],
+      z.string().min(1),
+      'ESTIMATE_ID',
+      'whitebit trade convert confirm <estimate_id>',
+    );
+
     const result = await api.confirm({
-      estimateId: flags.estimateId,
+      estimateId,
     });
 
     if (runtimeConfig.dryRun) {

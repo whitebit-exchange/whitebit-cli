@@ -25,6 +25,10 @@ export const accountWsTokenCommand = defineCommand({
       return;
     }
 
-    formatOutput(response, { format: runtimeConfig.format });
+    const data =
+      runtimeConfig.format === 'table' && typeof response === 'string'
+        ? JSON.parse(response)
+        : response;
+    formatOutput(data, { format: runtimeConfig.format });
   },
 });

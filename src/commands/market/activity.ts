@@ -3,6 +3,7 @@ import { defineCommand } from '@bunli/core';
 import { MarketApi } from '../../lib/api/market';
 import { loadConfig, loadPublicConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { recordToRows, unwrapWhitebitPayload } from './helpers';
 
 export const activityCommand = defineCommand({
   name: 'activity',
@@ -21,6 +22,7 @@ export const activityCommand = defineCommand({
       throw new Error(response.error?.message ?? 'Failed to fetch market activity');
     }
 
-    formatOutput(response.data, { format: runtimeConfig.format });
+    const payload = unwrapWhitebitPayload<Record<string, unknown>>(response.data);
+    formatOutput(recordToRows(payload, 'market'), { format: runtimeConfig.format });
   },
 });

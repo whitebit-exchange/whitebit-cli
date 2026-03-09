@@ -3,6 +3,7 @@ import { defineCommand } from '@bunli/core';
 import { MarketApi } from '../../lib/api/market';
 import { loadConfig, loadPublicConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { unwrapWhitebitPayload } from './helpers';
 
 export const futuresMarketsCommand = defineCommand({
   name: 'futures-markets',
@@ -21,6 +22,6 @@ export const futuresMarketsCommand = defineCommand({
       throw new Error(response.error?.message ?? 'Failed to fetch futures markets');
     }
 
-    formatOutput(response.data, { format: runtimeConfig.format });
+    formatOutput(unwrapWhitebitPayload(response.data), { format: runtimeConfig.format });
   },
 });

@@ -26,7 +26,7 @@ export const collateralBulkOrderCommand = defineCommand({
       market: flags.market,
       orders,
     };
-    const response = await authenticatedPost('/api/v4/collateral-bulk-limit', body, config);
+    const response = await authenticatedPost('/api/v4/order/collateral/bulk', body, config);
     if (runtimeConfig.dryRun) {
       return;
     }

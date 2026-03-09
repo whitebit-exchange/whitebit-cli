@@ -51,11 +51,6 @@ Create a configuration file at `~/.whitebit/config.toml`:
 api_key = "your-api-key"
 api_secret = "your-api-secret"
 format = "table"  # or "json"
-
-[testnet]
-api_key = "testnet-key"
-api_secret = "testnet-secret"
-api_url = "https://api.testnet.whitebit.com"
 ```
 
 ### 2. Authentication Methods
@@ -72,13 +67,13 @@ api_url = "https://api.testnet.whitebit.com"
 # Using environment variables
 export WHITEBIT_API_KEY="your-key"
 export WHITEBIT_API_SECRET="your-secret"
-whitebit account balance
+whitebit balance trade
 
 # Using config file profile
-whitebit account balance --profile testnet
+whitebit balance trade --profile testnet
 
 # Using CLI flags (least secure)
-whitebit account balance --api-key "your-key" --api-secret "your-secret"
+whitebit balance trade --api-key "your-key" --api-secret "your-secret"
 ```
 
 ### 3. Your First Commands
@@ -90,8 +85,8 @@ whitebit market ticker BTC_USDT
 whitebit market depth BTC_USDT
 
 # Account operations (requires auth)
-whitebit account balance
-whitebit account overview
+whitebit balance trade
+whitebit balance fee
 
 # Trading operations (requires auth)
 whitebit trade spot unexecuted
@@ -123,48 +118,82 @@ Query real-time market data without authentication.
 - `market fee` — Trading fee schedule
 - `market funding-history <pair>` — Futures funding rate history
 - `market mining-pool` — Mining pool statistics
+- `market mining-hashrate` — Mining hashrate
 - `market activity <pair>` — 24h trading activity
 
-### Account Management (Requires Auth)
+### Balance (Requires Auth)
 
-Manage balances, deposits, withdrawals, and earning products.
+View account balances and fees.
 
-- `account main-balance` — Main account balance
-- `account overview` — Account overview with all balances
-- `account balance [asset]` — Spot/trading balance
-- `account fee` — Personal trading fee rates
-- `account deposit-address <asset> <network>` — Get deposit address
-- `account fiat-deposit-address <provider> <currency>` — Fiat deposit address
-- `account create-address <asset> <network>` — Create new deposit address
-- `account withdraw-crypto <asset> <amount> <address>` — Withdraw crypto
-- `account withdraw-crypto-amount <asset> <address>` — Estimate withdrawal amount
-- `account withdraw-fiat <currency> <amount> <provider>` — Withdraw fiat
-- `account deposit-refund <hash>` — Request deposit refund
-- `account withdraw-history` — Withdrawal history
-- `account transfer-history` — Transfer history
-- `account transfer <asset> <amount> <from> <to>` — Internal transfer
-- `account create-code <asset> <amount>` — Create redemption code
-- `account apply-code <code>` — Redeem code
-- `account codes-history` — Code creation history
-- `account my-codes` — Active codes
-- `account plans` — Fixed staking plans
-- `account invest <plan_id> <amount>` — Create fixed staking
-- `account investments-history` — Staking history
-- `account close-investment <id>` — Close staking early
-- `account flex-plans` — Flexible staking plans
-- `account flex-invest <asset> <amount>` — Flexible staking invest
-- `account flex-investments` — Active flexible stakings
-- `account flex-investment-history` — Flexible staking history
-- `account flex-payment-history` — Flexible payment history
-- `account flex-withdraw <asset> <amount>` — Withdraw from flexible
-- `account flex-close <id>` — Close flexible staking
-- `account flex-auto-reinvest <id> <enabled>` — Toggle auto-reinvest
-- `account rewards` — Rewards history
-- `account mining-hashrate` — Mining hashrate
-- `account interest-history` — Interest payment history
-- `account credit-lines` — Credit lines
-- `account issue-jwt-token` — Issue JWT token
-- `account ws-token` — WebSocket auth token
+- `balance main` — Main account balance
+- `balance trade [asset]` — Spot/trading balance
+- `balance fee` — Personal trading fee rates
+
+### Deposit (Requires Auth)
+
+Manage deposit addresses and requests.
+
+- `deposit address <asset> <network>` — Get deposit address
+- `deposit fiat-address <provider> <currency>` — Fiat deposit address
+- `deposit create-address <asset> <network>` — Create new deposit address
+- `deposit refund <hash>` — Request deposit refund
+
+### Withdraw (Requires Auth)
+
+Manage withdrawals and view history.
+
+- `withdraw crypto <asset> <amount> <address>` — Withdraw crypto
+- `withdraw crypto-amount <asset> <address>` — Estimate withdrawal amount
+- `withdraw fiat <currency> <amount> <provider>` — Withdraw fiat
+- `withdraw history` — Withdrawal history
+
+### Transfer (Requires Auth)
+
+Internal account transfers.
+
+- `transfer internal <asset> <amount> <from> <to>` — Internal transfer
+
+### Codes (Requires Auth)
+
+Manage redemption codes.
+
+- `codes create <asset> <amount>` — Create redemption code
+- `codes apply <code>` — Redeem code
+- `codes history` — Code creation history
+- `codes list` — Active codes
+
+### Earn (Requires Auth)
+
+Staking and yield products.
+
+#### Fixed Staking (`earn fixed <command>`)
+
+- `earn fixed plans` — Fixed staking plans
+- `earn fixed invest <plan_id> <amount>` — Create fixed staking
+- `earn fixed investments-history` — Staking history
+- `earn fixed close-investment <id>` — Close staking early
+
+#### Flexible Staking (`earn flex <command>`)
+
+- `earn flex plans` — Flexible staking plans
+- `earn flex invest <asset> <amount>` — Flexible staking invest
+- `earn flex investments` — Active flexible stakings
+- `earn flex investment-history` — Flexible staking history
+- `earn flex payment-history` — Flexible payment history
+- `earn flex withdraw <asset> <amount>` — Withdraw from flexible
+- `earn flex close <id>` — Close flexible staking
+- `earn flex auto-reinvest <id> <enabled>` — Toggle auto-reinvest
+
+#### Interest History
+
+- `earn interest-history` — Interest payment history
+
+### Account Data (Requires Auth)
+
+Account and credit information.
+
+- `credit-lines` — Credit lines
+- `ws-token` — WebSocket auth token
 
 ### Trading (Requires Auth)
 
@@ -296,13 +325,13 @@ whitebit trade spot limit-order -m BTC_USDT -s buy -p 50000 -a 0.001
 ### Check account balance in JSON
 
 ```bash
-whitebit account balance --json
+whitebit balance trade --json
 ```
 
 ### Use testnet profile
 
 ```bash
-whitebit account balance --profile testnet
+whitebit balance trade --profile testnet
 ```
 
 ### Monitor active orders

@@ -1,6 +1,7 @@
-import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
+import { afterEach, beforeEach, describe, expect, spyOn, test } from 'bun:test';
 
 import { createAuthHeaders } from '../../src/lib/auth';
+import { clearGlobalConfigOverrides, setGlobalConfigOverrides } from '../../src/lib/config';
 import { HttpClient } from '../../src/lib/http';
 import type { RateLimitCategory } from '../../src/lib/rate-limiter';
 import { DEFAULT_USER_AGENT } from '../../src/lib/version';
@@ -51,6 +52,7 @@ describe('HttpClient', () => {
 
   afterEach(() => {
     setDateNow(originalDateNow);
+    clearGlobalConfigOverrides();
   });
 
   test('sends no auth headers for public GET requests', async () => {
@@ -230,5 +232,52 @@ describe('HttpClient', () => {
     expect(response.error?.errors).toEqual({
       ticker: ['Ticker is required'],
     });
+  });
+
+  test('respects global dry-run override in direct HttpClient calls', async () => {
+    setGlobalConfigOverrides({ dryRun: true });
+
+    const calls: FetchCall[] = [];
+    const fetchMock = toFetchMock(async (input, init) => {
+      calls.push({ input, init });
+      return createJsonResponse({ balance: '10.5' });
+    });
+
+    const client = new HttpClient({
+      apiUrl: API_URL,
+      apiKey: API_KEY,
+      apiSecret: API_SECRET,
+      fetch: fetchMock,
+      userAgent: DEFAULT_USER_AGENT,
+    });
+
+    const response = await client.post('/api/v4/trade-balance', { ticker: 'BTC' });
+
+    expect(calls).toHaveLength(0);
+    expect(response.success).toBe(true);
+    expect(response.data).toMatchObject({
+      dry_run: true,
+      method: 'POST',
+      url: 'https://whitebit.com/api/v4/trade-balance',
+    });
+  });
+
+  test('respects global verbose override in direct HttpClient calls', async () => {
+    setGlobalConfigOverrides({ verbose: true });
+
+    const fetchMock = toFetchMock(async () => createJsonResponse({ success: true }));
+    const stderrSpy = spyOn(process.stderr, 'write').mockImplementation(() => true);
+
+    const client = new HttpClient({
+      apiUrl: API_URL,
+      fetch: fetchMock,
+      userAgent: DEFAULT_USER_AGENT,
+    });
+
+    await client.get('/api/v4/public/tickers');
+
+    const output = stderrSpy.mock.calls.map(([msg]) => String(msg)).join('\n');
+    expect(output).toContain('[verbose] Outgoing request');
+    expect(output).toContain('[verbose] Response success: true');
   });
 });

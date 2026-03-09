@@ -8,6 +8,7 @@ import {
   saveConfigProfile,
 } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { runLogin } from '../login';
 
 export const configSetCommand = defineCommand({
   name: 'set',
@@ -27,6 +28,16 @@ export const configSetCommand = defineCommand({
     const overrides = getGlobalConfigOverrides();
     const apiKey = flags['api-key'] ?? overrides.apiKey;
     const apiSecret = flags['api-secret'] ?? overrides.apiSecret;
+
+    if (!apiKey && !apiSecret) {
+      await runLogin({
+        profile: flags.profile,
+        'api-key': flags['api-key'],
+        'api-secret': flags['api-secret'],
+        'api-url': overrides.apiUrl,
+      });
+      return;
+    }
 
     if (!apiKey || !apiSecret) {
       throw new Error('config set requires --api-key and --api-secret');
