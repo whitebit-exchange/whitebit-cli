@@ -90,7 +90,7 @@ whitebit balance fee
 
 # Trading operations (requires auth)
 whitebit trade spot unexecuted
-whitebit trade spot limit-order --market BTC_USDT --side buy --price 50000 --amount 0.001
+whitebit trade spot limit-order BTC_USDT buy 0.001 50000
 
 # Configuration
 whitebit config show
@@ -176,11 +176,11 @@ Staking and yield products.
 #### Flexible Staking (`earn flex <command>`)
 
 - `earn flex plans` — Flexible staking plans
-- `earn flex invest <asset> <amount>` — Flexible staking invest
+- `earn flex invest <plan_id> <amount>` — Flexible staking invest
 - `earn flex investments` — Active flexible stakings
 - `earn flex investment-history` — Flexible staking history
 - `earn flex payment-history` — Flexible payment history
-- `earn flex withdraw <asset> <amount>` — Withdraw from flexible
+- `earn flex withdraw <id> <amount>` — Withdraw from flexible
 - `earn flex close <id>` — Close flexible staking
 - `earn flex auto-reinvest <id> <enabled>` — Toggle auto-reinvest
 
@@ -201,24 +201,24 @@ Place, modify, and cancel orders across spot, collateral, and convert markets.
 
 #### Spot Trading (`trade spot <command>`)
 
-- `trade spot limit-order` — Create a limit order
-- `trade spot market-order` — Create a market order
-- `trade spot bulk-order` — Create multiple orders in bulk
-- `trade spot stop-limit` — Create a stop-limit order
-- `trade spot stop-market` — Create a stop-market order
-- `trade spot buy-stock` — Create a buy stock market order (buy for fixed money amount)
-- `trade spot cancel` — Cancel a specific order
+- `trade spot limit-order <pair> <side> <amount> <price>` — Create a limit order
+- `trade spot market-order <pair> <side> <amount>` — Create a market order
+- `trade spot bulk-order <pair> --orders '<json>'` — Create multiple orders in bulk
+- `trade spot stop-limit <pair> <side> <amount> <price> <activation_price>` — Create a stop-limit order
+- `trade spot stop-market <pair> <side> <amount> <activation_price>` — Create a stop-market order
+- `trade spot buy-stock <pair> <amount>` — Create a buy stock market order (buy for fixed money amount)
+- `trade spot cancel <pair> <order_id>` — Cancel a specific order
 - `trade spot cancel-all` — Cancel all orders (optionally filtered by market)
-- `trade spot modify` — Modify an existing order
+- `trade spot modify <pair> <order_id>` — Modify an existing order
 - `trade spot executed` — List executed orders
 - `trade spot unexecuted` — List unexecuted (open) orders
-- `trade spot deals` — Get executed deals for a specific order
+- `trade spot deals <order_id>` — Get executed deals for a specific order
 - `trade spot history` — Get trades history
 - `trade spot balance` — Get trade balance for all assets
-- `trade spot fee` — Get trading fee for a specific market
+- `trade spot fee <pair>` — Get trading fee for a specific market
 - `trade spot all-fees` — Get trading fees for all markets
 - `trade spot kill-switch-status` — Get kill switch status
-- `trade spot kill-switch-sync` — Sync kill switch timer
+- `trade spot kill-switch-sync <pair> <timeout>` — Sync kill switch timer
 
 #### Collateral Trading (`trade collateral <command>`)
 
@@ -226,29 +226,29 @@ Place, modify, and cancel orders across spot, collateral, and convert markets.
 - `trade collateral summary` — Fetch collateral account summary
 - `trade collateral balance-summary` — Fetch collateral account balance summary with detailed asset breakdown
 - `trade collateral hedge-mode` — Get collateral account hedge mode status
-- `trade collateral set-hedge-mode` — Update collateral account hedge mode
-- `trade collateral limit-order` — Create a collateral limit order
-- `trade collateral market-order` — Create a collateral market order
-- `trade collateral bulk-order` — Create multiple collateral limit orders
-- `trade collateral stop-limit` — Create a collateral stop-limit order
-- `trade collateral trigger-market` — Create a collateral trigger market order
-- `trade collateral set-leverage` — Set leverage for a collateral market
-- `trade collateral close-position` — Close a collateral position
+- `trade collateral set-hedge-mode <enabled>` — Update collateral account hedge mode
+- `trade collateral limit-order <pair> <side> <amount> <price>` — Create a collateral limit order
+- `trade collateral market-order <pair> <side> <amount>` — Create a collateral market order
+- `trade collateral bulk-order <pair> --orders '<json>'` — Create multiple collateral limit orders
+- `trade collateral stop-limit <pair> <side> <amount> <price> <activation_price>` — Create a collateral stop-limit order
+- `trade collateral trigger-market <pair> <side> <amount> <activation_price>` — Create a collateral trigger market order
+- `trade collateral set-leverage <pair> <leverage>` — Set leverage for a collateral market
+- `trade collateral close-position <pair>` — Close a collateral position
 - `trade collateral open-positions` — Get all open collateral positions
 - `trade collateral position-history` — Get collateral positions history
 - `trade collateral funding-history` — Get collateral funding history
 - `trade collateral conditional-orders` — Get unexecuted conditional orders
-- `trade collateral cancel-conditional` — Cancel a conditional order
+- `trade collateral cancel-conditional <pair> <order_id>` — Cancel a conditional order
 - `trade collateral oco-orders` — Get unexecuted OCO orders
-- `trade collateral create-oco` — Create an OCO (One-Cancels-Other) order
-- `trade collateral create-oto` — Create an OTO (One-Triggers-Other) order
-- `trade collateral cancel-oco` — Cancel an OCO order
-- `trade collateral cancel-oto` — Cancel an OTO order
+- `trade collateral create-oco <pair> <side> <amount> <price> <stop_price>` — Create an OCO (One-Cancels-Other) order
+- `trade collateral create-oto <pair> <side> <amount> <price> <trigger_price>` — Create an OTO (One-Triggers-Other) order
+- `trade collateral cancel-oco <pair> <order_id>` — Cancel an OCO order
+- `trade collateral cancel-oto <pair> <order_id>` — Cancel an OTO order
 
 #### Convert (`trade convert <command>`)
 
-- `trade convert estimate` — Estimate conversion rate and amount
-- `trade convert confirm` — Confirm and execute a conversion
+- `trade convert estimate <from> <to> <amount>` — Estimate conversion rate and amount
+- `trade convert confirm <estimate_id>` — Confirm and execute a conversion
 - `trade convert history` — Get conversion history
 
 ### Sub-Accounts (Requires Auth)
@@ -256,9 +256,9 @@ Place, modify, and cancel orders across spot, collateral, and convert markets.
 Manage sub-accounts and transfers.
 
 - `sub-account list` — List all sub-accounts
-- `sub-account create <email>` — Create sub-account
+- `sub-account create <alias>` — Create sub-account
 - `sub-account balance <id>` — Sub-account balance
-- `sub-account transfer <from_id> <to_id> <asset> <amount>` — Transfer between sub-accounts
+- `sub-account transfer <asset> <amount>` — Transfer between sub-accounts
 - `sub-account transfer-history` — Sub-account transfer history
 
 ### Configuration
@@ -319,7 +319,7 @@ whitebit market ticker BTC_USDT
 ### Place a limit buy order
 
 ```bash
-whitebit trade spot limit-order -m BTC_USDT -s buy -p 50000 -a 0.001
+whitebit trade spot limit-order BTC_USDT buy 0.001 50000
 ```
 
 ### Check account balance in JSON
