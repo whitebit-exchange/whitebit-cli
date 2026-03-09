@@ -47,13 +47,54 @@ const normalizeCellValue = (value: unknown): string => {
   return truncate(JSON.stringify(value));
 };
 
+const flattenRow = (row: Record<string, unknown>, prefix = ''): Record<string, unknown> => {
+  const result: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(row)) {
+    const flatKey = prefix ? `${prefix}.${key}` : key;
+
+    if (isRecord(value)) {
+      Object.assign(result, flattenRow(value, flatKey));
+    } else if (Array.isArray(value)) {
+      result[flatKey] = truncate(JSON.stringify(value));
+    } else {
+      result[flatKey] = value;
+    }
+  }
+
+  return result;
+};
+
+/**
+ * Unwrap API response wrappers like `{ data: [...] }` or `{ records: [...] }`.
+ * Returns the inner array if found, otherwise returns the original data unchanged.
+ * Only unwraps when the inner value is an Array.
+ */
+export const unwrapTableData = (data: unknown): unknown => {
+  if (!isRecord(data)) {
+    return data;
+  }
+
+  // Check .records first (more specific/explicit wrapper key)
+  if ('records' in data && Array.isArray(data.records)) {
+    return data.records;
+  }
+
+  // Check .data second (generic wrapper key)
+  if ('data' in data && Array.isArray(data.data)) {
+    return data.data;
+  }
+
+  return data;
+};
+
 const collectRows = (data: unknown): Record<string, unknown>[] => {
   if (Array.isArray(data)) {
-    return data.map((item) => (isRecord(item) ? item : { value: item }));
+    return data.map((item) => (isRecord(item) ? flattenRow(item) : { value: item }));
   }
 
   if (isRecord(data)) {
-    return [data];
+    return [flattenRow(data)];
   }
 
   return [{ value: data }];
