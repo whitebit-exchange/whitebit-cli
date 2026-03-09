@@ -1,0 +1,99 @@
+import { beforeEach, describe, expect, test } from 'bun:test';
+
+import { klineCommand } from '../../../src/commands/market/kline';
+import { setGlobalConfigOverrides } from '../../../src/lib/config';
+import type { KlineRecord } from '../../../src/lib/types/market';
+
+const createMockFetch =
+  (mockResponse: unknown, status = 200) =>
+  async (): Promise<Response> =>
+    ({
+      ok: status >= 200 && status < 300,
+      status,
+      statusText: status === 200 ? 'OK' : 'Error',
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => mockResponse,
+      text: async () => JSON.stringify(mockResponse),
+    }) as Response;
+
+describe('market kline command', () => {
+  beforeEach(() => {
+    setGlobalConfigOverrides({
+      apiUrl: 'https://whitebit.com',
+      format: 'json',
+    });
+  });
+
+  test('fetches kline with required params', async () => {
+    const mockData: KlineRecord[] = [
+      {
+        time: 1631451600,
+        open: '49500',
+        close: '50000',
+        high: '50100',
+        low: '49400',
+        volume: '100',
+        deal: '5000000',
+      },
+    ];
+
+    global.fetch = createMockFetch(mockData);
+
+    let capturedOutput = '';
+    const originalStdoutWrite = process.stdout.write;
+    process.stdout.write = ((chunk: string) => {
+      capturedOutput += chunk;
+      return true;
+    }) as typeof process.stdout.write;
+
+    try {
+      await klineCommand.handler({
+        options: { market: 'BTC_USDT', interval: '1h' },
+      } as never);
+
+      expect(capturedOutput).toContain('50000');
+      expect(capturedOutput).toContain('close');
+    } finally {
+      process.stdout.write = originalStdoutWrite;
+    }
+  });
+
+  test('fetches kline with optional params', async () => {
+    const mockData: KlineRecord[] = [
+      {
+        time: 1631451600,
+        open: '49500',
+        close: '50000',
+        high: '50100',
+        low: '49400',
+        volume: '100',
+        deal: '5000000',
+      },
+    ];
+
+    global.fetch = createMockFetch(mockData);
+
+    let capturedOutput = '';
+    const originalStdoutWrite = process.stdout.write;
+    process.stdout.write = ((chunk: string) => {
+      capturedOutput += chunk;
+      return true;
+    }) as typeof process.stdout.write;
+
+    try {
+      await klineCommand.handler({
+        options: {
+          market: 'BTC_USDT',
+          interval: '1h',
+          start: 1631400000,
+          end: 1631500000,
+          limit: 100,
+        },
+      } as never);
+
+      expect(capturedOutput).toContain('50000');
+    } finally {
+      process.stdout.write = originalStdoutWrite;
+    }
+  });
+});

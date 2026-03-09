@@ -1,0 +1,100 @@
+import { beforeEach, describe, expect, test } from 'bun:test';
+
+import { transferCommand } from '../../../src/commands/sub-account/transfer';
+import { setGlobalConfigOverrides } from '../../../src/lib/config';
+
+const createMockFetch =
+  (mockResponse: unknown, status = 200) =>
+  async (): Promise<Response> =>
+    ({
+      ok: status >= 200 && status < 300,
+      status,
+      statusText: status === 200 ? 'OK' : 'Error',
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => mockResponse,
+      text: async () => JSON.stringify(mockResponse),
+    }) as Response;
+
+describe('sub-account transfer command', () => {
+  beforeEach(() => {
+    setGlobalConfigOverrides({
+      apiUrl: 'https://whitebit.com',
+      apiKey: 'test-key',
+      apiSecret: 'test-secret',
+      format: 'json',
+    });
+  });
+
+  test('transfers funds to sub-account successfully', async () => {
+    const mockResult = { result: 'success' };
+
+    global.fetch = createMockFetch(mockResult);
+
+    let capturedOutput = '';
+    const originalStdoutWrite = process.stdout.write;
+    process.stdout.write = ((chunk: string) => {
+      capturedOutput += chunk;
+      return true;
+    }) as typeof process.stdout.write;
+
+    try {
+      await transferCommand.handler({
+        flags: {
+          ticker: 'BTC',
+          amount: '0.5',
+          toId: 'sub-1',
+        },
+      } as never);
+
+      expect(capturedOutput).toContain('success');
+    } finally {
+      process.stdout.write = originalStdoutWrite;
+    }
+  });
+
+  test('transfers funds from sub-account successfully', async () => {
+    const mockResult = { result: 'success' };
+
+    global.fetch = createMockFetch(mockResult);
+
+    let capturedOutput = '';
+    const originalStdoutWrite = process.stdout.write;
+    process.stdout.write = ((chunk: string) => {
+      capturedOutput += chunk;
+      return true;
+    }) as typeof process.stdout.write;
+
+    try {
+      await transferCommand.handler({
+        flags: {
+          ticker: 'ETH',
+          amount: '1.0',
+          fromId: 'sub-1',
+        },
+      } as never);
+
+      expect(capturedOutput).toContain('success');
+    } finally {
+      process.stdout.write = originalStdoutWrite;
+    }
+  });
+
+  test('handles insufficient balance error', async () => {
+    const mockError = { code: 1002, message: 'Insufficient balance' };
+    global.fetch = createMockFetch(mockError, 400);
+
+    try {
+      await transferCommand.handler({
+        flags: {
+          ticker: 'BTC',
+          amount: '100',
+          fromId: 'sub-1',
+        },
+      } as never);
+      expect.unreachable();
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+      expect((error as Error).message).toContain('Insufficient balance');
+    }
+  });
+});
