@@ -1,6 +1,7 @@
 import { defineCommand, option } from '@bunli/core';
 import { z } from 'zod';
 
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { authenticatedPost } from '../../lib/http';
@@ -9,18 +10,6 @@ export const collateralMarketOrderCommand = defineCommand({
   name: 'market-order',
   description: 'Create a collateral market order',
   options: {
-    market: option(z.string().min(1), {
-      short: 'm',
-      description: 'Market symbol (e.g., BTC_USDT)',
-    }),
-    side: option(z.enum(['buy', 'sell']), {
-      short: 's',
-      description: 'Order side: buy or sell',
-    }),
-    amount: option(z.string().min(1), {
-      short: 'a',
-      description: 'Order amount',
-    }),
     leverage: option(z.number().optional(), {
       short: 'l',
       description: 'Leverage multiplier (optional)',
@@ -30,13 +19,33 @@ export const collateralMarketOrderCommand = defineCommand({
       description: 'Client order ID (optional)',
     }),
   },
-  handler: async ({ flags }) => {
+  handler: async ({ positional, flags }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
+
+    const market = parseArg(
+      positional[0],
+      z.string().min(1),
+      'MARKET',
+      'whitebit trade collateral market-order <market> <side> <amount>',
+    );
+    const side = parseArg(
+      positional[1],
+      z.enum(['buy', 'sell']),
+      'SIDE',
+      'whitebit trade collateral market-order <market> <side> <amount>',
+    );
+    const amount = parseArg(
+      positional[2],
+      z.string().min(1),
+      'AMOUNT',
+      'whitebit trade collateral market-order <market> <side> <amount>',
+    );
+
     const body = {
-      market: flags.market,
-      side: flags.side,
-      amount: flags.amount,
+      market,
+      side,
+      amount,
       ...(flags.leverage !== undefined && { leverage: flags.leverage }),
       ...(flags.clientOrderId && { clientOrderId: flags.clientOrderId }),
     };
