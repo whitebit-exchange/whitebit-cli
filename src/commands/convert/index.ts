@@ -6,6 +6,6 @@ import { convertHistoryCommand } from './history';
 
 export const convertGroup = defineGroup({
   name: 'convert',
-  description: 'Currency conversion commands',
+  description: 'Convert between currencies (estimate rate → confirm transaction)',
   commands: [convertEstimateCommand, convertConfirmCommand, convertHistoryCommand],
 });

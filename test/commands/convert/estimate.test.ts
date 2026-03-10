@@ -6,7 +6,9 @@ describe('convertEstimateCommand', () => {
   test('command metadata is correct', () => {
     expect(convertEstimateCommand).toBeDefined();
     expect(convertEstimateCommand.name).toBe('estimate');
-    expect(convertEstimateCommand.description).toBe('Estimate conversion rate and amount');
+    expect(convertEstimateCommand.description).toBe(
+      'Get conversion quote with rate and estimated output amount before commit',
+    );
   });
 
   test('command handler accepts positional arguments', async () => {

@@ -6,7 +6,9 @@ describe('convertConfirmCommand', () => {
   test('command metadata is correct', () => {
     expect(convertConfirmCommand).toBeDefined();
     expect(convertConfirmCommand.name).toBe('confirm');
-    expect(convertConfirmCommand.description).toBe('Confirm and execute a conversion');
+    expect(convertConfirmCommand.description).toBe(
+      'Execute conversion using a previously estimated quote ID',
+    );
   });
 
   test('command handler accepts positional arguments', async () => {

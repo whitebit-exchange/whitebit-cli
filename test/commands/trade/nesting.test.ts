@@ -26,7 +26,9 @@ describe('Trade Group Nesting', () => {
   test('tradeGroup contains convert subgroup', () => {
     const convert = tradeGroup.commands.find((cmd) => cmd.name === 'convert');
     expect(convert).toBeDefined();
-    expect(convert?.description).toBe('Currency conversion commands');
+    expect(convert?.description).toBe(
+      'Convert between currencies (estimate rate → confirm transaction)',
+    );
   });
 
   test('spotGroup has correct name and command count', () => {
@@ -43,7 +45,9 @@ describe('Trade Group Nesting', () => {
 
   test('convertGroup has correct name and command count', () => {
     expect(convertGroup.name).toBe('convert');
-    expect(convertGroup.description).toBe('Currency conversion commands');
+    expect(convertGroup.description).toBe(
+      'Convert between currencies (estimate rate → confirm transaction)',
+    );
     expect(convertGroup.commands).toHaveLength(3);
   });
 });
