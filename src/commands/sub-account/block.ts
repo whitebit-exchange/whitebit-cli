@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const blockCommand = defineCommand({
   name: 'block',
-  description: 'Block a sub-account',
+  description: 'Temporarily disable access to a sub-account',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

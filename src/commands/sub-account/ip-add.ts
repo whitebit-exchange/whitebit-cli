@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const ipAddCommand = defineCommand({
   name: 'ip-add',
-  description: 'Add IP address to API key whitelist',
+  description: 'Whitelist IP address to restrict API key access',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

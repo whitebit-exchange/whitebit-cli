@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const apiKeyListCommand = defineCommand({
   name: 'api-key-list',
-  description: 'List all sub-account API keys',
+  description: 'List API keys created for a sub-account',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

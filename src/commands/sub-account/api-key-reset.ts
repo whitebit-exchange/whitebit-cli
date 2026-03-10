@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const apiKeyResetCommand = defineCommand({
   name: 'api-key-reset',
-  description: 'Reset sub-account API key',
+  description: 'Regenerate API key for security (invalidates old key)',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const balanceCommand = defineCommand({
   name: 'balance',
-  description: 'Get sub-account balances',
+  description: 'Check balance for a specific sub-account',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

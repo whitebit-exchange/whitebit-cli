@@ -8,15 +8,15 @@ import { HttpClient } from '../../lib/http';
 
 export const transferHistoryCommand = defineCommand({
   name: 'transfer-history',
-  description: 'Get sub-account transfer history',
+  description: 'View transfer history between accounts and sub-accounts',
   options: {
     limit: option(z.number().int().positive().optional(), {
       short: 'l',
-      description: 'Limit number of results',
+      description: 'Limit number of transfer history records',
     }),
     offset: option(z.number().int().nonnegative().optional(), {
       short: 'o',
-      description: 'Offset for pagination',
+      description: 'Offset for pagination of transfer history',
     }),
   },
   handler: async ({ flags }) => {

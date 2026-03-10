@@ -7,7 +7,7 @@ import { HttpClient } from '../../lib/http';
 
 export const listCommand = defineCommand({
   name: 'list',
-  description: 'Get list of all sub-accounts',
+  description: 'List all sub-accounts for fund isolation and management',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

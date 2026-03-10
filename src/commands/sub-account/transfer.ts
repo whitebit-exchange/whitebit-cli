@@ -9,15 +9,15 @@ import { HttpClient } from '../../lib/http';
 
 export const transferCommand = defineCommand({
   name: 'transfer',
-  description: 'Transfer funds to/from sub-account',
+  description: 'Transfer funds between main account and sub-accounts',
   options: {
     fromId: option(z.string().min(1).optional(), {
       short: 'f',
-      description: 'Source sub-account ID (omit for main account)',
+      description: 'Source sub-account ID (omit for main account transfer)',
     }),
     toId: option(z.string().min(1).optional(), {
       short: 'o',
-      description: 'Destination sub-account ID (omit for main account)',
+      description: 'Destination sub-account ID (omit for main account transfer)',
     }),
   },
   handler: async ({ positional, flags }) => {

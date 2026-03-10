@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const unblockCommand = defineCommand({
   name: 'unblock',
-  description: 'Unblock a sub-account',
+  description: 'Re-enable access to a blocked sub-account',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

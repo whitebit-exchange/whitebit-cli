@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const deleteCommand = defineCommand({
   name: 'delete',
-  description: 'Delete a sub-account',
+  description: 'Delete a sub-account permanently',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

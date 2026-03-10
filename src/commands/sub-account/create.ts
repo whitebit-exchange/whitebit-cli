@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const createCommand = defineCommand({
   name: 'create',
-  description: 'Create a new sub-account',
+  description: 'Create a new sub-account for isolated fund management',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

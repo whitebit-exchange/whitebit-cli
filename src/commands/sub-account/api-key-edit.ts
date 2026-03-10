@@ -9,15 +9,15 @@ import { HttpClient } from '../../lib/http';
 
 export const apiKeyEditCommand = defineCommand({
   name: 'api-key-edit',
-  description: 'Edit sub-account API key',
+  description: 'Update API key label and permissions for sub-account',
   options: {
     label: option(z.string().min(1).optional(), {
       short: 'l',
-      description: 'New API key label',
+      description: 'Update API key label for identification',
     }),
     permissions: option(z.string().min(1).optional(), {
       short: 'p',
-      description: 'Comma-separated permissions (e.g., trade,withdraw)',
+      description: 'Update API key permissions (comma-separated)',
     }),
   },
   handler: async ({ positional, flags }) => {

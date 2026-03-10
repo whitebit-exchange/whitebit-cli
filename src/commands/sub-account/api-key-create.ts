@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const apiKeyCreateCommand = defineCommand({
   name: 'api-key-create',
-  description: 'Create API key for sub-account',
+  description: 'Generate new API key with specified permissions for sub-account',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

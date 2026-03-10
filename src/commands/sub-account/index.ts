@@ -19,7 +19,7 @@ import { unblockCommand } from './unblock';
 
 export const subAccountGroup = defineGroup({
   name: 'sub-account',
-  description: 'Sub-account management commands',
+  description: 'Manage sub-accounts for fund isolation and separate API keys',
   commands: [
     listCommand,
     createCommand,

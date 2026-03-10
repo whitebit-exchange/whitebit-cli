@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const editCommand = defineCommand({
   name: 'edit',
-  description: 'Edit sub-account details',
+  description: 'Update sub-account alias and information',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

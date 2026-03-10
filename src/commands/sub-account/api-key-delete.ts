@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const apiKeyDeleteCommand = defineCommand({
   name: 'api-key-delete',
-  description: 'Delete sub-account API key',
+  description: 'Remove API key from sub-account permanently',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
