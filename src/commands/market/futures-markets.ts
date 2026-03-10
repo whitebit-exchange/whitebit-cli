@@ -7,7 +7,7 @@ import { unwrapWhitebitPayload } from './helpers';
 
 export const futuresMarketsCommand = defineCommand({
   name: 'futures-markets',
-  description: 'Get available futures markets list',
+  description: 'List available futures markets with trading specifications',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadPublicConfig();

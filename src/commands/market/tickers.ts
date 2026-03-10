@@ -7,7 +7,7 @@ import { recordToRows, unwrapWhitebitPayload } from './helpers';
 
 export const marketTickersCommand = defineCommand({
   name: 'tickers',
-  description: 'Fetch all market tickers',
+  description: 'Get current price, volume, and change metrics for all trading pairs',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadPublicConfig();

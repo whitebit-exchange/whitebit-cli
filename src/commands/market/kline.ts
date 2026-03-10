@@ -8,16 +8,16 @@ import { formatOutput } from '../../lib/formatter';
 
 export const klineCommand = defineCommand({
   name: 'kline',
-  description: 'Get candlestick/kline data for a market',
+  description: 'Get candlestick (OHLCV) data for charting and technical analysis',
   options: {
     start: option(z.coerce.number().int().optional(), {
-      description: 'Start time (Unix timestamp)',
+      description: 'Start time in Unix milliseconds',
     }),
     end: option(z.coerce.number().int().optional(), {
-      description: 'End time (Unix timestamp)',
+      description: 'End time in Unix milliseconds',
     }),
     limit: option(z.coerce.number().int().positive().optional(), {
-      description: 'Number of records to return',
+      description: 'Maximum number of candles to return',
     }),
   },
   handler: async ({ positional, flags }) => {

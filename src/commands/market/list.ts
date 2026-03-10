@@ -6,7 +6,7 @@ import { formatOutput } from '../../lib/formatter';
 
 export const listCommand = defineCommand({
   name: 'list',
-  description: 'Get information about all available markets',
+  description: 'List all available trading pairs with specifications and status',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadPublicConfig();

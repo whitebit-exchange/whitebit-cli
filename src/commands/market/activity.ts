@@ -7,7 +7,7 @@ import { recordToRows, unwrapWhitebitPayload } from './helpers';
 
 export const activityCommand = defineCommand({
   name: 'activity',
-  description: 'Get 24-hour pricing and volume summary for all markets',
+  description: 'Get 24-hour trading activity metrics (price, volume, changes) per pair',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadPublicConfig();

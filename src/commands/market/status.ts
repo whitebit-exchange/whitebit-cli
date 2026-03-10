@@ -6,7 +6,7 @@ import { formatOutput } from '../../lib/formatter';
 
 export const statusCommand = defineCommand({
   name: 'status',
-  description: 'Check current API server status',
+  description: 'Check API server health with ping/pong response',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadPublicConfig();

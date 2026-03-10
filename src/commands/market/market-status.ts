@@ -6,7 +6,7 @@ import { formatOutput } from '../../lib/formatter';
 
 export const marketStatusCommand = defineCommand({
   name: 'market-status',
-  description: 'Get market status list',
+  description: 'Get trading pair statuses (active, disabled, delisted)',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadPublicConfig();

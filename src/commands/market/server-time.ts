@@ -6,7 +6,7 @@ import { formatOutput } from '../../lib/formatter';
 
 export const serverTimeCommand = defineCommand({
   name: 'server-time',
-  description: 'Get current server time',
+  description: 'Get current server timestamp for synchronizing requests',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadPublicConfig();

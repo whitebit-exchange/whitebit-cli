@@ -7,7 +7,7 @@ import { recordToRows, unwrapWhitebitPayload } from './helpers';
 
 export const feeCommand = defineCommand({
   name: 'fee',
-  description: 'Get deposit and withdrawal fees and limits',
+  description: 'Get deposit/withdrawal fees and blockchain network limits per asset',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadPublicConfig();

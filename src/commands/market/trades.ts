@@ -8,10 +8,10 @@ import { formatOutput } from '../../lib/formatter';
 
 export const tradesCommand = defineCommand({
   name: 'trades',
-  description: 'Get recently executed trades for a market',
+  description: 'Get recent executed trades on a market with prices and sizes',
   options: {
     type: option(z.enum(['buy', 'sell']).optional(), {
-      description: 'Trade type filter (buy or sell)',
+      description: 'Filter by buy or sell trades only',
     }),
   },
   handler: async ({ positional, flags }) => {

@@ -7,7 +7,7 @@ import { unwrapWhitebitPayload } from './helpers';
 
 export const collateralMarketsCommand = defineCommand({
   name: 'collateral-markets',
-  description: 'Get markets available for collateral trading',
+  description: 'List markets available for margin and collateral trading',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadPublicConfig();

@@ -8,13 +8,13 @@ import { formatOutput } from '../../lib/formatter';
 
 export const fundingHistoryCommand = defineCommand({
   name: 'funding-history',
-  description: 'Get funding rate history for futures markets',
+  description: 'Get periodic funding rate payments paid for holding futures positions',
   options: {
     limit: option(z.coerce.number().int().positive().optional(), {
-      description: 'Number of records to return',
+      description: 'Maximum number of records to return',
     }),
     offset: option(z.coerce.number().int().min(0).optional(), {
-      description: 'Offset for pagination',
+      description: 'Number of records to skip for pagination',
     }),
   },
   handler: async ({ positional, flags }) => {

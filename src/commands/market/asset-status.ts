@@ -7,7 +7,7 @@ import { recordToRows, unwrapWhitebitPayload } from './helpers';
 
 export const assetStatusCommand = defineCommand({
   name: 'asset-status',
-  description: 'Get asset withdrawal and deposit status',
+  description: 'Get deposit and withdrawal availability status for each asset',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadPublicConfig();
