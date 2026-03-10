@@ -7,7 +7,7 @@ import { HttpClient } from '../lib/http';
 
 export const accountWsTokenCommand = defineCommand({
   name: 'ws-token',
-  description: 'Get WebSocket profile token',
+  description: 'Generate authentication token for private WebSocket API connections',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

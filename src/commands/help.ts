@@ -50,7 +50,7 @@ const HELP_TEXT = [
 
 export const helpCommand = defineCommand({
   name: 'help',
-  description: 'Show top-level CLI help and examples',
+  description: 'Display CLI help text and usage examples',
   handler: async () => {
     process.stdout.write(`${HELP_TEXT}\n`);
   },

@@ -7,7 +7,7 @@ import { globalOptions } from '../../lib/global-options';
 
 export const miningPoolOverviewCommand = defineCommand({
   name: 'overview',
-  description: 'Get overall mining pool state and hashrate info',
+  description: 'Mining pool account summary and current statistics',
   options: {
     ...globalOptions,
   },

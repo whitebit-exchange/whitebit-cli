@@ -8,7 +8,7 @@ import { HttpClient } from '../../lib/http';
 
 export const miningPoolHashrateCommand = defineCommand({
   name: 'hashrate',
-  description: 'Get mining hashrate information',
+  description: 'Mining pool hashrate statistics and performance metrics',
   options: {
     ...globalOptions,
   },

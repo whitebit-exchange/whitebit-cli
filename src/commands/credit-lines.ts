@@ -7,7 +7,7 @@ import { HttpClient } from '../lib/http';
 
 export const accountCreditLinesCommand = defineCommand({
   name: 'credit-lines',
-  description: 'Get credit lines information',
+  description: 'View active loans with LTV ratios and liquidation thresholds',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

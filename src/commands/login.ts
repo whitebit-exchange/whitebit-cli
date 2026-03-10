@@ -158,13 +158,13 @@ export const runLogin = async (flags: {
 
 export const loginCommand = defineCommand({
   name: 'login',
-  description: 'Login and save API credentials (interactive by default)',
+  description: 'Authenticate and save WhiteBIT API credentials (interactive or with flags)',
   options: {
     'api-key': option(z.string().min(1).optional(), {
-      description: 'WhiteBIT API key',
+      description: 'API key for authentication',
     }),
     'api-secret': option(z.string().min(1).optional(), {
-      description: 'WhiteBIT API secret',
+      description: 'API secret for authentication',
     }),
     'api-url': option(z.string().min(1).optional(), {
       description: 'Base API URL (https://whitebit.com or https://whitebit.eu)',
