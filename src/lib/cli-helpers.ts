@@ -9,7 +9,7 @@ export function parseArg<T>(
   if (value === undefined) {
     console.error(`Error: Missing required argument: ${argName}`);
     console.error(`\nUsage: ${usage}`);
-    process.exit(1);
+    process.exit(4);
   }
 
   try {
@@ -17,6 +17,6 @@ export function parseArg<T>(
   } catch {
     console.error(`Error: Invalid ${argName}: ${value}`);
     console.error(`\nUsage: ${usage}`);
-    process.exit(1);
+    process.exit(4);
   }
 }

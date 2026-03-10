@@ -55,11 +55,8 @@ describe('collateral limit-order command', () => {
 
     try {
       await collateralLimitOrderCommand.handler({
+        positional: ['BTC_USDT', 'buy', '0.01', '50000'],
         flags: {
-          market: 'BTC_USDT',
-          side: 'buy',
-          amount: '0.01',
-          price: '50000',
           leverage: 10,
         },
       } as never);
@@ -99,12 +96,8 @@ describe('collateral limit-order command', () => {
 
     try {
       await collateralLimitOrderCommand.handler({
-        flags: {
-          market: 'ETH_USDT',
-          side: 'sell',
-          amount: '1.0',
-          price: '3000',
-        },
+        positional: ['ETH_USDT', 'sell', '1.0', '3000'],
+        flags: {},
       } as never);
 
       expect(capturedOutput).toContain('123457');
@@ -120,12 +113,8 @@ describe('collateral limit-order command', () => {
 
     try {
       await collateralLimitOrderCommand.handler({
-        flags: {
-          market: 'BTC_USDT',
-          side: 'buy',
-          amount: '0.01',
-          price: '50000',
-        },
+        positional: ['BTC_USDT', 'buy', '0.01', '50000'],
+        flags: {},
       } as never);
       expect.unreachable();
     } catch (error) {

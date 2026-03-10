@@ -1,9 +1,9 @@
 import { defineCommand } from '@bunli/core';
 
-import { AccountApi } from '../../lib/api/account';
-import { loadAuthConfig, loadConfig } from '../../lib/config';
-import { formatOutput } from '../../lib/formatter';
-import { HttpClient } from '../../lib/http';
+import { AccountApi } from '../lib/api/account';
+import { loadAuthConfig, loadConfig } from '../lib/config';
+import { formatOutput } from '../lib/formatter';
+import { HttpClient } from '../lib/http';
 
 export const accountWsTokenCommand = defineCommand({
   name: 'ws-token',

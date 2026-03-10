@@ -1,11 +1,12 @@
+#!/usr/bin/env bun
+
 import { createCLI, defineGroup } from '@bunli/core';
-import { accountCreditLinesCommand } from './commands/account/credit-lines';
-import { accountWsTokenCommand } from './commands/account/ws-token';
 import { balanceGroup } from './commands/balance';
 import { codesGroup } from './commands/codes';
 import { completionCommand } from './commands/completion';
 import { configSetCommand } from './commands/config/set';
 import { configShowCommand } from './commands/config/show';
+import { accountCreditLinesCommand } from './commands/credit-lines';
 import { depositGroup } from './commands/deposit';
 import { earnGroup } from './commands/earn';
 import { helpCommand } from './commands/help';
@@ -30,6 +31,7 @@ import { subAccountGroup } from './commands/sub-account';
 import { tradeGroup } from './commands/trade';
 import { transferGroup } from './commands/transfer';
 import { withdrawGroup } from './commands/withdraw';
+import { accountWsTokenCommand } from './commands/ws-token';
 import { type LoadConfigOptions, setGlobalConfigOverrides } from './lib/config';
 import { CLI_VERSION } from './lib/version';
 
@@ -61,6 +63,49 @@ const readLongFlagValue = (
     value: nextValue,
     nextIndex: index + 1,
   };
+};
+
+const inferExitCode = (error: unknown): number => {
+  const message = error instanceof Error ? error.message : String(error ?? '');
+  const normalized = message.toLowerCase();
+
+  if (
+    normalized.includes('missing required argument') ||
+    normalized.includes('invalid --format') ||
+    normalized.includes('requires a value') ||
+    normalized.includes('usage:')
+  ) {
+    return 4;
+  }
+
+  if (
+    normalized.includes('api credentials are required') ||
+    normalized.includes('api key') ||
+    normalized.includes('api secret') ||
+    normalized.includes('authentication') ||
+    normalized.includes('unauthorized')
+  ) {
+    return 2;
+  }
+
+  if (
+    normalized.includes('rate limit') ||
+    normalized.includes('429') ||
+    normalized.includes('too many requests')
+  ) {
+    return 5;
+  }
+
+  if (
+    normalized.includes('network') ||
+    normalized.includes('enotfound') ||
+    normalized.includes('econnrefused') ||
+    normalized.includes('timed out')
+  ) {
+    return 3;
+  }
+
+  return 1;
 };
 
 const parseGlobalOptions = (
@@ -187,7 +232,7 @@ const parsedArgs = (() => {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     process.stderr.write(`${message}\n`);
-    process.exit(1);
+    process.exit(4);
   }
 })();
 
@@ -215,4 +260,10 @@ cli.command(completionCommand);
 cli.command(loginCommand);
 cli.command(helpCommand);
 
-await cli.run(parsedArgs.cleanedArgv);
+try {
+  await cli.run(parsedArgs.cleanedArgv);
+} catch (error) {
+  const message = error instanceof Error ? error.message : String(error);
+  process.stderr.write(`${message}\n`);
+  process.exit(inferExitCode(error));
+}
