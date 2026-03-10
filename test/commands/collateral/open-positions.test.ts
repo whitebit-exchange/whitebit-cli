@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 
 import { collateralOpenPositionsCommand } from '../../../src/commands/collateral/open-positions';
-import { setGlobalConfigOverrides } from '../../../src/lib/config';
 import type { Position } from '../../../src/lib/types/collateral';
 
 const createMockFetch =
@@ -17,15 +16,6 @@ const createMockFetch =
     }) as Response;
 
 describe('collateral open-positions command', () => {
-  beforeEach(() => {
-    setGlobalConfigOverrides({
-      apiUrl: 'https://whitebit.com',
-      apiKey: 'test-key',
-      apiSecret: 'test-secret',
-      format: 'json',
-    });
-  });
-
   test('fetches all open positions successfully', async () => {
     const mockPositions: Position[] = [
       {
@@ -67,7 +57,12 @@ describe('collateral open-positions command', () => {
 
     try {
       await collateralOpenPositionsCommand.handler({
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
 
       expect(capturedOutput).toContain('BTC_USDT');
@@ -109,6 +104,10 @@ describe('collateral open-positions command', () => {
       await collateralOpenPositionsCommand.handler({
         flags: {
           market: 'BTC_USDT',
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
         },
       } as never);
 
@@ -125,7 +124,12 @@ describe('collateral open-positions command', () => {
 
     try {
       await collateralOpenPositionsCommand.handler({
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
       expect.unreachable();
     } catch (error) {

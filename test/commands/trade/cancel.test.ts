@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 
 import { tradeCancelCommand } from '../../../src/commands/trade/cancel';
-import { setGlobalConfigOverrides } from '../../../src/lib/config';
 import type { Order } from '../../../src/lib/types/trade';
 
 const createMockFetch =
@@ -17,15 +16,6 @@ const createMockFetch =
     }) as Response;
 
 describe('trade cancel command', () => {
-  beforeEach(() => {
-    setGlobalConfigOverrides({
-      apiUrl: 'https://whitebit.com',
-      apiKey: 'test-key',
-      apiSecret: 'test-secret',
-      format: 'json',
-    });
-  });
-
   test('cancels order successfully', async () => {
     const mockOrder: Order = {
       orderId: 123456,
@@ -55,7 +45,12 @@ describe('trade cancel command', () => {
     try {
       await tradeCancelCommand.handler({
         positional: ['BTC_USDT', '123456'],
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
 
       expect(capturedOutput).toContain('123456');
@@ -72,7 +67,12 @@ describe('trade cancel command', () => {
     try {
       await tradeCancelCommand.handler({
         positional: ['BTC_USDT', '999999'],
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
       expect.unreachable();
     } catch (error) {

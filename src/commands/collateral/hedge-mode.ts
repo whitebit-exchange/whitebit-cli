@@ -6,7 +6,7 @@ import { authenticatedPost } from '../../lib/http';
 
 export const collateralHedgeModeCommand = defineCommand({
   name: 'hedge-mode',
-  description: 'Get collateral account hedge mode status',
+  description: 'Check if simultaneous long/short positions are enabled',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

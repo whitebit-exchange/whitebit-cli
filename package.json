@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@bunli/core": "^0.8.2",
+    "@bunli/plugin-completions": "^0.3.4",
     "smol-toml": "^1.6.0",
     "zod": "^4.3.6"
   },

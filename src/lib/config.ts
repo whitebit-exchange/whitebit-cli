@@ -251,31 +251,48 @@ const coerceRetry = (value: boolean | undefined): boolean => {
   return true;
 };
 
-export const loadConfig = (options: LoadConfigOptions): LoadedConfig => {
-  const profileName = resolveProfileName(options.profile);
+let globalConfigOverrides: LoadConfigOptions = {};
+
+export const setGlobalConfigOverrides = (overrides: LoadConfigOptions): void => {
+  globalConfigOverrides = overrides;
+};
+
+export const getGlobalConfigOverrides = (): LoadConfigOptions => {
+  return globalConfigOverrides;
+};
+
+export const resetGlobalConfigOverrides = (): void => {
+  globalConfigOverrides = {};
+};
+
+export const loadConfig = (options: LoadConfigOptions = {}): LoadedConfig => {
+  const merged = { ...globalConfigOverrides, ...options };
+  const hasExplicitOptions = Object.keys(options).length > 0;
+
+  const profileName = resolveProfileName(merged.profile);
   const configPath = getConfigFilePath();
   const parsedConfig = readTomlDocument(configPath);
   const profile = readTomlProfile(parsedConfig, profileName);
   warnIfConfigPermissionsAreLoose(configPath);
 
-  const apiKey = resolveConfigValue(options.apiKey, process.env.WHITEBIT_API_KEY, profile.api_key);
+  const apiKey = resolveConfigValue(merged.apiKey, process.env.WHITEBIT_API_KEY, profile.api_key);
   const apiSecret = resolveConfigValue(
-    options.apiSecret,
+    merged.apiSecret,
     process.env.WHITEBIT_API_SECRET,
     profile.api_secret,
   );
-  const apiUrl = resolveApiUrl(options, profile);
-  const format = resolveFormat(options, profile);
+  const apiUrl = resolveApiUrl(merged, profile);
+  const format = resolveFormat(merged, profile);
 
-  return {
+  const config: LoadedConfig = {
     profile: profileName,
     apiKey: apiKey.value,
     apiSecret: apiSecret.value,
     apiUrl: apiUrl.value,
     format: format.value,
-    verbose: options.verbose ?? false,
-    retry: coerceRetry(options.retry),
-    dryRun: options.dryRun ?? false,
+    verbose: merged.verbose ?? false,
+    retry: coerceRetry(merged.retry),
+    dryRun: merged.dryRun ?? false,
     sources: {
       apiKey: apiKey.source,
       apiSecret: apiSecret.source,
@@ -283,6 +300,16 @@ export const loadConfig = (options: LoadConfigOptions): LoadedConfig => {
       format: format.source,
     },
   };
+
+  if (hasExplicitOptions) {
+    globalConfigOverrides = {
+      verbose: config.verbose || undefined,
+      dryRun: config.dryRun || undefined,
+      retry: merged.retry,
+    };
+  }
+
+  return config;
 };
 
 export const loadPublicConfig = (options?: LoadConfigOptions): PublicConfig => {

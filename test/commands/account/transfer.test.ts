@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 
 import { accountTransferCommand } from '../../../src/commands/transfer/transfer';
-import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
 const createMockFetch =
   (mockResponse: unknown, status = 200) =>
@@ -16,15 +15,6 @@ const createMockFetch =
     }) as Response;
 
 describe('account transfer command', () => {
-  beforeEach(() => {
-    setGlobalConfigOverrides({
-      apiUrl: 'https://whitebit.com',
-      apiKey: 'test-key',
-      apiSecret: 'test-secret',
-      format: 'json',
-    });
-  });
-
   test('transfers funds between accounts successfully', async () => {
     const mockResponse = {
       success: true,
@@ -42,8 +32,13 @@ describe('account transfer command', () => {
 
     try {
       await accountTransferCommand.handler({
-        positional: ['BTC', '0.1', 'main', 'trade'],
-        flags: {},
+        positional: ['BTC', '0.1', 'main', 'spot'],
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
 
       expect(capturedOutput).toContain('98765');
@@ -69,8 +64,13 @@ describe('account transfer command', () => {
 
     try {
       await accountTransferCommand.handler({
-        positional: ['ETH', '5.0', 'trade', 'main'],
-        flags: {},
+        positional: ['ETH', '5.0', 'spot', 'main'],
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
 
       expect(capturedOutput).toContain('54321');
@@ -85,8 +85,13 @@ describe('account transfer command', () => {
 
     try {
       await accountTransferCommand.handler({
-        positional: ['BTC', '100', 'main', 'trade'],
-        flags: {},
+        positional: ['BTC', '100', 'main', 'spot'],
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
       expect.unreachable();
     } catch (error) {

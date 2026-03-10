@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 
 import { createCLI, defineGroup } from '@bunli/core';
+import { completionsPlugin } from '@bunli/plugin-completions';
 import { balanceGroup } from './commands/balance';
 import { codesGroup } from './commands/codes';
-import { completionCommand } from './commands/completion';
 import { configSetCommand } from './commands/config/set';
 import { configShowCommand } from './commands/config/show';
 import { accountCreditLinesCommand } from './commands/credit-lines';
@@ -21,12 +21,11 @@ import { futuresMarketsCommand } from './commands/market/futures-markets';
 import { klineCommand } from './commands/market/kline';
 import { listCommand } from './commands/market/list';
 import { marketStatusCommand } from './commands/market/market-status';
-import { accountMiningHashrateCommand } from './commands/market/mining-hashrate';
-import { miningPoolCommand } from './commands/market/mining-pool';
 import { serverTimeCommand } from './commands/market/server-time';
 import { statusCommand } from './commands/market/status';
 import { marketTickersCommand } from './commands/market/tickers';
 import { tradesCommand } from './commands/market/trades';
+import { miningPoolGroup } from './commands/mining-pool';
 import { subAccountGroup } from './commands/sub-account';
 import { tradeGroup } from './commands/trade';
 import { transferGroup } from './commands/transfer';
@@ -95,8 +94,6 @@ const marketGroup = defineGroup({
     activityCommand,
     serverTimeCommand,
     statusCommand,
-    miningPoolCommand,
-    accountMiningHashrateCommand,
   ],
 });
 
@@ -110,9 +107,12 @@ const cli = await createCLI({
   name: 'whitebit',
   version: CLI_VERSION,
   description: 'WhiteBIT CLI proof-of-concept',
+  generated: true,
+  plugins: [completionsPlugin({})] as const,
 });
 
 cli.command(marketGroup);
+cli.command(miningPoolGroup);
 cli.command(balanceGroup);
 cli.command(depositGroup);
 cli.command(withdrawGroup);
@@ -124,7 +124,6 @@ cli.command(accountWsTokenCommand);
 cli.command(configGroup);
 cli.command(tradeGroup);
 cli.command(subAccountGroup);
-cli.command(completionCommand);
 cli.command(loginCommand);
 cli.command(helpCommand);
 

@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 
 import { transferCommand } from '../../../src/commands/sub-account/transfer';
-import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
 const createMockFetch =
   (mockResponse: unknown, status = 200) =>
@@ -16,15 +15,6 @@ const createMockFetch =
     }) as Response;
 
 describe('sub-account transfer command', () => {
-  beforeEach(() => {
-    setGlobalConfigOverrides({
-      apiUrl: 'https://whitebit.com',
-      apiKey: 'test-key',
-      apiSecret: 'test-secret',
-      format: 'json',
-    });
-  });
-
   test('transfers funds to sub-account successfully', async () => {
     const mockResult = { result: 'success' };
 
@@ -42,6 +32,10 @@ describe('sub-account transfer command', () => {
         positional: ['BTC', '0.5'],
         flags: {
           toId: 'sub-1',
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
         },
       } as never);
 
@@ -68,6 +62,10 @@ describe('sub-account transfer command', () => {
         positional: ['ETH', '1.0'],
         flags: {
           fromId: 'sub-1',
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
         },
       } as never);
 
@@ -86,6 +84,10 @@ describe('sub-account transfer command', () => {
         positional: ['BTC', '100'],
         flags: {
           fromId: 'sub-1',
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
         },
       } as never);
       expect.unreachable();

@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 
 import { listCommand } from '../../../src/commands/sub-account/list';
-import { setGlobalConfigOverrides } from '../../../src/lib/config';
 import type { SubAccount } from '../../../src/lib/types/sub-account';
 
 const createMockFetch =
@@ -17,15 +16,6 @@ const createMockFetch =
     }) as Response;
 
 describe('sub-account list command', () => {
-  beforeEach(() => {
-    setGlobalConfigOverrides({
-      apiUrl: 'https://whitebit.com',
-      apiKey: 'test-key',
-      apiSecret: 'test-secret',
-      format: 'json',
-    });
-  });
-
   test('lists sub-accounts successfully', async () => {
     const mockSubAccounts: SubAccount[] = [
       { id: 'sub-1', alias: 'Trading Bot', status: 'active' },
@@ -43,7 +33,12 @@ describe('sub-account list command', () => {
 
     try {
       await listCommand.handler({
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
 
       expect(capturedOutput).toContain('Trading Bot');
@@ -59,7 +54,12 @@ describe('sub-account list command', () => {
 
     try {
       await listCommand.handler({
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
       expect.unreachable();
     } catch (error) {

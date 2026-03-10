@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 
 import { klineCommand } from '../../../src/commands/market/kline';
-import { setGlobalConfigOverrides } from '../../../src/lib/config';
 import type { KlineRecord } from '../../../src/lib/types/market';
 
 const createMockFetch =
@@ -17,13 +16,6 @@ const createMockFetch =
     }) as Response;
 
 describe('market kline command', () => {
-  beforeEach(() => {
-    setGlobalConfigOverrides({
-      apiUrl: 'https://whitebit.com',
-      format: 'json',
-    });
-  });
-
   test('fetches kline with required params', async () => {
     const handler = klineCommand.handler;
     if (!handler) {
@@ -54,7 +46,10 @@ describe('market kline command', () => {
     try {
       await handler({
         positional: ['BTC_USDT', '1h'],
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          format: 'json' as const,
+        },
       } as never);
 
       expect(capturedOutput).toContain('50000');
@@ -98,6 +93,8 @@ describe('market kline command', () => {
           start: 1631400000,
           end: 1631500000,
           limit: 100,
+          apiUrl: 'https://whitebit.com',
+          format: 'json' as const,
         },
       } as never);
 

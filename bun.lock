@@ -6,6 +6,7 @@
       "name": "whitebit-cli",
       "dependencies": {
         "@bunli/core": "^0.8.2",
+        "@bunli/plugin-completions": "^0.3.4",
         "smol-toml": "^1.6.0",
         "zod": "^4.3.6",
       },
@@ -38,6 +39,8 @@
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.4.6", "", { "os": "win32", "cpu": "x64" }, "sha512-7++XhnsPlr1HDbor5amovPjOH6vsrFOCdp93iKXhFn6bcMUI6soodj3WWKfgEO6JosKU1W5n3uky3WW9RlRjTg=="],
 
     "@bunli/core": ["@bunli/core@0.8.2", "", { "dependencies": { "@bunli/runtime": "^0.2.0", "@bunli/utils": "^0.5.1", "@standard-schema/spec": "^1.1.0", "@standard-schema/utils": "^0.3.0", "better-result": "^2.7.0", "debug": "^4.4.3", "zod": "^4.3.6" } }, "sha512-V2VlRduOtWVUX5XbYy+Sc6vWMfNKmzdfcV5URWzIoxTLYkK2HRB9CbLtqQ4EvMcctIXdLFa5ZopikGoSy/mTeQ=="],
+
+    "@bunli/plugin-completions": ["@bunli/plugin-completions@0.3.4", "", { "dependencies": { "@bunli/core": "^0.8.0", "better-result": "^2.7.0" } }, "sha512-leQyISHoL4H3TmNADiwRr4SiJDGAesAycKeWDugKw46as39Sk0ZgwKuL0+vsPXDv45lMWVBqyGrqBzxOZBzrQQ=="],
 
     "@bunli/runtime": ["@bunli/runtime@0.2.0", "", { "dependencies": { "@opentui/core": "^0.1.84", "@opentui/react": "^0.1.84", "@standard-schema/spec": "^1.1.0", "@standard-schema/utils": "^0.3.0", "better-result": "^2.7.0", "debug": "^4.4.3", "zod": "^4.3.6" }, "peerDependencies": { "react": "^19.2.4" } }, "sha512-8NKbHhUSx5xZrNPOvOcAeqdd/8KoTA1OQp07Ifmc9nUzHiNFjiZmk6UG3CzRRw1q9kC/FjbaIa/qUSgr5cBtFQ=="],
 

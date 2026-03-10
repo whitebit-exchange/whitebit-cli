@@ -54,11 +54,11 @@ run_cmd "market server-time" \
 run_cmd "market status" \
   "${WHITEBIT} market status ${EXTRA_FLAGS}"
 
-run_cmd "market mining-pool" \
-  "${WHITEBIT} market mining-pool ${EXTRA_FLAGS}"
+run_cmd "mining-pool overview" \
+  "${WHITEBIT} mining-pool overview ${EXTRA_FLAGS}"
 
-run_cmd "market mining-hashrate" \
-  "${WHITEBIT} market mining-hashrate ${EXTRA_FLAGS}"
+run_cmd "mining-pool hashrate" \
+  "${WHITEBIT} mining-pool hashrate ${EXTRA_FLAGS}"
 
 # ═══════════════════════════════════════════════════════════
 # Balance — Read-only queries

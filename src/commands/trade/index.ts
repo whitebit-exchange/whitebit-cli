@@ -23,7 +23,7 @@ import { tradeUnexecutedCommand } from './unexecuted';
 
 export const spotGroup = defineGroup({
   name: 'spot',
-  description: 'Spot order management',
+  description: 'Place and manage spot trading orders, check balances and fees, control kill-switch',
   commands: [
     tradeLimitOrderCommand,
     tradeMarketOrderCommand,
@@ -48,7 +48,7 @@ export const spotGroup = defineGroup({
 
 export const tradeGroup = defineGroup({
   name: 'trade',
-  description: 'Trading commands (spot, collateral, convert)',
+  description: 'Trade across spot, collateral markets, and convert between currencies',
   commands: [spotGroup, collateralGroup, convertGroup],
 });
 

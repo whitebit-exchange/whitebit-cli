@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 
 import { accountMainBalanceCommand } from '../../../src/commands/balance/main-balance';
-import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
 const createMockFetch =
   (mockResponse: unknown, status = 200) =>
@@ -16,15 +15,6 @@ const createMockFetch =
     }) as Response;
 
 describe('account main-balance command', () => {
-  beforeEach(() => {
-    setGlobalConfigOverrides({
-      apiUrl: 'https://whitebit.com',
-      apiKey: 'test-key',
-      apiSecret: 'test-secret',
-      format: 'json',
-    });
-  });
-
   test('fetches main balance successfully', async () => {
     const mockBalance = {
       BTC: { main_balance: '1.5' },
@@ -43,7 +33,12 @@ describe('account main-balance command', () => {
     try {
       await accountMainBalanceCommand.handler({
         positional: [],
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
 
       expect(capturedOutput).toContain('1.5');
@@ -70,7 +65,12 @@ describe('account main-balance command', () => {
     try {
       await accountMainBalanceCommand.handler({
         positional: ['BTC'],
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
 
       expect(capturedOutput).toContain('1.5');
@@ -87,7 +87,12 @@ describe('account main-balance command', () => {
     try {
       await accountMainBalanceCommand.handler({
         positional: [],
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
       expect.unreachable();
     } catch (error) {

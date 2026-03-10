@@ -6,7 +6,7 @@ import { authenticatedPost } from '../../lib/http';
 
 export const collateralSummaryCommand = defineCommand({
   name: 'summary',
-  description: 'Fetch collateral account summary',
+  description: 'View collateral account summary with totals and key metrics',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

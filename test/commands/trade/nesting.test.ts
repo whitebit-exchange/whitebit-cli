@@ -4,7 +4,9 @@ import { collateralGroup, convertGroup, spotGroup, tradeGroup } from '../../../s
 describe('Trade Group Nesting', () => {
   test('tradeGroup has correct name', () => {
     expect(tradeGroup.name).toBe('trade');
-    expect(tradeGroup.description).toBe('Trading commands (spot, collateral, convert)');
+    expect(tradeGroup.description).toBe(
+      'Trade across spot, collateral markets, and convert between currencies',
+    );
   });
 
   test('tradeGroup contains exactly 3 subgroups', () => {
@@ -14,7 +16,9 @@ describe('Trade Group Nesting', () => {
   test('tradeGroup contains spot subgroup', () => {
     const spot = tradeGroup.commands.find((cmd) => cmd.name === 'spot');
     expect(spot).toBeDefined();
-    expect(spot?.description).toBe('Spot order management');
+    expect(spot?.description).toBe(
+      'Place and manage spot trading orders, check balances and fees, control kill-switch',
+    );
   });
 
   test('tradeGroup contains collateral subgroup', () => {
@@ -33,7 +37,9 @@ describe('Trade Group Nesting', () => {
 
   test('spotGroup has correct name and command count', () => {
     expect(spotGroup.name).toBe('spot');
-    expect(spotGroup.description).toBe('Spot order management');
+    expect(spotGroup.description).toBe(
+      'Place and manage spot trading orders, check balances and fees, control kill-switch',
+    );
     expect(spotGroup.commands).toHaveLength(18);
   });
 

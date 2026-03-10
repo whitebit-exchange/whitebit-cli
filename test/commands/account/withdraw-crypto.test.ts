@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 
 import { accountWithdrawCryptoCommand } from '../../../src/commands/withdraw/withdraw-crypto';
-import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
 const createMockFetch =
   (mockResponse: unknown, status = 200) =>
@@ -16,15 +15,6 @@ const createMockFetch =
     }) as Response;
 
 describe('account withdraw-crypto command', () => {
-  beforeEach(() => {
-    setGlobalConfigOverrides({
-      apiUrl: 'https://whitebit.com',
-      apiKey: 'test-key',
-      apiSecret: 'test-secret',
-      format: 'json',
-    });
-  });
-
   test('withdraws crypto successfully', async () => {
     const mockResponse = {
       success: true,
@@ -43,7 +33,12 @@ describe('account withdraw-crypto command', () => {
     try {
       await accountWithdrawCryptoCommand.handler({
         positional: ['BTC', '0.1', '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'],
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
 
       expect(capturedOutput).toContain('12345');
@@ -70,7 +65,13 @@ describe('account withdraw-crypto command', () => {
     try {
       await accountWithdrawCryptoCommand.handler({
         positional: ['XRP', '100', 'rN7n7otQDd6FczFgLdlqtyMVrn3PvNvMGmm'],
-        flags: { memo: '123456' },
+        flags: {
+          memo: '123456',
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
 
       expect(capturedOutput).toContain('67890');
@@ -86,7 +87,12 @@ describe('account withdraw-crypto command', () => {
     try {
       await accountWithdrawCryptoCommand.handler({
         positional: ['BTC', '1000', '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'],
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
       expect.unreachable();
     } catch (error) {

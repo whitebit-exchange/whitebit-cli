@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 
 import { collateralBalanceCommand } from '../../../src/commands/collateral/balance';
-import { setGlobalConfigOverrides } from '../../../src/lib/config';
 import type { CollateralBalance } from '../../../src/lib/types/collateral';
 
 const createMockFetch =
@@ -17,15 +16,6 @@ const createMockFetch =
     }) as Response;
 
 describe('collateral balance command', () => {
-  beforeEach(() => {
-    setGlobalConfigOverrides({
-      apiUrl: 'https://whitebit.com',
-      apiKey: 'test-key',
-      apiSecret: 'test-secret',
-      format: 'json',
-    });
-  });
-
   test('fetches collateral balance successfully', async () => {
     const mockBalance: CollateralBalance = {
       BTC: { available: '1.5', freeze: '0.5' },
@@ -43,7 +33,12 @@ describe('collateral balance command', () => {
 
     try {
       await collateralBalanceCommand.handler({
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
 
       expect(capturedOutput).toContain('BTC');
@@ -59,7 +54,12 @@ describe('collateral balance command', () => {
 
     try {
       await collateralBalanceCommand.handler({
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
       expect.unreachable();
     } catch (error) {

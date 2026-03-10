@@ -290,7 +290,7 @@ export class AccountApi {
       body.passphrase = params.passphrase;
     }
     const response = await this.httpClient.post<CodeResponse>(
-      '/api/v4/main-account/codes-apply',
+      '/api/v4/main-account/codes/apply',
       body,
       { category: 'account' },
     );

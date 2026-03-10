@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 
 import { createCommand } from '../../../src/commands/sub-account/create';
-import { setGlobalConfigOverrides } from '../../../src/lib/config';
 import type { SubAccount } from '../../../src/lib/types/sub-account';
 
 const createMockFetch =
@@ -17,15 +16,6 @@ const createMockFetch =
     }) as Response;
 
 describe('sub-account create command', () => {
-  beforeEach(() => {
-    setGlobalConfigOverrides({
-      apiUrl: 'https://whitebit.com',
-      apiKey: 'test-key',
-      apiSecret: 'test-secret',
-      format: 'json',
-    });
-  });
-
   test('creates sub-account successfully', async () => {
     const mockSubAccount: SubAccount = {
       id: 'sub-123',
@@ -45,6 +35,12 @@ describe('sub-account create command', () => {
     try {
       await createCommand.handler({
         positional: ['New Trading Bot'],
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
 
       expect(capturedOutput).toContain('sub-123');
@@ -67,6 +63,12 @@ describe('sub-account create command', () => {
     try {
       await createCommand.handler({
         positional: ['Duplicate'],
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
       expect.unreachable();
     } catch (error) {

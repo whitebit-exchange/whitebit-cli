@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, spyOn, test } from 'bun:test';
 
 import { createAuthHeaders } from '../../src/lib/auth';
-import { clearGlobalConfigOverrides, setGlobalConfigOverrides } from '../../src/lib/config';
 import { HttpClient } from '../../src/lib/http';
 import type { RateLimitCategory } from '../../src/lib/rate-limiter';
 import { DEFAULT_USER_AGENT } from '../../src/lib/version';
@@ -52,7 +51,6 @@ describe('HttpClient', () => {
 
   afterEach(() => {
     setDateNow(originalDateNow);
-    clearGlobalConfigOverrides();
   });
 
   test('sends no auth headers for public GET requests', async () => {
@@ -235,8 +233,6 @@ describe('HttpClient', () => {
   });
 
   test('respects global dry-run override in direct HttpClient calls', async () => {
-    setGlobalConfigOverrides({ dryRun: true });
-
     const calls: FetchCall[] = [];
     const fetchMock = toFetchMock(async (input, init) => {
       calls.push({ input, init });
@@ -249,6 +245,7 @@ describe('HttpClient', () => {
       apiSecret: API_SECRET,
       fetch: fetchMock,
       userAgent: DEFAULT_USER_AGENT,
+      dryRun: true,
     });
 
     const response = await client.post('/api/v4/trade-balance', { ticker: 'BTC' });
@@ -263,8 +260,6 @@ describe('HttpClient', () => {
   });
 
   test('respects global verbose override in direct HttpClient calls', async () => {
-    setGlobalConfigOverrides({ verbose: true });
-
     const fetchMock = toFetchMock(async () => createJsonResponse({ success: true }));
     const stderrSpy = spyOn(process.stderr, 'write').mockImplementation(() => true);
 
@@ -272,6 +267,7 @@ describe('HttpClient', () => {
       apiUrl: API_URL,
       fetch: fetchMock,
       userAgent: DEFAULT_USER_AGENT,
+      verbose: true,
     });
 
     await client.get('/api/v4/public/tickers');

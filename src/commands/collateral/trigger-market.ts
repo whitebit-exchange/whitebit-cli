@@ -8,15 +8,15 @@ import { authenticatedPost } from '../../lib/http';
 
 export const collateralTriggerMarketCommand = defineCommand({
   name: 'trigger-market',
-  description: 'Create a collateral trigger market order',
+  description: 'Create stop order: executes as market order at trigger price',
   options: {
     leverage: option(z.number().optional(), {
       short: 'l',
-      description: 'Leverage multiplier (optional)',
+      description: 'Leverage multiplier (optional, required for margin)',
     }),
     clientOrderId: option(z.string().optional(), {
       short: 'c',
-      description: 'Client order ID (optional)',
+      description: 'Your custom order ID for tracking (optional)',
     }),
   },
   handler: async ({ positional, flags }) => {

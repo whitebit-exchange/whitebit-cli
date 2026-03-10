@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 
 import { collateralLimitOrderCommand } from '../../../src/commands/collateral/limit-order';
-import { setGlobalConfigOverrides } from '../../../src/lib/config';
 import type { CollateralOrder } from '../../../src/lib/types/collateral';
 
 const createMockFetch =
@@ -17,15 +16,6 @@ const createMockFetch =
     }) as Response;
 
 describe('collateral limit-order command', () => {
-  beforeEach(() => {
-    setGlobalConfigOverrides({
-      apiUrl: 'https://whitebit.com',
-      apiKey: 'test-key',
-      apiSecret: 'test-secret',
-      format: 'json',
-    });
-  });
-
   test('creates collateral limit order successfully', async () => {
     const mockOrder: CollateralOrder = {
       orderId: 123456,
@@ -58,6 +48,10 @@ describe('collateral limit-order command', () => {
         positional: ['BTC_USDT', 'buy', '0.01', '50000'],
         flags: {
           leverage: 10,
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
         },
       } as never);
 
@@ -97,7 +91,12 @@ describe('collateral limit-order command', () => {
     try {
       await collateralLimitOrderCommand.handler({
         positional: ['ETH_USDT', 'sell', '1.0', '3000'],
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
 
       expect(capturedOutput).toContain('123457');
@@ -114,7 +113,12 @@ describe('collateral limit-order command', () => {
     try {
       await collateralLimitOrderCommand.handler({
         positional: ['BTC_USDT', 'buy', '0.01', '50000'],
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          apiKey: 'test-key',
+          apiSecret: 'test-secret',
+          format: 'json' as const,
+        },
       } as never);
       expect.unreachable();
     } catch (error) {

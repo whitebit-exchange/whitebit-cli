@@ -116,9 +116,14 @@ Query real-time market data without authentication.
 - `market kline <pair> <interval>` — Candlestick data
 - `market fee` — Trading fee schedule
 - `market funding-history <pair>` — Futures funding rate history
-- `market mining-pool` — Mining pool statistics
-- `market mining-hashrate` — Mining hashrate
 - `market activity <pair>` — 24h trading activity
+
+### Mining Pool
+
+Mining pool statistics and hashrate.
+
+- `mining-pool overview` — Mining pool statistics
+- `mining-pool hashrate` — Mining hashrate
 
 ### Balance (Requires Auth)
 
@@ -150,7 +155,7 @@ Manage withdrawals and view history.
 
 Internal account transfers.
 
-- `transfer internal <asset> <amount> <from> <to>` — Internal transfer
+- `transfer internal <asset> <amount> <from> <to>` — Transfer between accounts (valid accounts: `main`, `spot`, `collateral`)
 
 ### Codes (Requires Auth)
 

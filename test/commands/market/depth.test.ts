@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 
 import { depthCommand } from '../../../src/commands/market/depth';
-import { setGlobalConfigOverrides } from '../../../src/lib/config';
 import type { OrderbookDepth } from '../../../src/lib/types/market';
 
 const createMockFetch =
@@ -17,13 +16,6 @@ const createMockFetch =
     }) as Response;
 
 describe('market depth command', () => {
-  beforeEach(() => {
-    setGlobalConfigOverrides({
-      apiUrl: 'https://whitebit.com',
-      format: 'json',
-    });
-  });
-
   test('fetches depth with required market param', async () => {
     const handler = depthCommand.handler;
     if (!handler) {
@@ -54,7 +46,10 @@ describe('market depth command', () => {
     try {
       await handler({
         positional: ['BTC_USDT'],
-        flags: {},
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          format: 'json' as const,
+        },
       } as never);
 
       expect(capturedOutput).toContain('asks');
@@ -89,7 +84,11 @@ describe('market depth command', () => {
     try {
       await handler({
         positional: ['BTC_USDT'],
-        flags: { limit: 1 },
+        flags: {
+          limit: 1,
+          apiUrl: 'https://whitebit.com',
+          format: 'json' as const,
+        },
       } as never);
 
       expect(capturedOutput).toContain('50001');

@@ -34,6 +34,8 @@ export interface HttpClientOptions {
   retrySleep?: (ms: number) => Promise<void>;
   userAgent?: string;
   runtimeLogging?: boolean;
+  dryRun?: boolean;
+  verbose?: boolean;
 }
 
 export interface HttpRequestOptions {
@@ -55,7 +57,7 @@ interface InternalRequestOptions {
 
 interface PublicErrorPayload {
   success: false;
-  message: string;
+  message: string | Record<string, string[]>;
   params?: unknown;
 }
 
@@ -136,7 +138,7 @@ const isPublicErrorPayload = (value: unknown): value is PublicErrorPayload => {
     return false;
   }
 
-  return value.success === false && typeof value.message === 'string';
+  return value.success === false && (typeof value.message === 'string' || isRecord(value.message));
 };
 
 const isPrivateErrorPayload = (value: unknown): value is PrivateErrorPayload => {
@@ -152,6 +154,19 @@ const isPrivateErrorPayload = (value: unknown): value is PrivateErrorPayload => 
   return typeof value.message === 'string';
 };
 
+const stringifyPublicErrorMessage = (message: string | Record<string, string[]>): string => {
+  if (typeof message === 'string') {
+    return message;
+  }
+
+  const parts: string[] = [];
+  for (const [field, messages] of Object.entries(message)) {
+    parts.push(`${field}: ${messages.join(', ')}`);
+  }
+
+  return parts.join('; ') || 'Validation failed';
+};
+
 const normalizeError = (
   body: unknown,
   status?: number,
@@ -160,7 +175,7 @@ const normalizeError = (
   if (isPublicErrorPayload(body)) {
     return {
       status,
-      message: body.message,
+      message: stringifyPublicErrorMessage(body.message),
       params: body.params,
       raw: body,
     };
@@ -264,14 +279,6 @@ const writeVerboseResponse = (response: NormalizedApiResponse<unknown>): void =>
   process.stderr.write(`${JSON.stringify(response, null, 2)}\n`);
 };
 
-const resolveRuntimeFlags = (): { verbose: boolean; dryRun: boolean } => {
-  const overrides = getGlobalConfigOverrides();
-  return {
-    verbose: overrides.verbose === true,
-    dryRun: overrides.dryRun === true,
-  };
-};
-
 export class HttpClient {
   private readonly apiUrl: string;
 
@@ -293,7 +300,12 @@ export class HttpClient {
 
   private readonly runtimeLogging: boolean;
 
+  private readonly dryRun: boolean;
+
+  private readonly verbose: boolean;
+
   constructor(options: HttpClientOptions) {
+    const overrides = getGlobalConfigOverrides();
     this.apiUrl = normalizeApiUrl(options.apiUrl);
     this.apiKey = options.apiKey;
     this.apiSecret = options.apiSecret;
@@ -303,6 +315,8 @@ export class HttpClient {
     this.retrySleep = options.retrySleep;
     this.userAgent = options.userAgent ?? DEFAULT_USER_AGENT;
     this.runtimeLogging = options.runtimeLogging ?? true;
+    this.dryRun = options.dryRun ?? overrides.dryRun ?? false;
+    this.verbose = options.verbose ?? overrides.verbose ?? false;
   }
 
   get<T = ApiResponse>(
@@ -338,7 +352,10 @@ export class HttpClient {
   private async request<T>(options: InternalRequestOptions): Promise<NormalizedApiResponse<T>> {
     const url = resolveUrl(this.apiUrl, options.endpointPath, options.params);
     const runtimeFlags = this.runtimeLogging
-      ? resolveRuntimeFlags()
+      ? {
+          verbose: this.verbose,
+          dryRun: this.dryRun,
+        }
       : {
           verbose: false,
           dryRun: false,

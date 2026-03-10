@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 
 import { marketTickersCommand } from '../../../src/commands/market/tickers';
-import { setGlobalConfigOverrides } from '../../../src/lib/config';
 import type { TickerData } from '../../../src/lib/types/market';
 
 const createMockFetch =
@@ -17,13 +16,6 @@ const createMockFetch =
     }) as Response;
 
 describe('market tickers command', () => {
-  beforeEach(() => {
-    setGlobalConfigOverrides({
-      apiUrl: 'https://whitebit.com',
-      format: 'json',
-    });
-  });
-
   test('fetches tickers successfully', async () => {
     const mockData: Record<string, TickerData> = {
       BTC_USDT: {
@@ -55,7 +47,12 @@ describe('market tickers command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await marketTickersCommand.handler({} as never);
+      await marketTickersCommand.handler({
+        flags: {
+          apiUrl: 'https://whitebit.com',
+          format: 'json' as const,
+        },
+      } as never);
 
       expect(capturedOutput).toContain('BTC_USDT');
       expect(capturedOutput).toContain('50000');
