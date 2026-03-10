@@ -11,7 +11,7 @@ export interface AuthConfig extends PublicConfig {
   apiSecret: string;
 }
 
-export type ApiRequestBody = Record<string, unknown>;
+export type ApiRequestBody = object;
 export type ApiResponse = JsonValue | Record<string, unknown>;
 
 export interface WhitebitSignedPayload extends ApiRequestBody {
