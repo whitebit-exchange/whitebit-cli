@@ -1,6 +1,7 @@
 import { defineCommand, option } from '@bunli/core';
 import { z } from 'zod';
 
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { authenticatedPost } from '../../lib/http';
@@ -9,20 +10,24 @@ export const collateralClosePositionCommand = defineCommand({
   name: 'close-position',
   description: 'Close a collateral position',
   options: {
-    market: option(z.string().min(1), {
-      short: 'm',
-      description: 'Market symbol (e.g., BTC_USDT)',
-    }),
     positionId: option(z.number().optional(), {
       short: 'p',
       description: 'Position ID (optional)',
     }),
   },
-  handler: async ({ flags }) => {
+  handler: async ({ positional, flags }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
+
+    const market = parseArg(
+      positional[0],
+      z.string().min(1),
+      'MARKET',
+      'whitebit trade collateral close-position <market>',
+    );
+
     const body = {
-      market: flags.market,
+      market,
       ...(flags.positionId !== undefined && { positionId: flags.positionId }),
     };
     const response = await authenticatedPost(
