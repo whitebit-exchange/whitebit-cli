@@ -12,19 +12,19 @@ describe('Trade Group Nesting', () => {
   });
 
   test('tradeGroup contains spot subgroup', () => {
-    const spot = tradeGroup.commands.find((cmd: any) => cmd.name === 'spot');
+    const spot = tradeGroup.commands.find((cmd) => cmd.name === 'spot');
     expect(spot).toBeDefined();
     expect(spot?.description).toBe('Spot order management');
   });
 
   test('tradeGroup contains collateral subgroup', () => {
-    const collateral = tradeGroup.commands.find((cmd: any) => cmd.name === 'collateral');
+    const collateral = tradeGroup.commands.find((cmd) => cmd.name === 'collateral');
     expect(collateral).toBeDefined();
     expect(collateral?.description).toBe('Collateral trading commands');
   });
 
   test('tradeGroup contains convert subgroup', () => {
-    const convert = tradeGroup.commands.find((cmd: any) => cmd.name === 'convert');
+    const convert = tradeGroup.commands.find((cmd) => cmd.name === 'convert');
     expect(convert).toBeDefined();
     expect(convert?.description).toBe('Currency conversion commands');
   });
