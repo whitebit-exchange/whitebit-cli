@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const tradeCancelCommand = defineCommand({
   name: 'cancel',
-  description: 'Cancel a specific order',
+  description: 'Cancel a specific order by market and order ID',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

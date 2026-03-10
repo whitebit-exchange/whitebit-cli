@@ -9,11 +9,11 @@ import { HttpClient } from '../../lib/http';
 
 export const tradeBulkOrderCommand = defineCommand({
   name: 'bulk-order',
-  description: 'Create multiple orders in bulk',
+  description: 'Create multiple limit orders (1-20) in a single API call for efficiency',
   options: {
     orders: option(z.string().min(1), {
       short: 'o',
-      description: 'Orders JSON array (e.g., \'[{"side":"buy","amount":"0.01","price":"50000"}]\')',
+      description: 'JSON array of orders: [{"side":"buy","amount":"0.01","price":"50000"}]',
     }),
   },
   handler: async ({ positional, flags }) => {

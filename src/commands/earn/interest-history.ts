@@ -8,7 +8,7 @@ import { HttpClient } from '../../lib/http';
 
 export const accountInterestHistoryCommand = defineCommand({
   name: 'interest-history',
-  description: 'Get interest payments history',
+  description: 'View earned interest and reward payments across all products',
   options: {
     limit: option(z.coerce.number().int().positive().optional(), {
       short: 'l',

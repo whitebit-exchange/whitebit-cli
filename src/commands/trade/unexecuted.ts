@@ -8,7 +8,7 @@ import { HttpClient } from '../../lib/http';
 
 export const tradeUnexecutedCommand = defineCommand({
   name: 'unexecuted',
-  description: 'List unexecuted (open) orders',
+  description: 'List open (unexecuted) orders with optional filtering and pagination',
   options: {
     market: option(z.string().optional(), {
       short: 'm',

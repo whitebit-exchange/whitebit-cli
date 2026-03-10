@@ -9,14 +9,15 @@ import { HttpClient } from '../../lib/http';
 
 export const tradeLimitOrderCommand = defineCommand({
   name: 'limit-order',
-  description: 'Create a limit order',
+  description:
+    'Create a limit order at a specific price (sell when price rises, buy when price falls)',
   options: {
     clientOrderId: option(z.string().optional(), {
       short: 'c',
-      description: 'Optional client order ID',
+      description: 'User-defined order ID for tracking and cancellation',
     }),
     postOnly: option(z.boolean().optional(), {
-      description: 'Post-only order (maker only)',
+      description: 'Only create maker orders (add liquidity, not take existing orders)',
     }),
   },
   handler: async ({ positional, flags }) => {

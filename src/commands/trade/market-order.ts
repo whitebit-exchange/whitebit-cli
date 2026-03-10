@@ -9,11 +9,11 @@ import { HttpClient } from '../../lib/http';
 
 export const tradeMarketOrderCommand = defineCommand({
   name: 'market-order',
-  description: 'Create a market order',
+  description: 'Create a market order (execute immediately at best available price)',
   options: {
     clientOrderId: option(z.string().optional(), {
       short: 'c',
-      description: 'Optional client order ID',
+      description: 'User-defined order ID for tracking and cancellation',
     }),
   },
   handler: async ({ positional, flags }) => {

@@ -9,11 +9,11 @@ import { HttpClient } from '../../lib/http';
 
 export const tradeStopMarketCommand = defineCommand({
   name: 'stop-market',
-  description: 'Create a stop-market order',
+  description: 'Create a conditional order: wait for activation_price, then execute as market',
   options: {
     clientOrderId: option(z.string().optional(), {
       short: 'c',
-      description: 'Optional client order ID',
+      description: 'User-defined order ID for tracking and cancellation',
     }),
   },
   handler: async ({ positional, flags }) => {

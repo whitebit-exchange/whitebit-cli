@@ -8,7 +8,7 @@ import { HttpClient } from '../../lib/http';
 
 export const tradeCancelAllCommand = defineCommand({
   name: 'cancel-all',
-  description: 'Cancel all orders (optionally filtered by market)',
+  description: 'Cancel all open orders or filter by market',
   options: {
     market: option(z.string().optional(), {
       short: 'm',

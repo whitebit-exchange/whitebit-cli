@@ -56,7 +56,7 @@ const formatFeesAsRows = (data: unknown): unknown[] => {
 
 export const tradeAllFeesCommand = defineCommand({
   name: 'all-fees',
-  description: 'Get trading fees for all markets',
+  description: 'Get maker/taker fees for all markets and custom fee tiers',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

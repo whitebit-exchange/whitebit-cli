@@ -7,7 +7,7 @@ import { HttpClient } from '../../../lib/http';
 
 export const accountFlexPlansCommand = defineCommand({
   name: 'plans',
-  description: 'Get available flexible investment plans',
+  description: 'List flexible staking plans with variable APR rates',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const tradeDealsCommand = defineCommand({
   name: 'deals',
-  description: 'Get executed deals for a specific order',
+  description: 'Get all trades executed for a specific order with pagination',
   options: {
     limit: option(z.number().int().positive().optional(), {
       short: 'l',

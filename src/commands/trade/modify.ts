@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const tradeModifyCommand = defineCommand({
   name: 'modify',
-  description: 'Modify an existing order',
+  description: 'Update price and/or amount of an existing order',
   options: {
     price: option(z.string().optional(), {
       short: 'p',

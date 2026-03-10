@@ -5,7 +5,7 @@ import { accountInterestHistoryCommand } from './interest-history';
 
 export const earnGroup = defineGroup({
   name: 'earn',
-  description: 'Staking and yield (fixed, flex, interest)',
+  description: 'Stake tokens for yield and earn interest rewards',
   commands: [fixedGroup, flexGroup, accountInterestHistoryCommand],
 });
 

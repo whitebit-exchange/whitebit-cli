@@ -8,7 +8,7 @@ import { HttpClient } from '../../../lib/http';
 
 export const accountFlexAutoReinvestCommand = defineCommand({
   name: 'auto-reinvest',
-  description: 'Set auto-reinvest for flexible investment',
+  description: 'Automatically restake earned rewards in flexible staking',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

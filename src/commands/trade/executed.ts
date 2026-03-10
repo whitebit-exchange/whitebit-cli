@@ -9,7 +9,7 @@ import { recordOfArraysToRows } from '../market/helpers';
 
 export const tradeExecutedCommand = defineCommand({
   name: 'executed',
-  description: 'List executed orders',
+  description: 'List completed orders with optional filtering and pagination',
   options: {
     market: option(z.string().optional(), {
       short: 'm',

@@ -7,7 +7,7 @@ import { accountPlansCommand } from './plans';
 
 export const fixedGroup = defineGroup({
   name: 'fixed',
-  description: 'Fixed staking plans',
+  description: 'Lock tokens for set period at guaranteed APR',
   commands: [
     accountPlansCommand,
     accountInvestCommand,
