@@ -1,6 +1,8 @@
 import { defineCommand } from '@bunli/core';
+import { z } from 'zod';
 
 import { AccountApi } from '../../lib/api/account';
+import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
 import { HttpClient } from '../../lib/http';
@@ -20,7 +22,9 @@ export const accountMainBalanceCommand = defineCommand({
     });
     const api = new AccountApi(client);
 
-    const ticker = positional[0];
+    const ticker = positional[0]
+      ? parseArg(positional[0], z.string().min(1), 'ASSET', 'whitebit balance main [asset]')
+      : undefined;
     const response = await api.mainBalance(ticker ? { ticker } : undefined);
 
     if (runtimeConfig.dryRun) {
