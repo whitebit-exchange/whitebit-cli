@@ -32,38 +32,7 @@ import { tradeGroup } from './commands/trade';
 import { transferGroup } from './commands/transfer';
 import { withdrawGroup } from './commands/withdraw';
 import { accountWsTokenCommand } from './commands/ws-token';
-import { type LoadConfigOptions, setGlobalConfigOverrides } from './lib/config';
 import { CLI_VERSION } from './lib/version';
-
-const readLongFlagValue = (
-  argv: string[],
-  index: number,
-  flagName: string,
-): { value: string; nextIndex: number } => {
-  const token = argv[index] ?? '';
-  const inlinePrefix = `${flagName}=`;
-  if (token.startsWith(inlinePrefix)) {
-    const value = token.slice(inlinePrefix.length);
-    if (value.length === 0) {
-      throw new Error(`Flag ${flagName} requires a value`);
-    }
-
-    return {
-      value,
-      nextIndex: index,
-    };
-  }
-
-  const nextValue = argv[index + 1];
-  if (!nextValue || nextValue.startsWith('-')) {
-    throw new Error(`Flag ${flagName} requires a value`);
-  }
-
-  return {
-    value: nextValue,
-    nextIndex: index + 1,
-  };
-};
 
 const inferExitCode = (error: unknown): number => {
   const message = error instanceof Error ? error.message : String(error ?? '');
@@ -108,95 +77,6 @@ const inferExitCode = (error: unknown): number => {
   return 1;
 };
 
-const parseGlobalOptions = (
-  argv: string[],
-): {
-  cleanedArgv: string[];
-  overrides: Partial<LoadConfigOptions>;
-} => {
-  const cleanedArgv: string[] = [];
-  const overrides: Partial<LoadConfigOptions> = {};
-
-  for (let index = 0; index < argv.length; index += 1) {
-    const token = argv[index] ?? '';
-
-    if (token === '--') {
-      cleanedArgv.push(...argv.slice(index));
-      break;
-    }
-
-    if (token === '--json') {
-      overrides.json = true;
-      continue;
-    }
-
-    if (token === '--verbose' || token === '-v') {
-      overrides.verbose = true;
-      continue;
-    }
-
-    if (token === '--no-retry') {
-      overrides.retry = false;
-      continue;
-    }
-
-    if (token === '--dry-run') {
-      overrides.dryRun = true;
-      continue;
-    }
-
-    if (token === '--format' || token.startsWith('--format=')) {
-      const { value, nextIndex } = readLongFlagValue(argv, index, '--format');
-      if (value !== 'json' && value !== 'table') {
-        throw new Error(`Invalid --format value: ${value}. Expected 'json' or 'table'.`);
-      }
-
-      overrides.format = value;
-      index = nextIndex;
-      continue;
-    }
-
-    if (token === '--profile' || token.startsWith('--profile=')) {
-      const { value, nextIndex } = readLongFlagValue(argv, index, '--profile');
-      overrides.profile = value;
-      index = nextIndex;
-      continue;
-    }
-
-    if (token === '--api-key' || token.startsWith('--api-key=')) {
-      const { value, nextIndex } = readLongFlagValue(argv, index, '--api-key');
-      overrides.apiKey = value;
-      index = nextIndex;
-      continue;
-    }
-
-    if (token === '--api-secret' || token.startsWith('--api-secret=')) {
-      const { value, nextIndex } = readLongFlagValue(argv, index, '--api-secret');
-      overrides.apiSecret = value;
-      index = nextIndex;
-      continue;
-    }
-
-    if (token === '--api-url' || token.startsWith('--api-url=')) {
-      const { value, nextIndex } = readLongFlagValue(argv, index, '--api-url');
-      overrides.apiUrl = value;
-      index = nextIndex;
-      continue;
-    }
-
-    cleanedArgv.push(token);
-  }
-
-  if (overrides.json) {
-    overrides.format = 'json';
-  }
-
-  return {
-    cleanedArgv,
-    overrides,
-  };
-};
-
 const marketGroup = defineGroup({
   name: 'market',
   description: 'Market data and platform status',
@@ -226,18 +106,6 @@ const configGroup = defineGroup({
   commands: [configSetCommand, configShowCommand],
 });
 
-const parsedArgs = (() => {
-  try {
-    return parseGlobalOptions(Bun.argv.slice(2));
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    process.stderr.write(`${message}\n`);
-    process.exit(4);
-  }
-})();
-
-setGlobalConfigOverrides(parsedArgs.overrides);
-
 const cli = await createCLI({
   name: 'whitebit',
   version: CLI_VERSION,
@@ -261,7 +129,7 @@ cli.command(loginCommand);
 cli.command(helpCommand);
 
 try {
-  await cli.run(parsedArgs.cleanedArgv);
+  await cli.run(Bun.argv.slice(2));
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error);
   process.stderr.write(`${message}\n`);

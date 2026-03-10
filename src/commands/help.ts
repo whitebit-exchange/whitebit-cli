@@ -32,7 +32,7 @@ const HELP_TEXT = [
   '  --api-key <key>            Override API key',
   '  --api-secret <secret>      Override API secret',
   '  --api-url <url>            Override API URL',
-  '  --verbose                  Print request/response diagnostics',
+  '  --verbose, -V              Print request/response diagnostics',
   '  --dry-run                  Print request without sending it',
   '',
   'Examples',

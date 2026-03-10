@@ -65,8 +65,6 @@ const CONFIG_FILE_MODE = 0o600;
 const formatSchema = z.enum(['json', 'table']);
 const urlSchema = z.url();
 
-let globalOverrides: Partial<LoadConfigOptions> = {};
-
 const isObjectRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
@@ -166,22 +164,6 @@ const warnIfConfigPermissionsAreLoose = (configPath: string): void => {
   );
 };
 
-const mergeLoadOptions = (options?: LoadConfigOptions): LoadConfigOptions => {
-  const merged: LoadConfigOptions = { ...globalOverrides };
-  if (!options) {
-    return merged;
-  }
-
-  const mergedMutable = merged as Record<string, string | boolean | undefined>;
-  for (const [key, value] of Object.entries(options)) {
-    if (typeof value !== 'undefined') {
-      mergedMutable[key] = value as string | boolean;
-    }
-  }
-
-  return merged;
-};
-
 const resolveProfileName = (profile?: string): string => {
   if (!hasText(profile)) {
     return DEFAULT_PROFILE;
@@ -269,36 +251,21 @@ const coerceRetry = (value: boolean | undefined): boolean => {
   return true;
 };
 
-export const setGlobalConfigOverrides = (overrides: Partial<LoadConfigOptions>): void => {
-  globalOverrides = { ...overrides };
-};
-
-export const getGlobalConfigOverrides = (): Readonly<Partial<LoadConfigOptions>> => globalOverrides;
-
-export const clearGlobalConfigOverrides = (): void => {
-  globalOverrides = {};
-};
-
-export const loadConfig = (options?: LoadConfigOptions): LoadedConfig => {
-  const mergedOptions = mergeLoadOptions(options);
-  const profileName = resolveProfileName(mergedOptions.profile);
+export const loadConfig = (options: LoadConfigOptions): LoadedConfig => {
+  const profileName = resolveProfileName(options.profile);
   const configPath = getConfigFilePath();
   const parsedConfig = readTomlDocument(configPath);
   const profile = readTomlProfile(parsedConfig, profileName);
   warnIfConfigPermissionsAreLoose(configPath);
 
-  const apiKey = resolveConfigValue(
-    mergedOptions.apiKey,
-    process.env.WHITEBIT_API_KEY,
-    profile.api_key,
-  );
+  const apiKey = resolveConfigValue(options.apiKey, process.env.WHITEBIT_API_KEY, profile.api_key);
   const apiSecret = resolveConfigValue(
-    mergedOptions.apiSecret,
+    options.apiSecret,
     process.env.WHITEBIT_API_SECRET,
     profile.api_secret,
   );
-  const apiUrl = resolveApiUrl(mergedOptions, profile);
-  const format = resolveFormat(mergedOptions, profile);
+  const apiUrl = resolveApiUrl(options, profile);
+  const format = resolveFormat(options, profile);
 
   return {
     profile: profileName,
@@ -306,9 +273,9 @@ export const loadConfig = (options?: LoadConfigOptions): LoadedConfig => {
     apiSecret: apiSecret.value,
     apiUrl: apiUrl.value,
     format: format.value,
-    verbose: mergedOptions.verbose ?? false,
-    retry: coerceRetry(mergedOptions.retry),
-    dryRun: mergedOptions.dryRun ?? false,
+    verbose: options.verbose ?? false,
+    retry: coerceRetry(options.retry),
+    dryRun: options.dryRun ?? false,
     sources: {
       apiKey: apiKey.source,
       apiSecret: apiSecret.source,
@@ -319,14 +286,14 @@ export const loadConfig = (options?: LoadConfigOptions): LoadedConfig => {
 };
 
 export const loadPublicConfig = (options?: LoadConfigOptions): PublicConfig => {
-  const config = loadConfig(options);
+  const config = loadConfig(options ?? {});
   return {
     apiUrl: config.apiUrl,
   };
 };
 
 export const loadAuthConfig = (options?: LoadConfigOptions): AuthConfig => {
-  const config = loadConfig(options);
+  const config = loadConfig(options ?? {});
   if (!hasText(config.apiKey) || !hasText(config.apiSecret)) {
     throw new Error(
       'Missing WhiteBIT API credentials. Set WHITEBIT_API_KEY and WHITEBIT_API_SECRET or run `whitebit config set --api-key ... --api-secret ...`.',
