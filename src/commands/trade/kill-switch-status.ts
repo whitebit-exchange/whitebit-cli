@@ -7,7 +7,7 @@ import { HttpClient } from '../../lib/http';
 
 export const tradeKillSwitchStatusCommand = defineCommand({
   name: 'kill-switch-status',
-  description: 'Get kill switch status',
+  description: 'Get emergency kill-switch status and timeout info',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const tradeKillSwitchSyncCommand = defineCommand({
   name: 'kill-switch-sync',
-  description: 'Sync kill switch timer',
+  description: 'Update emergency kill-switch timeout for a market',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
