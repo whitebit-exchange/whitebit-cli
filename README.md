@@ -81,7 +81,7 @@ whitebit balance trade --api-key "your-key" --api-secret "your-secret"
 ```bash
 # Public market data (no auth required)
 whitebit market list
-whitebit market ticker BTC_USDT
+whitebit market tickers
 whitebit market depth BTC_USDT
 
 # Account operations (requires auth)
@@ -94,7 +94,7 @@ whitebit trade spot limit-order BTC_USDT buy 0.001 50000
 
 # Configuration
 whitebit config show
-whitebit config set api_key "your-key"
+whitebit config set --api-key "your-key" --api-secret "your-secret"
 ```
 
 ## Command Reference
@@ -106,12 +106,11 @@ Query real-time market data without authentication.
 - `market server-time` — Server timestamp
 - `market status` — Platform operational status
 - `market list` — All available trading pairs
-- `market status <pair>` — Market pair status
+- `market market-status` — Market status list
 - `market asset-status <asset>` — Asset deposit/withdrawal status
 - `market futures-markets` — Futures trading pairs
 - `market collateral-markets` — Collateral markets
 - `market tickers` — All market tickers
-- `market ticker <pair>` — Single pair ticker
 - `market depth <pair>` — Order book depth
 - `market trades <pair>` — Recent trades history
 - `market kline <pair> <interval>` — Candlestick data
@@ -258,15 +257,33 @@ Manage sub-accounts and transfers.
 - `sub-account list` — List all sub-accounts
 - `sub-account create <alias>` — Create sub-account
 - `sub-account balance <id>` — Sub-account balance
-- `sub-account transfer <asset> <amount>` — Transfer between sub-accounts
+- `sub-account transfer <asset> <amount> [--fromId <id>] [--toId <id>]` — Transfer funds to/from sub-account
 - `sub-account transfer-history` — Sub-account transfer history
+- `sub-account edit <id> <alias>` — Edit sub-account details
+- `sub-account delete <id>` — Delete a sub-account
+- `sub-account block <id>` — Block a sub-account
+- `sub-account unblock <id>` — Unblock a sub-account
+- `sub-account api-key-list <sub_account_id>` — List all sub-account API keys
+- `sub-account api-key-create <sub_account_id> <label> <permissions>` — Create API key for sub-account
+- `sub-account api-key-edit <sub_account_id> <api_key_id>` — Edit sub-account API key
+- `sub-account api-key-reset <sub_account_id> <api_key_id>` — Reset sub-account API key
+- `sub-account api-key-delete <sub_account_id> <api_key_id>` — Delete sub-account API key
+- `sub-account ip-list <sub_account_id> <api_key_id>` — List IP addresses for API key
+- `sub-account ip-add <sub_account_id> <api_key_id> <ip>` — Add IP address to API key whitelist
+- `sub-account ip-delete <sub_account_id> <api_key_id> <ip>` — Remove IP address from API key whitelist
 
 ### Configuration
 
 Manage CLI settings and profiles.
 
-- `config show [key]` — Show configuration
-- `config set <key> <value>` — Set configuration value
+- `config show` — Show resolved configuration values
+- `config set --api-key <key> --api-secret <secret>` — Store API credentials
+
+### General Commands
+
+- `help` — Show top-level CLI help and examples
+- `login` — Login and save API credentials (interactive or with flags)
+- `completion --shell <bash|zsh|fish>` — Generate shell completion script
 
 ## Global Options
 
@@ -310,10 +327,10 @@ whitebit market list --json | jq '.[] | select(.name | contains("BTC"))'
 
 ## Examples
 
-### Check BTC price
+### Check market tickers
 
 ```bash
-whitebit market ticker BTC_USDT
+whitebit market tickers
 ```
 
 ### Place a limit buy order

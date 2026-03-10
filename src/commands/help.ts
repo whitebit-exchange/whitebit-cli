@@ -45,7 +45,7 @@ const HELP_TEXT = [
   '  whitebit earn flex plans',
   '  whitebit earn fixed invest 123 100',
   '  whitebit codes list',
-  '  whitebit trade spot limit-order --market BTC_USDT --side buy --price 50000 --amount 0.001',
+  '  whitebit trade spot limit-order BTC_USDT buy 0.001 50000',
 ].join('\n');
 
 export const helpCommand = defineCommand({
