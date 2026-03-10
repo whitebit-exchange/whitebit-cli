@@ -99,31 +99,6 @@ describe('AccountApi', () => {
     expect(body.ticker).toBe('BTC');
   });
 
-  test('overview sends correct POST request', async () => {
-    const calls: FetchCall[] = [];
-    const fetchMock = toFetchMock(async (input, init) => {
-      calls.push({ input, init });
-      return createJsonResponse({
-        BTC: { main_balance: '1.5', trade_balance: '0.5' },
-      });
-    });
-
-    const client = new HttpClient({
-      apiUrl: API_URL,
-      apiKey: API_KEY,
-      apiSecret: API_SECRET,
-      fetch: fetchMock,
-      userAgent: DEFAULT_USER_AGENT,
-    });
-    api = new AccountApi(client);
-
-    const result = await api.overview();
-
-    expect(calls).toHaveLength(1);
-    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/overview`);
-    expect(result).toEqual({ BTC: { main_balance: '1.5', trade_balance: '0.5' } });
-  });
-
   test('balance sends correct POST request', async () => {
     const calls: FetchCall[] = [];
     const fetchMock = toFetchMock(async (input, init) => {
@@ -170,7 +145,7 @@ describe('AccountApi', () => {
     const result = await api.fee();
 
     expect(calls).toHaveLength(1);
-    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/trade-account/fee`);
+    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/fee`);
     expect(result).toEqual({ BTC_USDT: { makerFee: '0.1', takerFee: '0.1' } });
   });
 
@@ -417,34 +392,6 @@ describe('AccountApi', () => {
     expect(result.limit).toBe(50);
   });
 
-  test('transferHistory sends correct POST request', async () => {
-    const calls: FetchCall[] = [];
-    const fetchMock = toFetchMock(async (input, init) => {
-      calls.push({ input, init });
-      return createJsonResponse({
-        limit: 50,
-        offset: 0,
-        records: [],
-        total: 0,
-      });
-    });
-
-    const client = new HttpClient({
-      apiUrl: API_URL,
-      apiKey: API_KEY,
-      apiSecret: API_SECRET,
-      fetch: fetchMock,
-      userAgent: DEFAULT_USER_AGENT,
-    });
-    api = new AccountApi(client);
-
-    const result = await api.transferHistory();
-
-    expect(calls).toHaveLength(1);
-    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/transfer-history`);
-    expect(result.limit).toBe(50);
-  });
-
   test('transfer sends correct POST request', async () => {
     const calls: FetchCall[] = [];
     const fetchMock = toFetchMock(async (input, init) => {
@@ -557,7 +504,7 @@ describe('AccountApi', () => {
     const result = await api.codesHistory();
 
     expect(calls).toHaveLength(1);
-    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/codes-history`);
+    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/codes/history`);
     expect(result.limit).toBe(50);
   });
 
@@ -585,7 +532,7 @@ describe('AccountApi', () => {
     const result = await api.myCodes();
 
     expect(calls).toHaveLength(1);
-    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/codes-my`);
+    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/codes/my`);
     expect(result.limit).toBe(50);
   });
 
@@ -608,7 +555,7 @@ describe('AccountApi', () => {
     const result = await api.plans();
 
     expect(calls).toHaveLength(1);
-    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/investment/plans`);
+    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/smart/plans`);
     expect(result).toHaveLength(1);
   });
 
@@ -633,7 +580,7 @@ describe('AccountApi', () => {
     await api.invest({ planId: 'plan1', amount: '100' });
 
     expect(calls).toHaveLength(1);
-    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/investment/invest`);
+    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/smart/investment`);
     const body = JSON.parse(calls[0]?.init?.body as string);
     expect(body.planId).toBe('plan1');
     expect(body.amount).toBe('100');
@@ -663,7 +610,7 @@ describe('AccountApi', () => {
     const result = await api.investmentsHistory();
 
     expect(calls).toHaveLength(1);
-    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/investment/history`);
+    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/smart/investments`);
     expect(result.limit).toBe(50);
   });
 
@@ -688,7 +635,9 @@ describe('AccountApi', () => {
     await api.closeInvestment({ id: 123 });
 
     expect(calls).toHaveLength(1);
-    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/investment/close`);
+    expect(calls[0]?.input.toString()).toBe(
+      `${API_URL}/api/v4/main-account/smart/investment/close`,
+    );
     const body = JSON.parse(calls[0]?.init?.body as string);
     expect(body.id).toBe(123);
   });
@@ -712,9 +661,7 @@ describe('AccountApi', () => {
     const result = await api.flexPlans();
 
     expect(calls).toHaveLength(1);
-    expect(calls[0]?.input.toString()).toBe(
-      `${API_URL}/api/v4/main-account/flexible-investment/plans`,
-    );
+    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/smart-flex/plans`);
     expect(result).toHaveLength(1);
   });
 
@@ -740,7 +687,7 @@ describe('AccountApi', () => {
 
     expect(calls).toHaveLength(1);
     expect(calls[0]?.input.toString()).toBe(
-      `${API_URL}/api/v4/main-account/flexible-investment/invest`,
+      `${API_URL}/api/v4/main-account/smart-flex/investments/invest`,
     );
   });
 
@@ -764,7 +711,7 @@ describe('AccountApi', () => {
 
     expect(calls).toHaveLength(1);
     expect(calls[0]?.input.toString()).toBe(
-      `${API_URL}/api/v4/main-account/flexible-investment/investments`,
+      `${API_URL}/api/v4/main-account/smart-flex/investments`,
     );
     expect(result).toHaveLength(1);
   });
@@ -794,7 +741,7 @@ describe('AccountApi', () => {
 
     expect(calls).toHaveLength(1);
     expect(calls[0]?.input.toString()).toBe(
-      `${API_URL}/api/v4/main-account/flexible-investment/history`,
+      `${API_URL}/api/v4/main-account/smart-flex/investments/history`,
     );
     expect(result.limit).toBe(50);
   });
@@ -824,7 +771,7 @@ describe('AccountApi', () => {
 
     expect(calls).toHaveLength(1);
     expect(calls[0]?.input.toString()).toBe(
-      `${API_URL}/api/v4/main-account/flexible-investment/payment-history`,
+      `${API_URL}/api/v4/main-account/smart-flex/investments/payment-history`,
     );
     expect(result.limit).toBe(50);
   });
@@ -851,7 +798,7 @@ describe('AccountApi', () => {
 
     expect(calls).toHaveLength(1);
     expect(calls[0]?.input.toString()).toBe(
-      `${API_URL}/api/v4/main-account/flexible-investment/withdraw`,
+      `${API_URL}/api/v4/main-account/smart-flex/investments/withdraw`,
     );
     const body = JSON.parse(calls[0]?.init?.body as string);
     expect(body.id).toBe(1);
@@ -880,7 +827,7 @@ describe('AccountApi', () => {
 
     expect(calls).toHaveLength(1);
     expect(calls[0]?.input.toString()).toBe(
-      `${API_URL}/api/v4/main-account/flexible-investment/close`,
+      `${API_URL}/api/v4/main-account/smart-flex/investments/close`,
     );
     const body = JSON.parse(calls[0]?.init?.body as string);
     expect(body.id).toBe(1);
@@ -908,36 +855,11 @@ describe('AccountApi', () => {
 
     expect(calls).toHaveLength(1);
     expect(calls[0]?.input.toString()).toBe(
-      `${API_URL}/api/v4/main-account/flexible-investment/auto-reinvest`,
+      `${API_URL}/api/v4/main-account/smart-flex/investments/auto-invest`,
     );
     const body = JSON.parse(calls[0]?.init?.body as string);
     expect(body.id).toBe(1);
     expect(body.enabled).toBe(true);
-  });
-
-  test('rewards sends correct POST request', async () => {
-    const calls: FetchCall[] = [];
-    const fetchMock = toFetchMock(async (input, init) => {
-      calls.push({ input, init });
-      return createJsonResponse({
-        rewards: [],
-      });
-    });
-
-    const client = new HttpClient({
-      apiUrl: API_URL,
-      apiKey: API_KEY,
-      apiSecret: API_SECRET,
-      fetch: fetchMock,
-      userAgent: DEFAULT_USER_AGENT,
-    });
-    api = new AccountApi(client);
-
-    const result = await api.rewards();
-
-    expect(calls).toHaveLength(1);
-    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/rewards`);
-    expect(result).toEqual({ rewards: [] });
   });
 
   test('miningHashrate sends correct POST request', async () => {
@@ -961,7 +883,7 @@ describe('AccountApi', () => {
     const result = await api.miningHashrate();
 
     expect(calls).toHaveLength(1);
-    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/mining/hashrate`);
+    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/mining/hashrate`);
     expect(result).toEqual({ hashrate: '1000' });
   });
 
@@ -990,7 +912,7 @@ describe('AccountApi', () => {
 
     expect(calls).toHaveLength(1);
     expect(calls[0]?.input.toString()).toBe(
-      `${API_URL}/api/v4/main-account/interest-payments-history`,
+      `${API_URL}/api/v4/main-account/smart/interest-payment-history`,
     );
     expect(result.limit).toBe(50);
   });
@@ -1016,7 +938,7 @@ describe('AccountApi', () => {
     const result = await api.creditLines();
 
     expect(calls).toHaveLength(1);
-    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/credit-lines`);
+    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/credit-line/loans/info`);
     expect(result).toEqual({ lines: [] });
   });
 

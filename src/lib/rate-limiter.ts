@@ -4,6 +4,7 @@ export type RateLimitCategory =
   | 'trading-query'
   | 'account'
   | 'collateral'
+  | 'collateral-trading'
   | 'convert'
   | 'sub-account';
 
@@ -22,6 +23,7 @@ export const RATE_LIMIT_CONFIG: RateLimitConfig = {
   'trading-query': { limit: 12000, windowMs: WINDOW_MS },
   account: { limit: 1000, windowMs: WINDOW_MS },
   collateral: { limit: 12000, windowMs: WINDOW_MS },
+  'collateral-trading': { limit: 12000, windowMs: WINDOW_MS },
   convert: { limit: 1000, windowMs: WINDOW_MS },
   'sub-account': { limit: 1000, windowMs: WINDOW_MS },
 };
@@ -61,6 +63,7 @@ export class RateLimiter {
       'trading-query': { queue: Promise.resolve(), timestamps: [] },
       account: { queue: Promise.resolve(), timestamps: [] },
       collateral: { queue: Promise.resolve(), timestamps: [] },
+      'collateral-trading': { queue: Promise.resolve(), timestamps: [] },
       convert: { queue: Promise.resolve(), timestamps: [] },
       'sub-account': { queue: Promise.resolve(), timestamps: [] },
     };
