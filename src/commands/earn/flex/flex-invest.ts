@@ -8,7 +8,7 @@ import { HttpClient } from '../../../lib/http';
 
 export const accountFlexInvestCommand = defineCommand({
   name: 'invest',
-  description: 'Stake tokens in flexible plan; withdraw anytime, variable APR',
+  description: 'Stake tokens in flexible plan with variable APR and instant access',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

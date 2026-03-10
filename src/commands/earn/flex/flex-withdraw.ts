@@ -8,7 +8,7 @@ import { HttpClient } from '../../../lib/http';
 
 export const accountFlexWithdrawCommand = defineCommand({
   name: 'withdraw',
-  description: 'Withdraw tokens from flexible staking anytime',
+  description: 'Withdraw staked tokens from flexible staking anytime without penalties',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

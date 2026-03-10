@@ -8,7 +8,7 @@ import { HttpClient } from '../../../lib/http';
 
 export const accountInvestmentsHistoryCommand = defineCommand({
   name: 'investments-history',
-  description: 'View past and current fixed staking investments',
+  description: 'View all past and current fixed staking investments with status',
   options: {
     limit: option(z.coerce.number().int().positive().optional(), {
       short: 'l',

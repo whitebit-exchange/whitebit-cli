@@ -8,7 +8,7 @@ import { HttpClient } from '../../../lib/http';
 
 export const accountInvestCommand = defineCommand({
   name: 'invest',
-  description: 'Lock tokens in fixed plan for guaranteed APR returns',
+  description: 'Lock tokens in fixed plan for guaranteed APR returns until maturity',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

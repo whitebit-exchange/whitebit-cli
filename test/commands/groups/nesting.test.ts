@@ -75,7 +75,7 @@ describe('Account Command Groups Nesting', () => {
   describe('earn group', () => {
     test('has correct name and description', () => {
       expect(earnGroup.name).toBe('earn');
-      expect(earnGroup.description).toBe('Stake tokens for yield and earn interest rewards');
+      expect(earnGroup.description).toBe('Lock and stake tokens to earn passive yield and rewards');
     });
 
     test('contains 3 entries (fixedGroup, flexGroup, accountInterestHistoryCommand)', () => {
@@ -86,7 +86,7 @@ describe('Account Command Groups Nesting', () => {
   describe('fixed group', () => {
     test('has correct name and description', () => {
       expect(fixedGroup.name).toBe('fixed');
-      expect(fixedGroup.description).toBe('Lock tokens for set period at guaranteed APR');
+      expect(fixedGroup.description).toBe('Lock tokens for set period at guaranteed APR returns');
     });
 
     test('contains 4 commands', () => {
@@ -98,7 +98,7 @@ describe('Account Command Groups Nesting', () => {
     test('has correct name and description', () => {
       expect(flexGroup.name).toBe('flex');
       expect(flexGroup.description).toBe(
-        'Stake tokens anytime with variable APR; withdraw on demand',
+        'Stake tokens with variable APR and withdraw anytime, penalty-free',
       );
     });
 

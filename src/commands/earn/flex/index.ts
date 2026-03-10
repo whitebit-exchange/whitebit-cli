@@ -11,7 +11,7 @@ import { accountFlexWithdrawCommand } from './flex-withdraw';
 
 export const flexGroup = defineGroup({
   name: 'flex',
-  description: 'Stake tokens anytime with variable APR; withdraw on demand',
+  description: 'Stake tokens with variable APR and withdraw anytime, penalty-free',
   commands: [
     accountFlexPlansCommand,
     accountFlexInvestCommand,

@@ -8,7 +8,7 @@ import { HttpClient } from '../../../lib/http';
 
 export const accountFlexCloseCommand = defineCommand({
   name: 'close',
-  description: 'Close flexible staking and withdraw tokens immediately',
+  description: 'Close flexible staking and withdraw all tokens immediately without fees',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

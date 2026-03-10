@@ -8,7 +8,7 @@ import { HttpClient } from '../../../lib/http';
 
 export const accountCloseInvestmentCommand = defineCommand({
   name: 'close-investment',
-  description: 'Close fixed staking early and withdraw tokens (may incur penalties)',
+  description: 'Close fixed staking early and withdraw tokens (early exit fees apply)',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

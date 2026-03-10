@@ -8,7 +8,7 @@ import { HttpClient } from '../../../lib/http';
 
 export const accountFlexPaymentHistoryCommand = defineCommand({
   name: 'payment-history',
-  description: 'View earned rewards from flexible staking investments',
+  description: 'View earned rewards and interest payments from flexible staking',
   options: {
     limit: option(z.coerce.number().int().positive().optional(), {
       short: 'l',
