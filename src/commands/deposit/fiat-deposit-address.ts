@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const accountFiatDepositAddressCommand = defineCommand({
   name: 'fiat-address',
-  description: 'Get fiat deposit URL',
+  description: 'Get fiat currency deposit details (bank account or payment provider)',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

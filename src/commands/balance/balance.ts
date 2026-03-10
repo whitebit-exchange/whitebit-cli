@@ -7,7 +7,7 @@ import { recordToRows } from '../market/helpers';
 
 export const accountBalanceCommand = defineCommand({
   name: 'trade',
-  description: 'Fetch spot trading balance',
+  description: 'Get spot trading balance (available for trading)',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

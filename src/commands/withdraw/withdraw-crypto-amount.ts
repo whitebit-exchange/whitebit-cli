@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const accountWithdrawCryptoAmountCommand = defineCommand({
   name: 'crypto-amount',
-  description: 'Withdraw cryptocurrency with exact amount',
+  description: 'Withdraw crypto: recipient gets exact amount, fee added on top',
   options: {
     network: option(z.string().min(1).optional(), {
       short: 'n',

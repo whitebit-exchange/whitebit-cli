@@ -7,7 +7,7 @@ import { accountFiatDepositAddressCommand } from './fiat-deposit-address';
 
 export const depositGroup = defineGroup({
   name: 'deposit',
-  description: 'Deposit addresses and refunds',
+  description: 'Get deposit addresses (crypto/fiat) and refund canceled deposits',
   commands: [
     accountDepositAddressCommand,
     accountFiatDepositAddressCommand,

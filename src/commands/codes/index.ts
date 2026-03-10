@@ -7,7 +7,7 @@ import { accountMyCodesCommand } from './my-codes';
 
 export const codesGroup = defineGroup({
   name: 'codes',
-  description: 'Redemption codes',
+  description: 'Create and redeem WBe-prefixed vouchers for peer-to-peer value transfer',
   commands: [
     accountCreateCodeCommand,
     accountApplyCodeCommand,

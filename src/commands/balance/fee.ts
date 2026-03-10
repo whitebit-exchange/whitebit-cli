@@ -7,7 +7,7 @@ import { HttpClient } from '../../lib/http';
 
 export const accountFeeCommand = defineCommand({
   name: 'fee',
-  description: 'Get trading fees for all markets',
+  description: 'Get personal trading fee rates per market pair',
   handler: async () => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

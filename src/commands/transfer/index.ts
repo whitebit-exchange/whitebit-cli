@@ -4,6 +4,6 @@ import { accountTransferCommand } from './transfer';
 
 export const transferGroup = defineGroup({
   name: 'transfer',
-  description: 'Internal account transfers',
+  description: 'Move funds between your own accounts (main, trade, collateral)',
   commands: [accountTransferCommand],
 });

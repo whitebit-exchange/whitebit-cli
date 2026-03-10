@@ -8,7 +8,7 @@ import { HttpClient } from '../../lib/http';
 
 export const accountMyCodesCommand = defineCommand({
   name: 'list',
-  description: 'Get my created voucher codes',
+  description: 'Get list of voucher codes you have created',
   options: {
     limit: option(z.coerce.number().int().positive().optional(), {
       short: 'l',

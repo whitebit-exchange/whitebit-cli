@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const accountWithdrawFiatCommand = defineCommand({
   name: 'fiat',
-  description: 'Withdraw fiat currency',
+  description: 'Withdraw fiat currency to bank account or payment provider',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

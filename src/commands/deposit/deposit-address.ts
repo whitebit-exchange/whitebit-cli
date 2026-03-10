@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const accountDepositAddressCommand = defineCommand({
   name: 'address',
-  description: 'Get crypto deposit address',
+  description: 'Get cryptocurrency deposit address for specified network',
   options: {
     network: option(z.string().min(1).optional(), {
       short: 'n',

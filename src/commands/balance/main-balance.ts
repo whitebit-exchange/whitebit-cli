@@ -10,7 +10,7 @@ import { recordToRows } from '../market/helpers';
 
 export const accountMainBalanceCommand = defineCommand({
   name: 'main',
-  description: 'Get main account balance',
+  description: 'Get main account balance across all sub-accounts',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

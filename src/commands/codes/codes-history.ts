@@ -8,7 +8,7 @@ import { HttpClient } from '../../lib/http';
 
 export const accountCodesHistoryCommand = defineCommand({
   name: 'history',
-  description: 'Get voucher codes history (applied codes)',
+  description: 'Get history of voucher codes you have redeemed',
   options: {
     limit: option(z.coerce.number().int().positive().optional(), {
       short: 'l',

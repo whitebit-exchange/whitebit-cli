@@ -10,7 +10,7 @@ describe('Account Command Groups Nesting', () => {
   describe('balance group', () => {
     test('has correct name and description', () => {
       expect(balanceGroup.name).toBe('balance');
-      expect(balanceGroup.description).toBe('Account balance queries');
+      expect(balanceGroup.description).toBe('View account balance: main (total) vs trading (available for spot trades)');
     });
 
     test('contains 3 commands', () => {
@@ -21,7 +21,7 @@ describe('Account Command Groups Nesting', () => {
   describe('deposit group', () => {
     test('has correct name and description', () => {
       expect(depositGroup.name).toBe('deposit');
-      expect(depositGroup.description).toBe('Deposit addresses and refunds');
+      expect(depositGroup.description).toBe('Get deposit addresses (crypto/fiat) and refund canceled deposits');
     });
 
     test('contains 4 commands', () => {
@@ -32,7 +32,7 @@ describe('Account Command Groups Nesting', () => {
   describe('withdraw group', () => {
     test('has correct name and description', () => {
       expect(withdrawGroup.name).toBe('withdraw');
-      expect(withdrawGroup.description).toBe('Crypto and fiat withdrawals');
+      expect(withdrawGroup.description).toBe('Withdraw cryptocurrency and fiat funds to external addresses');
     });
 
     test('contains 4 commands', () => {
@@ -43,7 +43,7 @@ describe('Account Command Groups Nesting', () => {
   describe('transfer group', () => {
     test('has correct name and description', () => {
       expect(transferGroup.name).toBe('transfer');
-      expect(transferGroup.description).toBe('Internal account transfers');
+      expect(transferGroup.description).toBe('Move funds between your own accounts (main, trade, collateral)');
     });
 
     test('contains 1 command', () => {
@@ -54,7 +54,7 @@ describe('Account Command Groups Nesting', () => {
   describe('codes group', () => {
     test('has correct name and description', () => {
       expect(codesGroup.name).toBe('codes');
-      expect(codesGroup.description).toBe('Redemption codes');
+      expect(codesGroup.description).toBe('Create and redeem WBe-prefixed vouchers for peer-to-peer value transfer');
     });
 
     test('contains 4 commands', () => {

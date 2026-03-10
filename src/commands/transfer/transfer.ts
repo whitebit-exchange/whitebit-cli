@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const accountTransferCommand = defineCommand({
   name: 'internal',
-  description: 'Transfer funds between accounts',
+  description: 'Transfer funds between your own accounts (main, trade, collateral)',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

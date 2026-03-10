@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const accountCreateCodeCommand = defineCommand({
   name: 'create',
-  description: 'Create a new voucher code',
+  description: 'Create WBe-prefixed voucher (cryptographic code for value transfer)',
   options: {
     passphrase: option(z.string().min(1).optional(), {
       short: 'p',

@@ -7,7 +7,7 @@ import { accountWithdrawHistoryCommand } from './withdraw-history';
 
 export const withdrawGroup = defineGroup({
   name: 'withdraw',
-  description: 'Crypto and fiat withdrawals',
+  description: 'Withdraw cryptocurrency and fiat funds to external addresses',
   commands: [
     accountWithdrawCryptoCommand,
     accountWithdrawCryptoAmountCommand,

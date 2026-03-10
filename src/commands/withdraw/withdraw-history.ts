@@ -8,7 +8,7 @@ import { HttpClient } from '../../lib/http';
 
 export const accountWithdrawHistoryCommand = defineCommand({
   name: 'history',
-  description: 'Get withdrawal history',
+  description: 'Get withdrawal history with pagination',
   options: {
     limit: option(z.coerce.number().int().positive().optional(), {
       short: 'l',

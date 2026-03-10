@@ -6,6 +6,6 @@ import { accountMainBalanceCommand } from './main-balance';
 
 export const balanceGroup = defineGroup({
   name: 'balance',
-  description: 'Account balance queries',
+  description: 'View account balance: main (total) vs trading (available for spot trades)',
   commands: [accountMainBalanceCommand, accountBalanceCommand, accountFeeCommand],
 });

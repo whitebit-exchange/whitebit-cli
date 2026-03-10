@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const accountCreateAddressCommand = defineCommand({
   name: 'create-address',
-  description: 'Create a new deposit address',
+  description: 'Generate a new deposit address for cryptocurrency',
   options: {
     network: option(z.string().min(1).optional(), {
       short: 'n',

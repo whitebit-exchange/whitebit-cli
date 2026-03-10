@@ -9,7 +9,7 @@ import { HttpClient } from '../../lib/http';
 
 export const accountDepositRefundCommand = defineCommand({
   name: 'refund',
-  description: 'Request deposit refund',
+  description: 'Refund canceled deposits back to external address',
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
