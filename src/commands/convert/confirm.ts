@@ -19,7 +19,6 @@ export const convertConfirmCommand = defineCommand({
       apiUrl: flags.apiUrl,
       format: flags.json ? 'json' : flags.format,
       verbose: flags.verbose,
-      retry: flags.noRetry === true ? false : undefined,
       dryRun: flags.dryRun,
     });
     const config = loadAuthConfig({

@@ -300,8 +300,7 @@ Available for all commands:
 - `--api-url <url>` — Override API URL
 - `--format <table|json>` — Output format
 - `--json` — Shortcut for `--format json`
-- `--verbose`, `-v` — Verbose output (show raw API responses)
-- `--no-retry` — Disable automatic retry on transient errors
+- `--verbose`, `-V` — Verbose output (show raw API responses)
 - `--dry-run` — Show what would be sent without executing
 
 ## Output Formats

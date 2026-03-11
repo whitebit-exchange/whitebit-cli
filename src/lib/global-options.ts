@@ -7,9 +7,6 @@ export const globalOptions = {
     description: 'Verbose output (show raw API responses)',
     short: 'V',
   }),
-  noRetry: option(z.boolean().optional(), {
-    description: 'Disable automatic retry on transient errors',
-  }),
   dryRun: option(z.boolean().optional(), {
     description: 'Show what would be sent without executing',
   }),
@@ -25,7 +22,6 @@ export const globalOptions = {
 export type GlobalFlags = {
   json?: boolean;
   verbose?: boolean;
-  noRetry?: boolean;
   dryRun?: boolean;
   format?: 'json' | 'table';
   profile?: string;

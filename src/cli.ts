@@ -31,6 +31,8 @@ import { tradeGroup } from './commands/trade';
 import { transferGroup } from './commands/transfer';
 import { withdrawGroup } from './commands/withdraw';
 import { accountWsTokenCommand } from './commands/ws-token';
+import { setGlobalConfigOverrides } from './lib/config';
+import { parseGlobalConfigOverrides } from './lib/global-config-overrides';
 import { CLI_VERSION } from './lib/version';
 
 const inferExitCode = (error: unknown): number => {
@@ -110,6 +112,8 @@ const cli = await createCLI({
   generated: true,
   plugins: [completionsPlugin({})] as const,
 });
+
+setGlobalConfigOverrides(parseGlobalConfigOverrides(Bun.argv.slice(2)));
 
 cli.command(marketGroup);
 cli.command(miningPoolGroup);
