@@ -475,7 +475,7 @@ describe('AccountApi', () => {
     await api.applyCode({ code: 'ABC123' });
 
     expect(calls).toHaveLength(1);
-    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/codes-apply`);
+    expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/main-account/codes/apply`);
     const body = JSON.parse(calls[0]?.init?.body as string);
     expect(body.code).toBe('ABC123');
   });
