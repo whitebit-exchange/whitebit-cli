@@ -50,7 +50,7 @@ describe('Account Command Groups Nesting', () => {
     test('has correct name and description', () => {
       expect(transferGroup.name).toBe('transfer');
       expect(transferGroup.description).toBe(
-        'Move funds between your own accounts (main, trade, collateral)',
+        'Move funds between your own accounts (main, spot, collateral)',
       );
     });
 
