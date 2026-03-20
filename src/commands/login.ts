@@ -19,6 +19,49 @@ const normalizeOptional = (value: string): string | undefined => {
   return trimmed.length > 0 ? trimmed : undefined;
 };
 
+/**
+ * Reads a secret from stdin without echoing characters.
+ * Uses raw mode so no keystrokes appear on screen.
+ * Must only be called when stdin is a TTY and readline is not active.
+ */
+const readSecret = (prompt: string): Promise<string> =>
+  new Promise((resolve, reject) => {
+    process.stdout.write(prompt);
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+
+    let value = '';
+
+    const cleanup = () => {
+      process.stdin.removeListener('data', onData);
+      process.stdin.setRawMode(false);
+      process.stdin.pause();
+    };
+
+    const onData = (chunk: Buffer) => {
+      const char = chunk.toString('utf8');
+
+      if (char === '\r' || char === '\n') {
+        cleanup();
+        process.stdout.write('\n');
+        resolve(value);
+      } else if (char === '\u0003') {
+        // Ctrl+C — restore terminal state before exiting
+        cleanup();
+        process.stdout.write('\n');
+        reject(new Error('Interrupted'));
+      } else if (char === '\u007f' || char === '\b') {
+        // Backspace / DEL — remove last char silently
+        value = value.slice(0, -1);
+      } else if (char >= ' ') {
+        // Printable character — accumulate without echo
+        value += char;
+      }
+    };
+
+    process.stdin.on('data', onData);
+  });
+
 const collectInteractiveLoginValues = async (
   defaults: Partial<LoginValues> = {},
 ): Promise<LoginValues> => {
@@ -33,34 +76,39 @@ const collectInteractiveLoginValues = async (
     output: stdout,
   });
 
+  let profileAnswer: string;
+  let apiKeyAnswer: string;
+  let apiUrlAnswer: string;
+
   try {
     process.stdout.write('WhiteBIT Login\n');
 
-    const profileAnswer = await rl.question(`Profile [${defaults.profile ?? 'default'}]: `);
-    const apiKeyAnswer = await rl.question('API key: ');
-    const apiSecretAnswer = await rl.question('API secret: ');
-    const apiUrlAnswer = await rl.question(
-      `API URL [${defaults.apiUrl ?? 'https://whitebit.com'}]: `,
-    );
-
-    const profile = normalizeOptional(profileAnswer) ?? defaults.profile ?? 'default';
-    const apiKey = apiKeyAnswer.trim();
-    const apiSecret = apiSecretAnswer.trim();
-    const apiUrl = normalizeOptional(apiUrlAnswer) ?? defaults.apiUrl ?? 'https://whitebit.com';
-
-    if (apiKey.length === 0 || apiSecret.length === 0) {
-      throw new Error('Missing required argument: API key and secret cannot be empty');
-    }
-
-    return {
-      profile,
-      apiKey,
-      apiSecret,
-      apiUrl,
-    };
+    profileAnswer = await rl.question(`Profile [${defaults.profile ?? 'default'}]: `);
+    apiKeyAnswer = await rl.question('API key: ');
+    apiUrlAnswer = await rl.question(`API URL [${defaults.apiUrl ?? 'https://whitebit.com'}]: `);
   } finally {
+    // Close readline before entering raw mode — two stdin listeners conflict.
     rl.close();
   }
+
+  // Secret is collected last, after readline releases stdin.
+  const apiSecretAnswer = await readSecret('API secret: ');
+
+  const profile = normalizeOptional(profileAnswer) ?? defaults.profile ?? 'default';
+  const apiKey = apiKeyAnswer.trim();
+  const apiSecret = apiSecretAnswer.trim();
+  const apiUrl = normalizeOptional(apiUrlAnswer) ?? defaults.apiUrl ?? 'https://whitebit.com';
+
+  if (apiKey.length === 0 || apiSecret.length === 0) {
+    throw new Error('Missing required argument: API key and secret cannot be empty');
+  }
+
+  return {
+    profile,
+    apiKey,
+    apiSecret,
+    apiUrl,
+  };
 };
 
 export const runLogin = async (flags: {
