@@ -11,7 +11,7 @@ export const collateralFundingHistoryCommand = defineCommand({
   options: {
     market: option(z.string().optional(), {
       short: 'm',
-      description: 'Filter by market symbol (optional)',
+      description: 'Market symbol (required), e.g. BTC_PERP',
     }),
     limit: option(z.number().optional(), {
       short: 'l',
@@ -25,8 +25,14 @@ export const collateralFundingHistoryCommand = defineCommand({
   handler: async ({ flags }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
+    if (!flags.market) {
+      throw new Error(
+        'Missing required flag: --market\n\nUsage: whitebit trade collateral funding-history --market <pair>',
+      );
+    }
+
     const body = {
-      ...(flags.market && { market: flags.market }),
+      market: flags.market,
       ...(flags.limit !== undefined && { limit: flags.limit }),
       ...(flags.offset !== undefined && { offset: flags.offset }),
     };

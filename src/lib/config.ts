@@ -5,6 +5,7 @@ import { dirname, join } from 'node:path';
 import { parse, stringify } from 'smol-toml';
 import { z } from 'zod';
 
+import { CredentialsMissingError } from './errors';
 import type { AuthConfig, PublicConfig } from './types';
 
 export type OutputFormat = 'json' | 'table';
@@ -20,6 +21,7 @@ export interface LoadConfigOptions {
   verbose?: boolean;
   retry?: boolean;
   dryRun?: boolean;
+  raw?: boolean;
 }
 
 export interface LoadedConfig {
@@ -31,6 +33,7 @@ export interface LoadedConfig {
   verbose: boolean;
   retry: boolean;
   dryRun: boolean;
+  raw: boolean;
   sources: {
     apiKey: ConfigValueSource;
     apiSecret: ConfigValueSource;
@@ -57,6 +60,7 @@ interface TomlProfile {
 }
 
 const DEFAULT_API_URL = 'https://whitebit.com';
+export const WHITEBIT_EU_URL = 'https://whitebit.eu';
 const DEFAULT_PROFILE = 'default';
 const DEFAULT_FORMAT: OutputFormat = 'table';
 const CONFIG_DIRECTORY_MODE = 0o700;
@@ -283,16 +287,19 @@ export const loadConfig = (options: LoadConfigOptions = {}): LoadedConfig => {
   );
   const apiUrl = resolveApiUrl(merged, profile);
   const format = resolveFormat(merged, profile);
+  // --raw implies JSON output
+  const resolvedFormat: OutputFormat = merged.raw ? 'json' : format.value;
 
   const config: LoadedConfig = {
     profile: profileName,
     apiKey: apiKey.value,
     apiSecret: apiSecret.value,
     apiUrl: apiUrl.value,
-    format: format.value,
+    format: resolvedFormat,
     verbose: merged.verbose ?? false,
     retry: coerceRetry(merged.retry),
     dryRun: merged.dryRun ?? false,
+    raw: merged.raw ?? false,
     sources: {
       apiKey: apiKey.source,
       apiSecret: apiSecret.source,
@@ -322,9 +329,7 @@ export const loadPublicConfig = (options?: LoadConfigOptions): PublicConfig => {
 export const loadAuthConfig = (options?: LoadConfigOptions): AuthConfig => {
   const config = loadConfig(options ?? {});
   if (!hasText(config.apiKey) || !hasText(config.apiSecret)) {
-    throw new Error(
-      'Missing WhiteBIT API credentials. Set WHITEBIT_API_KEY and WHITEBIT_API_SECRET or run `whitebit config set --api-key ... --api-secret ...`.',
-    );
+    throw new CredentialsMissingError();
   }
 
   return {

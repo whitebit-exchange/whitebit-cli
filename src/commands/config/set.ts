@@ -44,13 +44,27 @@ export const configSetCommand = defineCommand({
     }
 
     const profile = flags.profile ?? overrides.profile;
+    const runtimeConfig = loadConfig({ profile, apiKey, apiSecret });
+
+    if (runtimeConfig.dryRun) {
+      formatOutput(
+        {
+          updated: false,
+          dry_run: true,
+          profile: runtimeConfig.profile,
+          api_key: maskSecret(apiKey),
+          api_secret: maskSecret(apiSecret),
+        },
+        { format: runtimeConfig.format },
+      );
+      return;
+    }
+
     const configPath = await saveConfigProfile({
       profile,
       apiKey,
       apiSecret,
     });
-    const runtimeConfig = loadConfig({ profile, apiKey, apiSecret });
-
     formatOutput(
       {
         updated: true,

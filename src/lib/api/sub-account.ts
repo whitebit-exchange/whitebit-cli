@@ -146,9 +146,7 @@ export class SubAccountApi {
     return response.data;
   }
 
-  async transferHistory(
-    params: SubAccountTransferHistoryParams = {},
-  ): Promise<SubAccountTransfer[]> {
+  async transferHistory(params: SubAccountTransferHistoryParams): Promise<SubAccountTransfer[]> {
     const response = await this.httpClient.post<SubAccountTransfer[]>(
       '/api/v4/sub-account/transfer/history',
       params,

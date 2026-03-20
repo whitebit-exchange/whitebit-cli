@@ -51,6 +51,12 @@ export const parseGlobalConfigOverrides = (argv: string[]): LoadConfigOptions =>
       continue;
     }
 
+    if (token === '--raw') {
+      overrides.raw = true;
+      index += 1;
+      continue;
+    }
+
     if (token.startsWith('--format')) {
       const { value, consumed } = readFlagValue(argv, index);
       const format = parseOutputFormat(value);

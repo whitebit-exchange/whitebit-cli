@@ -5,12 +5,14 @@ import { TradeApi } from '../../lib/api/trade';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 import { HttpClient } from '../../lib/http';
 
 export const tradeModifyCommand = defineCommand({
   name: 'modify',
   description: 'Update price and/or amount of an existing order',
   options: {
+    ...globalOptions,
     price: option(z.string().optional(), {
       short: 'p',
       description: 'New order price',

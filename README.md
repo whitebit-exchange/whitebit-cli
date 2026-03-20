@@ -1,6 +1,22 @@
 # WhiteBIT CLI
 
-WhiteBIT Exchange CLI — Trade, manage accounts, and query market data from the terminal.
+[![npm](https://img.shields.io/npm/v/whitebit.svg?style=flat-square)](https://www.npmjs.com/package/whitebit)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](LICENSE)
+
+WhiteBIT Exchange CLI — trade, manage accounts, and query market data directly from your terminal.
+Built for scripting, CI/CD pipelines, and anyone who prefers the command line over a browser UI.
+
+## Features
+
+| | |
+|---|---|
+| **110+ commands** | Full WhiteBIT API surface: spot, collateral, earn, sub-accounts, deposits, withdrawals |
+| **Multi-profile** | Named profiles in `~/.whitebit/config.toml` — switch between different API keys with `--profile` |
+| **`--dry-run` mode** | Preview the exact request payload before it hits the API |
+| **JSON output** | `--json` flag on every command — pipe directly into `jq` or any automation tool |
+| **Shell completion** | Tab-completion for Bash, Zsh, and Fish |
+| **Rate-limit aware** | Built-in token-bucket limiter per API category — no accidental bursts |
+| **Cross-platform** | macOS (ARM + x64), Linux, and Windows binaries |
 
 ## Installation
 
@@ -26,7 +42,7 @@ npx whitebit market list
 
 ### Binary Download
 
-Download pre-compiled binaries from [GitHub Releases](https://github.com/whitebit-exchange/cli/releases):
+Download pre-compiled binaries from [GitHub Releases](https://github.com/whitebit-exchange/whitebit-cli/releases):
 
 - **macOS (ARM64):** `whitebit-darwin-arm64`
 - **macOS (x64):** `whitebit-darwin-x64`
@@ -36,68 +52,76 @@ Download pre-compiled binaries from [GitHub Releases](https://github.com/whitebi
 
 ```bash
 # Example: Install on macOS ARM64
-curl -L -o /usr/local/bin/whitebit https://github.com/whitebit-exchange/cli/releases/latest/download/whitebit-darwin-arm64
+curl -L -o /usr/local/bin/whitebit https://github.com/whitebit-exchange/whitebit-cli/releases/latest/download/whitebit-darwin-arm64
 chmod +x /usr/local/bin/whitebit
 ```
 
 ## Quick Start
 
-### 1. Configuration (Optional)
+```bash
+# 1. Set credentials (required for account and trading commands)
+export WHITEBIT_API_KEY="your-key"
+export WHITEBIT_API_SECRET="your-secret"
 
-Create a configuration file at `~/.whitebit/config.toml`:
+# 2. Verify setup — no auth needed
+whitebit market list
+
+# 3. Check your balance
+whitebit balance trade
+
+# 4. Place a limit order
+whitebit trade spot limit-order BTC_USDT buy 0.001 50000
+```
+
+Public market data commands work without credentials. See [Authentication](#authentication) for all credential options.
+
+## Authentication
+
+Credentials are resolved in priority order (highest first):
+
+| Method | Best For | Persistence | Security |
+|--------|----------|-------------|----------|
+| **CLI flags** (`--api-key`, `--api-secret`) | Quick testing, scripts | None | Visible in process list ⚠️ |
+| **Environment variables** | CI/CD, Docker, one-off scripts | Per-session | Depends on environment |
+| **Config file** (`~/.whitebit/config.toml`) | Daily use, multiple profiles | Permanent | 0600 permissions recommended |
+
+### Config file
+
+Create `~/.whitebit/config.toml` with one or more named profiles:
 
 ```toml
 [default]
 api_key = "your-api-key"
 api_secret = "your-api-secret"
 format = "table"  # or "json"
+
+[work]
+api_key = "work-api-key"
+api_secret = "work-api-secret"
 ```
 
-### 2. Authentication Methods
-
-| Method | Best For | Persistence | Security |
-|--------|----------|-------------|----------|
-| **Environment variables** | CI/CD, Docker, one-off scripts | Per-session | Depends on environment |
-| **Config file** (`~/.whitebit/config.toml`) | Daily use, multiple profiles | Permanent | 0600 permissions recommended |
-| **CLI flags** (`--api-key`, `--api-secret`) | Quick testing, scripts | None | Visible in process list ⚠️ |
-
-**Examples:**
+Switch profiles with `--profile`:
 
 ```bash
-# Using environment variables
-export WHITEBIT_API_KEY="your-key"
-export WHITEBIT_API_SECRET="your-secret"
-whitebit balance trade
-
-# Using config file profile
-whitebit balance trade --profile testnet
-
-# Using CLI flags (least secure)
-whitebit balance trade --api-key "your-key" --api-secret "your-secret"
+whitebit balance trade --profile work
 ```
 
-### 3. Your First Commands
+## Commands
 
-```bash
-# Public market data (no auth required)
-whitebit market list
-whitebit market tickers
-whitebit market depth BTC_USDT
-
-# Account operations (requires auth)
-whitebit balance trade
-whitebit balance fee
-
-# Trading operations (requires auth)
-whitebit trade spot unexecuted
-whitebit trade spot limit-order BTC_USDT buy 0.001 50000
-
-# Configuration
-whitebit config show
-whitebit config set --api-key "your-key" --api-secret "your-secret"
-```
-
-## Command Reference
+| Module | Commands | Auth | Description |
+|--------|:--------:|:----:|-------------|
+| `market` | 14 | No | Tickers, order book, trades, klines, funding rates, platform status |
+| `mining-pool` | 2 | No | Pool statistics and hashrate |
+| `balance` | 3 | Yes | Spot, main, and personal fee balances |
+| `deposit` | 4 | Yes | Crypto and fiat deposit addresses |
+| `withdraw` | 4 | Yes | Crypto and fiat withdrawals + history |
+| `transfer` | 1 | Yes | Transfer between main / spot / collateral accounts |
+| `codes` | 4 | Yes | Create, apply, and list redemption codes |
+| `earn` | 13 | Yes | Fixed and flexible staking, interest history |
+| `trade spot` | 18 | Yes | Limit, market, stop, bulk orders; cancel, modify, kill-switch |
+| `trade collateral` | 22 | Yes | Margin: leverage, positions, OCO, OTO, conditional orders |
+| `trade convert` | 3 | Yes | Estimate and execute asset conversions |
+| `sub-account` | 17 | Yes | Sub-account management, API keys, IP whitelists |
 
 ### Market Data (Public)
 
@@ -290,6 +314,26 @@ Manage CLI settings and profiles.
 - `login` — Login and save API credentials (interactive or with flags)
 - `completion --shell <bash|zsh|fish>` — Generate shell completion script
 
+## Shell Completion
+
+Generate and activate tab-completion for your shell:
+
+```bash
+# Bash — add to ~/.bashrc for permanent activation
+source <(whitebit completion --shell bash)
+# or append to completion file:
+whitebit completion --shell bash >> ~/.bash_completion
+
+# Zsh — save to a directory in $fpath
+mkdir -p ~/.zfunc
+whitebit completion --shell zsh > ~/.zfunc/_whitebit
+# Add to ~/.zshrc if not already present:
+#   fpath=(~/.zfunc $fpath) && autoload -Uz compinit && compinit
+
+# Fish — drop into completions directory
+whitebit completion --shell fish > ~/.config/fish/completions/whitebit.fish
+```
+
 ## Global Options
 
 Available for all commands:
@@ -323,42 +367,47 @@ whitebit market list --format json
 whitebit market list --json
 ```
 
-Use with `jq` for advanced filtering:
+Use with `jq` for filtering:
 
 ```bash
 whitebit market list --json | jq '.[] | select(.name | contains("BTC"))'
 ```
 
-## Examples
-
-### Check market tickers
+## Scripting & Automation
 
 ```bash
-whitebit market tickers
-```
+# Preview a large order before submitting — inspect the request payload
+whitebit trade spot limit-order BTC_USDT buy 1.0 50000 --dry-run
 
-### Place a limit buy order
-
-```bash
-whitebit trade spot limit-order BTC_USDT buy 0.001 50000
-```
-
-### Check account balance in JSON
-
-```bash
-whitebit balance trade --json
-```
-
-### Use testnet profile
-
-```bash
-whitebit balance trade --profile testnet
-```
-
-### Monitor active orders
-
-```bash
+# Monitor open orders, refreshing every 5 seconds
 watch -n 5 'whitebit trade spot unexecuted --json | jq'
+
+# Use in a CI script — fail the job if the balance check returns an error
+whitebit balance trade --json
+if [ $? -ne 0 ]; then echo "Balance check failed (exit $?)"; exit 1; fi
+
+# Filter tickers to BTC pairs only
+whitebit market tickers --json | jq '[.[] | select(.name | contains("BTC"))]'
+
+# Use a dedicated profile for CI pipelines
+whitebit trade spot limit-order BTC_USDT buy 0.001 50000 --profile ci --dry-run
+```
+
+## Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success |
+| `1` | General error |
+| `2` | Authentication / credential error |
+| `3` | Network error |
+| `4` | Usage / bad arguments |
+| `5` | Rate limit (HTTP 429) |
+
+Useful for conditional shell logic:
+
+```bash
+whitebit balance trade && echo "OK" || echo "Failed with exit $?"
 ```
 
 ## Security Best Practices
@@ -369,11 +418,21 @@ watch -n 5 'whitebit trade spot unexecuted --json | jq'
 4. **Use API key restrictions** in WhiteBIT dashboard (IP whitelist, read-only keys)
 5. **Avoid `--api-key` flags** in production scripts (visible in process list)
 
+## Reporting Issues
+
+Open an issue at [GitHub Issues](https://github.com/whitebit-exchange/whitebit-cli/issues) and include:
+
+- The exact command you ran
+- The full error output from stderr
+- Output of `whitebit --version`
+
+For API errors, re-run with `--verbose` to capture the full request and response, and include that output in the issue.
+
 ## Development
 
 ```bash
 # Clone repository
-git clone https://github.com/whitebit-exchange/cli
+git clone https://github.com/whitebit-exchange/whitebit-cli
 cd cli
 
 # Install dependencies
@@ -393,9 +452,16 @@ bun test
 
 Apache 2.0 — See [LICENSE](LICENSE) for details.
 
-## Links
+## Resources
 
-- [GitHub Repository](https://github.com/whitebit-exchange/cli)
-- [WhiteBIT API Documentation](https://docs.whitebit.com/)
-- [WhiteBIT Exchange](https://whitebit.com/)
-- [Report Issues](https://github.com/whitebit-exchange/cli/issues)
+| | |
+|---|---|
+| [WhiteBIT API Documentation](https://docs.whitebit.com/) | Official API reference |
+| [API Platform Overview](https://docs.whitebit.com/platform/overview) | REST, WebSocket, authentication, rate limits |
+| [Use with AI](https://docs.whitebit.com/guides/use-with-ai) | Use API docs with Claude, Cursor, VS Code via MCP |
+| [GitHub Repository](https://github.com/whitebit-exchange/whitebit-cli) | Source code |
+| [Releases](https://github.com/whitebit-exchange/whitebit-cli/releases) | Binaries and changelog |
+| [Contributing](CONTRIBUTING.md) | Development setup and contribution guide |
+| [Security](SECURITY.md) | Vulnerability reporting and security practices |
+| [Report an Issue](https://github.com/whitebit-exchange/whitebit-cli/issues) | Bug reports and feature requests |
+| [WhiteBIT Exchange](https://whitebit.com/) | The exchange |

@@ -1,5 +1,6 @@
 import { createAuthHeadersFromPayload, createSignedPayload } from './auth';
 import { getGlobalConfigOverrides, loadConfig, maskSecret } from './config';
+import { ApiAuthError, CredentialsMissingError, NetworkError, RateLimitError } from './errors';
 import { type RateLimitCategory, RateLimiter } from './rate-limiter';
 import { withRetry } from './retry';
 import type { ApiRequestBody, ApiResponse, AuthConfig, PublicConfig } from './types';
@@ -438,7 +439,29 @@ export class HttpClient {
 
       return result;
     } catch (error) {
+      // Propagate typed errors directly — cli.ts uses instanceof for exit codes
+      if (
+        error instanceof CredentialsMissingError ||
+        error instanceof ApiAuthError ||
+        error instanceof RateLimitError ||
+        error instanceof NetworkError
+      ) {
+        throw error;
+      }
+
       if (error instanceof HttpResponseError) {
+        if (error.status === 429) {
+          throw new RateLimitError(
+            normalizeError(error.responseBody, error.status, error.message).message,
+          );
+        }
+
+        if (error.status === 401 || error.status === 403) {
+          throw new ApiAuthError(
+            normalizeError(error.responseBody, error.status, error.message).message,
+          );
+        }
+
         const result = {
           success: false,
           error: normalizeError(error.responseBody, error.status, error.message),
@@ -449,6 +472,11 @@ export class HttpClient {
         }
 
         return result;
+      }
+
+      if (error instanceof TypeError) {
+        // fetch() throws TypeError for network-level failures (ENOTFOUND, ECONNREFUSED, etc.)
+        throw new NetworkError(error.message);
       }
 
       if (error instanceof Error) {
@@ -492,7 +520,7 @@ export class HttpClient {
 
     if (options.privateRequest) {
       if (!this.apiKey || !this.apiSecret) {
-        throw new Error('API credentials are required for private requests');
+        throw new CredentialsMissingError();
       }
 
       const signedPayload = createSignedPayload(options.endpointPath, options.body ?? {});

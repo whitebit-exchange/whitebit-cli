@@ -5,11 +5,13 @@ import { MarketApi } from '../../lib/api/market';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadConfig, loadPublicConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 
 export const klineCommand = defineCommand({
   name: 'kline',
   description: 'Get candlestick (OHLCV) data for charting and technical analysis',
   options: {
+    ...globalOptions,
     start: option(z.coerce.number().int().optional(), {
       description: 'Start time in Unix milliseconds',
     }),

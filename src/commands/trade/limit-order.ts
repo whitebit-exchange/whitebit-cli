@@ -5,6 +5,7 @@ import { TradeApi } from '../../lib/api/trade';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 import { HttpClient } from '../../lib/http';
 
 export const tradeLimitOrderCommand = defineCommand({
@@ -12,6 +13,7 @@ export const tradeLimitOrderCommand = defineCommand({
   description:
     'Create a limit order at a specific price (sell when price rises, buy when price falls)',
   options: {
+    ...globalOptions,
     clientOrderId: option(z.string().optional(), {
       short: 'c',
       description: 'User-defined order ID for tracking and cancellation',

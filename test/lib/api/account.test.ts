@@ -880,7 +880,7 @@ describe('AccountApi', () => {
     });
     api = new AccountApi(client);
 
-    const result = await api.miningHashrate();
+    const result = await api.miningHashrate({ account: 'test_account' });
 
     expect(calls).toHaveLength(1);
     expect(calls[0]?.input.toString()).toBe(`${API_URL}/api/v4/mining/hashrate`);

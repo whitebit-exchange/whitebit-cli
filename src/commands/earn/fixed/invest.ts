@@ -4,11 +4,15 @@ import { AccountApi } from '../../../lib/api/account';
 import { parseArg } from '../../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../../lib/config';
 import { formatOutput } from '../../../lib/formatter';
+import { globalOptions } from '../../../lib/global-options';
 import { HttpClient } from '../../../lib/http';
 
 export const accountInvestCommand = defineCommand({
   name: 'invest',
   description: 'Lock tokens in fixed plan for guaranteed APR returns until maturity',
+  options: {
+    ...globalOptions,
+  },
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

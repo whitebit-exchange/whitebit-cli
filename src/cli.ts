@@ -31,11 +31,26 @@ import { tradeGroup } from './commands/trade';
 import { transferGroup } from './commands/transfer';
 import { withdrawGroup } from './commands/withdraw';
 import { accountWsTokenCommand } from './commands/ws-token';
-import { setGlobalConfigOverrides } from './lib/config';
+import { getGlobalConfigOverrides, setGlobalConfigOverrides } from './lib/config';
+import {
+  ApiAuthError,
+  CredentialsMissingError,
+  NetworkError,
+  RateLimitError,
+  getPendingExitCode,
+} from './lib/errors';
+import { formatError } from './lib/formatter';
 import { parseGlobalConfigOverrides } from './lib/global-config-overrides';
 import { CLI_VERSION } from './lib/version';
 
 const inferExitCode = (error: unknown): number => {
+  // Typed errors: reliable, not dependent on message wording
+  if (error instanceof CredentialsMissingError) return 2;
+  if (error instanceof ApiAuthError) return 2;
+  if (error instanceof RateLimitError) return 5;
+  if (error instanceof NetworkError) return 3;
+
+  // Framework-level usage errors from @bunli/core (not under our control)
   const message = error instanceof Error ? error.message : String(error ?? '');
   const normalized = message.toLowerCase();
 
@@ -46,33 +61,6 @@ const inferExitCode = (error: unknown): number => {
     normalized.includes('usage:')
   ) {
     return 4;
-  }
-
-  if (
-    normalized.includes('api credentials are required') ||
-    normalized.includes('api key') ||
-    normalized.includes('api secret') ||
-    normalized.includes('authentication') ||
-    normalized.includes('unauthorized')
-  ) {
-    return 2;
-  }
-
-  if (
-    normalized.includes('rate limit') ||
-    normalized.includes('429') ||
-    normalized.includes('too many requests')
-  ) {
-    return 5;
-  }
-
-  if (
-    normalized.includes('network') ||
-    normalized.includes('enotfound') ||
-    normalized.includes('econnrefused') ||
-    normalized.includes('timed out')
-  ) {
-    return 3;
   }
 
   return 1;
@@ -115,6 +103,14 @@ const cli = await createCLI({
 
 setGlobalConfigOverrides(parseGlobalConfigOverrides(Bun.argv.slice(2)));
 
+// @bunli/core catches handler errors and always calls process.exit(1), losing
+// instanceof identity. Intercept it to use the typed error's intended exit code.
+const _originalExit = process.exit.bind(process);
+process.exit = ((code?: number): never => {
+  const pending = getPendingExitCode();
+  return _originalExit(code === 1 && pending !== undefined ? pending : code);
+}) as typeof process.exit;
+
 cli.command(marketGroup);
 cli.command(miningPoolGroup);
 cli.command(balanceGroup);
@@ -134,7 +130,8 @@ cli.command(helpCommand);
 try {
   await cli.run(Bun.argv.slice(2));
 } catch (error) {
-  const message = error instanceof Error ? error.message : String(error);
-  process.stderr.write(`${message}\n`);
+  const overrides = getGlobalConfigOverrides();
+  const format = overrides.json ? 'json' : (overrides.format ?? 'table');
+  formatError(error, { format });
   process.exit(inferExitCode(error));
 }

@@ -12,19 +12,19 @@ export const miningPoolHashrateCommand = defineCommand({
   options: {
     ...globalOptions,
   },
-  handler: async ({ flags }) => {
+  handler: async ({ positional, flags }) => {
     const runtimeConfig = loadConfig({
       profile: flags.profile,
-      apiUrl: flags.apiUrl,
+      apiUrl: flags['api-url'],
       format: flags.json ? 'json' : flags.format,
       verbose: flags.verbose,
-      dryRun: flags.dryRun,
+      dryRun: flags['dry-run'],
     });
     const config = loadAuthConfig({
       profile: flags.profile,
-      apiKey: flags.apiKey,
-      apiSecret: flags.apiSecret,
-      apiUrl: flags.apiUrl,
+      apiKey: flags['api-key'],
+      apiSecret: flags['api-secret'],
+      apiUrl: flags['api-url'],
     });
 
     const client = new HttpClient({
@@ -34,7 +34,14 @@ export const miningPoolHashrateCommand = defineCommand({
     });
     const api = new AccountApi(client);
 
-    const response = await api.miningHashrate();
+    const account = positional[0];
+    if (!account) {
+      throw new Error(
+        'Missing required argument: ACCOUNT\n\nUsage: whitebit mining-pool hashrate <account>',
+      );
+    }
+
+    const response = await api.miningHashrate({ account });
 
     if (runtimeConfig.dryRun) {
       return;

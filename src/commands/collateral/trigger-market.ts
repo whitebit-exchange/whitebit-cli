@@ -4,12 +4,14 @@ import { z } from 'zod';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 import { authenticatedPost } from '../../lib/http';
 
 export const collateralTriggerMarketCommand = defineCommand({
   name: 'trigger-market',
   description: 'Create stop order: executes as market order at trigger price',
   options: {
+    ...globalOptions,
     leverage: option(z.number().optional(), {
       short: 'l',
       description: 'Leverage multiplier (optional, required for margin)',

@@ -14,12 +14,12 @@ export const miningPoolOverviewCommand = defineCommand({
   handler: async ({ flags }) => {
     const runtimeConfig = loadConfig({
       profile: flags.profile,
-      apiUrl: flags.apiUrl,
+      apiUrl: flags['api-url'],
       format: flags.json ? 'json' : flags.format,
       verbose: flags.verbose,
-      dryRun: flags.dryRun,
+      dryRun: flags['dry-run'],
     });
-    const config = loadPublicConfig({ apiUrl: flags.apiUrl, profile: flags.profile });
+    const config = loadPublicConfig({ apiUrl: flags['api-url'], profile: flags.profile });
     const api = new MarketApi({ apiUrl: config.apiUrl });
     const response = await api.miningPoolOverview();
 

@@ -50,6 +50,7 @@ export interface SubAccountTransferParams extends Record<string, unknown> {
 }
 
 export interface SubAccountTransferHistoryParams extends Record<string, unknown> {
+  id: string;
   limit?: number;
   offset?: number;
 }

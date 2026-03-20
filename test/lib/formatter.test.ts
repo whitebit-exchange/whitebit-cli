@@ -89,13 +89,13 @@ describe('output formatter', () => {
     expect(captureWrites(stdoutSpy)).toContain('No results found');
   });
 
-  test('table format truncates long values (>50 chars)', () => {
+  test('table format truncates long values (>80 chars)', () => {
     const stdoutSpy = spyOn(process.stdout, 'write').mockImplementation(() => true);
-    const longValue = 'x'.repeat(70);
+    const longValue = 'x'.repeat(90); // 90 > MAX_TABLE_CELL_LENGTH (80)
 
     formatOutput([{ note: longValue }], { format: 'table' });
 
     const output = captureWrites(stdoutSpy);
-    expect(output).toContain(`${'x'.repeat(47)}...`);
+    expect(output).toContain(`${'x'.repeat(77)}...`); // 80 - 3 = 77
   });
 });

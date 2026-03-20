@@ -5,12 +5,14 @@ import { AccountApi } from '../../lib/api/account';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 import { HttpClient } from '../../lib/http';
 
 export const accountCreateCodeCommand = defineCommand({
   name: 'create',
   description: 'Create WBe-prefixed voucher (cryptographic code for value transfer)',
   options: {
+    ...globalOptions,
     passphrase: option(z.string().min(1).optional(), {
       short: 'p',
       description: 'Optional passphrase protection',

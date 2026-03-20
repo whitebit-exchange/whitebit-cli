@@ -7,25 +7,25 @@ export const globalOptions = {
     description: 'Verbose output (show raw API responses)',
     short: 'V',
   }),
-  dryRun: option(z.boolean().optional(), {
+  'dry-run': option(z.boolean().optional(), {
     description: 'Show what would be sent without executing',
   }),
   format: option(z.enum(['json', 'table']).optional(), {
     description: 'Output format (json or table)',
   }),
   profile: option(z.string().min(1).optional(), { description: 'Config profile name' }),
-  apiKey: option(z.string().min(1).optional(), { description: 'Override API key' }),
-  apiSecret: option(z.string().min(1).optional(), { description: 'Override API secret' }),
-  apiUrl: option(z.string().url().optional(), { description: 'Override API URL' }),
+  'api-key': option(z.string().min(1).optional(), { description: 'Override API key' }),
+  'api-secret': option(z.string().min(1).optional(), { description: 'Override API secret' }),
+  'api-url': option(z.string().url().optional(), { description: 'Override API URL' }),
 };
 
 export type GlobalFlags = {
   json?: boolean;
   verbose?: boolean;
-  dryRun?: boolean;
+  'dry-run'?: boolean;
   format?: 'json' | 'table';
   profile?: string;
-  apiKey?: string;
-  apiSecret?: string;
-  apiUrl?: string;
+  'api-key'?: string;
+  'api-secret'?: string;
+  'api-url'?: string;
 };

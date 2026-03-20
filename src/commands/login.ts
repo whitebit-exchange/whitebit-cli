@@ -49,7 +49,7 @@ const collectInteractiveLoginValues = async (
     const apiUrl = normalizeOptional(apiUrlAnswer) ?? defaults.apiUrl ?? 'https://whitebit.com';
 
     if (apiKey.length === 0 || apiSecret.length === 0) {
-      throw new Error('API key and secret are required');
+      throw new Error('Missing required argument: API key and secret cannot be empty');
     }
 
     return {

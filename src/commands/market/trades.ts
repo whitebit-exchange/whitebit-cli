@@ -5,11 +5,13 @@ import { MarketApi } from '../../lib/api/market';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadConfig, loadPublicConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 
 export const tradesCommand = defineCommand({
   name: 'trades',
   description: 'Get recent executed trades on a market with prices and sizes',
   options: {
+    ...globalOptions,
     type: option(z.enum(['buy', 'sell']).optional(), {
       description: 'Filter by buy or sell trades only',
     }),

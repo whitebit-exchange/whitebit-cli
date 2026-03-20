@@ -145,7 +145,8 @@ export interface MyCodesParams {
 
 export interface CodeResponse {
   code: string;
-  [key: string]: unknown;
+  externalId?: string;
+  message?: string;
 }
 
 export interface CodesHistoryResponse {

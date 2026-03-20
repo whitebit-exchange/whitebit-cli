@@ -5,12 +5,14 @@ import { TradeApi } from '../../lib/api/trade';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 import { HttpClient } from '../../lib/http';
 
 export const tradeDealsCommand = defineCommand({
   name: 'deals',
   description: 'Get all trades executed for a specific order with pagination',
   options: {
+    ...globalOptions,
     limit: option(z.number().int().positive().optional(), {
       short: 'l',
       description: 'Maximum number of deals to return',

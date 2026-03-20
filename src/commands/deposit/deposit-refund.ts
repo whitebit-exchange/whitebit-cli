@@ -5,11 +5,15 @@ import { AccountApi } from '../../lib/api/account';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 import { HttpClient } from '../../lib/http';
 
 export const accountDepositRefundCommand = defineCommand({
   name: 'refund',
   description: 'Refund canceled deposits back to external address',
+  options: {
+    ...globalOptions,
+  },
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
