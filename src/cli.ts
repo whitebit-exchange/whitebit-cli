@@ -35,9 +35,9 @@ import { getGlobalConfigOverrides, setGlobalConfigOverrides } from './lib/config
 import {
   ApiAuthError,
   CredentialsMissingError,
+  getPendingExitCode,
   NetworkError,
   RateLimitError,
-  getPendingExitCode,
 } from './lib/errors';
 import { formatError } from './lib/formatter';
 import { parseGlobalConfigOverrides } from './lib/global-config-overrides';

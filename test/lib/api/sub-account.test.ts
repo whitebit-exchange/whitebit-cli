@@ -42,7 +42,7 @@ describe('SubAccountApi', () => {
 
       expect(result).toEqual(mockData);
       expect(result.length).toBe(2);
-      expect(result[0].alias).toBe('Trading Bot');
+      expect(result[0]!.alias).toBe('Trading Bot');
     });
 
     test('handles error response', async () => {
@@ -167,8 +167,8 @@ describe('SubAccountApi', () => {
       const result = await api.balance({ id: 'sub-1' });
 
       expect(result).toEqual(mockData);
-      expect(result.BTC.available).toBe('1.5');
-      expect(result.ETH.available).toBe('10.0');
+      expect(result['BTC']!.available).toBe('1.5');
+      expect(result['ETH']!.available).toBe('10.0');
     });
 
     test('handles error response', async () => {
@@ -247,11 +247,11 @@ describe('SubAccountApi', () => {
       const httpClient = createMockHttpClient(mockData);
       api = new SubAccountApi(httpClient);
 
-      const result = await api.transferHistory();
+      const result = await api.transferHistory({ id: 'sub-1' });
 
       expect(result).toEqual(mockData);
       expect(result.length).toBe(2);
-      expect(result[0].ticker).toBe('BTC');
+      expect(result[0]!.ticker).toBe('BTC');
     });
 
     test('returns transfer history with pagination', async () => {
@@ -268,7 +268,7 @@ describe('SubAccountApi', () => {
       const httpClient = createMockHttpClient(mockData);
       api = new SubAccountApi(httpClient);
 
-      const result = await api.transferHistory({ limit: 50, offset: 0 });
+      const result = await api.transferHistory({ id: 'sub-1', limit: 50, offset: 0 });
 
       expect(result).toEqual(mockData);
       expect(result.length).toBe(1);
@@ -278,7 +278,7 @@ describe('SubAccountApi', () => {
       const httpClient = createMockHttpClientWithError('Failed to fetch');
       api = new SubAccountApi(httpClient);
 
-      await expect(api.transferHistory()).rejects.toThrow('Failed to fetch');
+      await expect(api.transferHistory({ id: 'sub-1' })).rejects.toThrow('Failed to fetch');
     });
   });
 
@@ -305,7 +305,7 @@ describe('SubAccountApi', () => {
 
       expect(result).toEqual(mockData);
       expect(result.length).toBe(2);
-      expect(result[0].label).toBe('Trading Bot');
+      expect(result[0]!.label).toBe('Trading Bot');
     });
 
     test('handles error response', async () => {
@@ -486,7 +486,7 @@ describe('SubAccountApi', () => {
 
       expect(result).toEqual(mockData);
       expect(result.length).toBe(2);
-      expect(result[0].ip).toBe('192.168.1.1');
+      expect(result[0]!.ip).toBe('192.168.1.1');
     });
 
     test('handles error response', async () => {

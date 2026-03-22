@@ -33,7 +33,7 @@ describe('trade limit-order command', () => {
       price: '50000',
     };
 
-    global.fetch = createMockFetch(mockOrder);
+    global.fetch = createMockFetch(mockOrder) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -43,7 +43,7 @@ describe('trade limit-order command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await tradeLimitOrderCommand.handler({
+      await tradeLimitOrderCommand.handler!({
         positional: ['BTC_USDT', 'buy', '0.01', '50000'],
         flags: {
           apiUrl: 'https://whitebit.com',
@@ -62,10 +62,10 @@ describe('trade limit-order command', () => {
 
   test('handles error gracefully', async () => {
     const mockError = { code: 1001, message: 'Insufficient balance' };
-    global.fetch = createMockFetch(mockError, 400);
+    global.fetch = createMockFetch(mockError, 400) as unknown as typeof fetch;
 
     try {
-      await tradeLimitOrderCommand.handler({
+      await tradeLimitOrderCommand.handler!({
         positional: ['BTC_USDT', 'buy', '0.01', '50000'],
         flags: {
           apiUrl: 'https://whitebit.com',

@@ -23,7 +23,7 @@ describe('sub-account create command', () => {
       status: 'active',
     };
 
-    global.fetch = createMockFetch(mockSubAccount);
+    global.fetch = createMockFetch(mockSubAccount) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -33,7 +33,7 @@ describe('sub-account create command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await createCommand.handler({
+      await createCommand.handler!({
         positional: ['New Trading Bot'],
         flags: {
           apiUrl: 'https://whitebit.com',
@@ -58,10 +58,10 @@ describe('sub-account create command', () => {
         alias: ['Alias already exists.'],
       },
     };
-    global.fetch = createMockFetch(mockError, 400);
+    global.fetch = createMockFetch(mockError, 400) as unknown as typeof fetch;
 
     try {
-      await createCommand.handler({
+      await createCommand.handler!({
         positional: ['Duplicate'],
         flags: {
           apiUrl: 'https://whitebit.com',

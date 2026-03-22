@@ -46,7 +46,7 @@ describe('collateral open-positions command', () => {
       },
     ];
 
-    global.fetch = createMockFetch(mockPositions);
+    global.fetch = createMockFetch(mockPositions) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -56,7 +56,7 @@ describe('collateral open-positions command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await collateralOpenPositionsCommand.handler({
+      await collateralOpenPositionsCommand.handler!({
         flags: {
           apiUrl: 'https://whitebit.com',
           apiKey: 'test-key',
@@ -91,7 +91,7 @@ describe('collateral open-positions command', () => {
       },
     ];
 
-    global.fetch = createMockFetch(mockPositions);
+    global.fetch = createMockFetch(mockPositions) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -101,7 +101,7 @@ describe('collateral open-positions command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await collateralOpenPositionsCommand.handler({
+      await collateralOpenPositionsCommand.handler!({
         flags: {
           market: 'BTC_USDT',
           apiUrl: 'https://whitebit.com',
@@ -120,10 +120,10 @@ describe('collateral open-positions command', () => {
 
   test('handles error gracefully', async () => {
     const mockError = { code: 1001, message: 'Authentication failed' };
-    global.fetch = createMockFetch(mockError, 401);
+    global.fetch = createMockFetch(mockError, 401) as unknown as typeof fetch;
 
     try {
-      await collateralOpenPositionsCommand.handler({
+      await collateralOpenPositionsCommand.handler!({
         flags: {
           apiUrl: 'https://whitebit.com',
           apiKey: 'test-key',

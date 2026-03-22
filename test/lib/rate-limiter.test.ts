@@ -12,6 +12,7 @@ const createLimits = (limit: number, windowMs: number): RateLimitConfig => ({
   'trading-query': { limit, windowMs },
   account: { limit, windowMs },
   collateral: { limit, windowMs },
+  'collateral-trading': { limit, windowMs },
   convert: { limit, windowMs },
   'sub-account': { limit, windowMs },
 });

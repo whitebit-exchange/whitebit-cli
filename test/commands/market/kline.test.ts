@@ -34,7 +34,7 @@ describe('market kline command', () => {
       },
     ];
 
-    global.fetch = createMockFetch(mockData);
+    global.fetch = createMockFetch(mockData) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -77,7 +77,7 @@ describe('market kline command', () => {
       },
     ];
 
-    global.fetch = createMockFetch(mockData);
+    global.fetch = createMockFetch(mockData) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;

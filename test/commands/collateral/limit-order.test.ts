@@ -34,7 +34,7 @@ describe('collateral limit-order command', () => {
       leverage: 10,
     };
 
-    global.fetch = createMockFetch(mockOrder);
+    global.fetch = createMockFetch(mockOrder) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -44,7 +44,7 @@ describe('collateral limit-order command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await collateralLimitOrderCommand.handler({
+      await collateralLimitOrderCommand.handler!({
         positional: ['BTC_USDT', 'buy', '0.01', '50000'],
         flags: {
           leverage: 10,
@@ -79,7 +79,7 @@ describe('collateral limit-order command', () => {
       price: '3000',
     };
 
-    global.fetch = createMockFetch(mockOrder);
+    global.fetch = createMockFetch(mockOrder) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -89,7 +89,7 @@ describe('collateral limit-order command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await collateralLimitOrderCommand.handler({
+      await collateralLimitOrderCommand.handler!({
         positional: ['ETH_USDT', 'sell', '1.0', '3000'],
         flags: {
           apiUrl: 'https://whitebit.com',
@@ -108,10 +108,10 @@ describe('collateral limit-order command', () => {
 
   test('handles error gracefully', async () => {
     const mockError = { code: 1001, message: 'Insufficient balance' };
-    global.fetch = createMockFetch(mockError, 400);
+    global.fetch = createMockFetch(mockError, 400) as unknown as typeof fetch;
 
     try {
-      await collateralLimitOrderCommand.handler({
+      await collateralLimitOrderCommand.handler!({
         positional: ['BTC_USDT', 'buy', '0.01', '50000'],
         flags: {
           apiUrl: 'https://whitebit.com',

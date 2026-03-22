@@ -18,7 +18,7 @@ describe('sub-account transfer command', () => {
   test('transfers funds to sub-account successfully', async () => {
     const mockResult = { result: 'success' };
 
-    global.fetch = createMockFetch(mockResult);
+    global.fetch = createMockFetch(mockResult) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -28,7 +28,7 @@ describe('sub-account transfer command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await transferCommand.handler({
+      await transferCommand.handler!({
         positional: ['BTC', '0.5'],
         flags: {
           toId: 'sub-1',
@@ -48,7 +48,7 @@ describe('sub-account transfer command', () => {
   test('transfers funds from sub-account successfully', async () => {
     const mockResult = { result: 'success' };
 
-    global.fetch = createMockFetch(mockResult);
+    global.fetch = createMockFetch(mockResult) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -58,7 +58,7 @@ describe('sub-account transfer command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await transferCommand.handler({
+      await transferCommand.handler!({
         positional: ['ETH', '1.0'],
         flags: {
           fromId: 'sub-1',
@@ -77,10 +77,10 @@ describe('sub-account transfer command', () => {
 
   test('handles insufficient balance error', async () => {
     const mockError = { code: 1002, message: 'Insufficient balance' };
-    global.fetch = createMockFetch(mockError, 400);
+    global.fetch = createMockFetch(mockError, 400) as unknown as typeof fetch;
 
     try {
-      await transferCommand.handler({
+      await transferCommand.handler!({
         positional: ['BTC', '100'],
         flags: {
           fromId: 'sub-1',

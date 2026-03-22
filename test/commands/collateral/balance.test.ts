@@ -22,7 +22,7 @@ describe('collateral balance command', () => {
       USDT: { available: '10000', freeze: '5000' },
     };
 
-    global.fetch = createMockFetch(mockBalance);
+    global.fetch = createMockFetch(mockBalance) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -32,7 +32,7 @@ describe('collateral balance command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await collateralBalanceCommand.handler({
+      await collateralBalanceCommand.handler!({
         flags: {
           apiUrl: 'https://whitebit.com',
           apiKey: 'test-key',
@@ -50,10 +50,10 @@ describe('collateral balance command', () => {
 
   test('handles error gracefully', async () => {
     const mockError = { code: 1001, message: 'Authentication failed' };
-    global.fetch = createMockFetch(mockError, 401);
+    global.fetch = createMockFetch(mockError, 401) as unknown as typeof fetch;
 
     try {
-      await collateralBalanceCommand.handler({
+      await collateralBalanceCommand.handler!({
         flags: {
           apiUrl: 'https://whitebit.com',
           apiKey: 'test-key',

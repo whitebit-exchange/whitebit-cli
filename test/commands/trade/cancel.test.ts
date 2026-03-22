@@ -33,7 +33,7 @@ describe('trade cancel command', () => {
       price: '50000',
     };
 
-    global.fetch = createMockFetch(mockOrder);
+    global.fetch = createMockFetch(mockOrder) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -43,7 +43,7 @@ describe('trade cancel command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await tradeCancelCommand.handler({
+      await tradeCancelCommand.handler!({
         positional: ['BTC_USDT', '123456'],
         flags: {
           apiUrl: 'https://whitebit.com',
@@ -62,10 +62,10 @@ describe('trade cancel command', () => {
 
   test('handles error gracefully', async () => {
     const mockError = { code: 1002, message: 'Order not found' };
-    global.fetch = createMockFetch(mockError, 404);
+    global.fetch = createMockFetch(mockError, 404) as unknown as typeof fetch;
 
     try {
-      await tradeCancelCommand.handler({
+      await tradeCancelCommand.handler!({
         positional: ['BTC_USDT', '999999'],
         flags: {
           apiUrl: 'https://whitebit.com',

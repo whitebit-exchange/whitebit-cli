@@ -21,7 +21,7 @@ describe('account transfer command', () => {
       transactionId: 98765,
     };
 
-    global.fetch = createMockFetch(mockResponse);
+    global.fetch = createMockFetch(mockResponse) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -31,7 +31,7 @@ describe('account transfer command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await accountTransferCommand.handler({
+      await accountTransferCommand.handler!({
         positional: ['BTC', '0.1', 'main', 'spot'],
         flags: {
           apiUrl: 'https://whitebit.com',
@@ -53,7 +53,7 @@ describe('account transfer command', () => {
       transactionId: 54321,
     };
 
-    global.fetch = createMockFetch(mockResponse);
+    global.fetch = createMockFetch(mockResponse) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -63,7 +63,7 @@ describe('account transfer command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await accountTransferCommand.handler({
+      await accountTransferCommand.handler!({
         positional: ['ETH', '5.0', 'spot', 'main'],
         flags: {
           apiUrl: 'https://whitebit.com',
@@ -81,10 +81,10 @@ describe('account transfer command', () => {
 
   test('handles transfer error', async () => {
     const mockError = { code: 3001, message: 'Insufficient funds in source account' };
-    global.fetch = createMockFetch(mockError, 400);
+    global.fetch = createMockFetch(mockError, 400) as unknown as typeof fetch;
 
     try {
-      await accountTransferCommand.handler({
+      await accountTransferCommand.handler!({
         positional: ['BTC', '100', 'main', 'spot'],
         flags: {
           apiUrl: 'https://whitebit.com',

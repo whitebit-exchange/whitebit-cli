@@ -22,7 +22,7 @@ describe('sub-account list command', () => {
       { id: 'sub-2', alias: 'Savings Account', status: 'active' },
     ];
 
-    global.fetch = createMockFetch(mockSubAccounts);
+    global.fetch = createMockFetch(mockSubAccounts) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -32,7 +32,7 @@ describe('sub-account list command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await listCommand.handler({
+      await listCommand.handler!({
         flags: {
           apiUrl: 'https://whitebit.com',
           apiKey: 'test-key',
@@ -50,10 +50,10 @@ describe('sub-account list command', () => {
 
   test('handles error gracefully', async () => {
     const mockError = { code: 1001, message: 'Authentication failed' };
-    global.fetch = createMockFetch(mockError, 401);
+    global.fetch = createMockFetch(mockError, 401) as unknown as typeof fetch;
 
     try {
-      await listCommand.handler({
+      await listCommand.handler!({
         flags: {
           apiUrl: 'https://whitebit.com',
           apiKey: 'test-key',
