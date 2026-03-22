@@ -1,0 +1,25 @@
+# Test files
+test/
+*.test.ts
+*.spec.ts
+
+# Build artifacts
+dist/
+*.tsbuildinfo
+
+# Development
+.github/
+scripts/
+.sisyphus/
+.cursor/
+.env
+.env.*
+
+# Configuration
+biome.json
+tsconfig.json
+bun.lock
+
+# Documentation
+.editorconfig
+.gitignore
