@@ -1,11 +1,11 @@
 {
-  "name": "whitebit",
+  "name": "whitebit-cli",
   "version": "0.1.0",
   "description": "WhiteBIT Exchange CLI — Trade, manage accounts, and query market data from the terminal",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/whitebit-exchange/cli"
+    "url": "https://github.com/whitebit-exchange/whitebit-cli"
   },
   "bin": {
     "whitebit": "src/cli.ts"
@@ -33,7 +33,8 @@
     "lint": "biome check .",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
-    "test": "bun test"
+    "test": "bun test",
+    "smoke": "bash test/smoke.sh --dev"
   },
   "dependencies": {
     "@bunli/core": "^0.8.2",

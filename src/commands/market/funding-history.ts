@@ -5,11 +5,13 @@ import { MarketApi } from '../../lib/api/market';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadConfig, loadPublicConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 
 export const fundingHistoryCommand = defineCommand({
   name: 'funding-history',
-  description: 'Get periodic funding rate payments paid for holding futures positions',
+  description: 'Get periodic funding rate payments for a futures/perpetual market (e.g. BTC_PERP)',
   options: {
+    ...globalOptions,
     limit: option(z.coerce.number().int().positive().optional(), {
       description: 'Maximum number of records to return',
     }),
@@ -26,7 +28,7 @@ export const fundingHistoryCommand = defineCommand({
       positional[0],
       z.string().min(1),
       'PAIR',
-      'whitebit market funding-history <pair>',
+      'whitebit market funding-history <pair>  (pair must be a futures/perpetual market, e.g. BTC_PERP)',
     );
 
     const response = await api.fundingHistory({

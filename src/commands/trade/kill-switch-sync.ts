@@ -5,11 +5,15 @@ import { TradeApi } from '../../lib/api/trade';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 import { HttpClient } from '../../lib/http';
 
 export const tradeKillSwitchSyncCommand = defineCommand({
   name: 'kill-switch-sync',
   description: 'Update emergency kill-switch timeout for a market',
+  options: {
+    ...globalOptions,
+  },
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

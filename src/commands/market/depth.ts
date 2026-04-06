@@ -5,11 +5,13 @@ import { MarketApi } from '../../lib/api/market';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadConfig, loadPublicConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 
 export const depthCommand = defineCommand({
   name: 'depth',
   description: 'Get order book depth within ±2% of market price',
   options: {
+    ...globalOptions,
     limit: option(z.coerce.number().int().positive().optional(), {
       description: 'Number of price levels to return',
     }),

@@ -4,11 +4,15 @@ import { z } from 'zod';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 import { authenticatedPost } from '../../lib/http';
 
 export const collateralCancelOcoCommand = defineCommand({
   name: 'cancel-oco',
   description: 'Cancel an OCO order',
+  options: {
+    ...globalOptions,
+  },
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

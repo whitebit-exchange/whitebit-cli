@@ -4,6 +4,7 @@ export interface ConvertEstimateParams {
   from: string;
   to: string;
   amount: string;
+  direction: 'from' | 'to';
 }
 
 export interface ConvertEstimate {

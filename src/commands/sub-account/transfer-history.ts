@@ -19,7 +19,7 @@ export const transferHistoryCommand = defineCommand({
       description: 'Offset for pagination of transfer history',
     }),
   },
-  handler: async ({ flags }) => {
+  handler: async ({ positional, flags }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
     const httpClient = new HttpClient({
@@ -28,10 +28,15 @@ export const transferHistoryCommand = defineCommand({
       apiSecret: config.apiSecret,
     });
     const api = new SubAccountApi(httpClient);
-    const result = await api.transferHistory({
-      limit: flags.limit,
-      offset: flags.offset,
-    });
+
+    const id = positional[0];
+    if (!id) {
+      throw new Error(
+        'Missing required argument: SUB_ACCOUNT_ID\n\nUsage: whitebit sub-account transfer-history <sub_account_id>',
+      );
+    }
+
+    const result = await api.transferHistory({ id, limit: flags.limit, offset: flags.offset });
 
     if (runtimeConfig.dryRun) {
       return;

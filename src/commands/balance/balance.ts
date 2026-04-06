@@ -2,12 +2,16 @@ import { defineCommand } from '@bunli/core';
 
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 import { authenticatedPost } from '../../lib/http';
 import { recordToRows } from '../market/helpers';
 
 export const accountBalanceCommand = defineCommand({
   name: 'trade',
   description: 'Get spot trading balance (available for trading)',
+  options: {
+    ...globalOptions,
+  },
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

@@ -21,7 +21,7 @@ describe('account main-balance command', () => {
       ETH: { main_balance: '10.0' },
     };
 
-    global.fetch = createMockFetch(mockBalance);
+    global.fetch = createMockFetch(mockBalance) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -31,7 +31,7 @@ describe('account main-balance command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await accountMainBalanceCommand.handler({
+      await accountMainBalanceCommand.handler!({
         positional: [],
         flags: {
           apiUrl: 'https://whitebit.com',
@@ -53,7 +53,7 @@ describe('account main-balance command', () => {
       BTC: { main_balance: '1.5' },
     };
 
-    global.fetch = createMockFetch(mockBalance);
+    global.fetch = createMockFetch(mockBalance) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -63,7 +63,7 @@ describe('account main-balance command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await accountMainBalanceCommand.handler({
+      await accountMainBalanceCommand.handler!({
         positional: ['BTC'],
         flags: {
           apiUrl: 'https://whitebit.com',
@@ -82,10 +82,10 @@ describe('account main-balance command', () => {
 
   test('handles error gracefully', async () => {
     const mockError = { code: 1001, message: 'Invalid ticker' };
-    global.fetch = createMockFetch(mockError, 400);
+    global.fetch = createMockFetch(mockError, 400) as unknown as typeof fetch;
 
     try {
-      await accountMainBalanceCommand.handler({
+      await accountMainBalanceCommand.handler!({
         positional: [],
         flags: {
           apiUrl: 'https://whitebit.com',

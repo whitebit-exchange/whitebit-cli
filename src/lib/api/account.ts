@@ -276,9 +276,22 @@ export class AccountApi {
     const response = await this.httpClient.post<CodeResponse>('/api/v4/main-account/codes', body, {
       category: 'account',
     });
-    if (!response.success || !response.data) {
+
+    // WhiteBIT code creation returns success:false with the code in error.raw
+    if (!response.success) {
+      const raw = response.error?.raw as Record<string, unknown> | undefined;
+      const code = raw?.code;
+      if (typeof code === 'string' && code.startsWith('CODE')) {
+        return {
+          code,
+          externalId: typeof raw?.external_id === 'string' ? raw.external_id : undefined,
+          message: typeof raw?.message === 'string' ? raw.message : undefined,
+        };
+      }
       throw new Error(response.error?.message ?? 'Failed to create code');
     }
+
+    if (!response.data) throw new Error('Failed to create code');
     return response.data;
   }
 
@@ -519,10 +532,10 @@ export class AccountApi {
     return response.data;
   }
 
-  async miningHashrate(): Promise<MiningHashrateResponse> {
+  async miningHashrate(params: { account: string }): Promise<MiningHashrateResponse> {
     const response = await this.httpClient.post<MiningHashrateResponse>(
       '/api/v4/mining/hashrate',
-      {},
+      { account: params.account },
       { category: 'account' },
     );
     if (!response.success || !response.data) {

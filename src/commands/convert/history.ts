@@ -24,15 +24,15 @@ export const convertHistoryCommand = defineCommand({
   handler: async ({ flags }) => {
     const runtimeConfig = loadConfig({
       profile: flags.profile,
-      apiUrl: flags.apiUrl,
+      apiUrl: flags['api-url'],
       format: flags.json ? 'json' : flags.format,
       verbose: flags.verbose,
-      dryRun: flags.dryRun,
+      dryRun: flags['dry-run'],
     });
     const config = loadAuthConfig({
-      apiUrl: flags.apiUrl,
-      apiKey: flags.apiKey,
-      apiSecret: flags.apiSecret,
+      apiUrl: flags['api-url'],
+      apiKey: flags['api-key'],
+      apiSecret: flags['api-secret'],
       profile: flags.profile,
     });
     const httpClient = new HttpClient({

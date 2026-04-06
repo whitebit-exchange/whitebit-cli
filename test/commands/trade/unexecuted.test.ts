@@ -50,7 +50,7 @@ describe('trade unexecuted command', () => {
       },
     ];
 
-    global.fetch = createMockFetch(mockOrders);
+    global.fetch = createMockFetch(mockOrders) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -60,7 +60,7 @@ describe('trade unexecuted command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await tradeUnexecutedCommand.handler({
+      await tradeUnexecutedCommand.handler!({
         flags: {
           market: undefined,
           limit: 50,
@@ -81,10 +81,10 @@ describe('trade unexecuted command', () => {
 
   test('handles error gracefully', async () => {
     const mockError = { code: 1001, message: 'Authentication failed' };
-    global.fetch = createMockFetch(mockError, 401);
+    global.fetch = createMockFetch(mockError, 401) as unknown as typeof fetch;
 
     try {
-      await tradeUnexecutedCommand.handler({
+      await tradeUnexecutedCommand.handler!({
         flags: {
           apiUrl: 'https://whitebit.com',
           apiKey: 'test-key',

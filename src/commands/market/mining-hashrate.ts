@@ -8,7 +8,7 @@ import { HttpClient } from '../../lib/http';
 export const accountMiningHashrateCommand = defineCommand({
   name: 'mining-hashrate',
   description: 'Get mining hashrate information',
-  handler: async () => {
+  handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();
 
@@ -19,7 +19,14 @@ export const accountMiningHashrateCommand = defineCommand({
     });
     const api = new AccountApi(client);
 
-    const response = await api.miningHashrate();
+    const account = positional[0];
+    if (!account) {
+      throw new Error(
+        'Missing required argument: ACCOUNT\n\nUsage: whitebit market mining-hashrate <account>',
+      );
+    }
+
+    const response = await api.miningHashrate({ account });
 
     if (runtimeConfig.dryRun) {
       return;

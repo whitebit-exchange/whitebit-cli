@@ -5,12 +5,14 @@ import { SubAccountApi } from '../../lib/api/sub-account';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 import { HttpClient } from '../../lib/http';
 
 export const apiKeyEditCommand = defineCommand({
   name: 'api-key-edit',
   description: 'Update API key label and permissions for sub-account',
   options: {
+    ...globalOptions,
     label: option(z.string().min(1).optional(), {
       short: 'l',
       description: 'Update API key label for identification',

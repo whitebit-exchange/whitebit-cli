@@ -3,15 +3,17 @@ import { describe, expect, test } from 'bun:test';
 import { CollateralApi } from '../../../src/lib/api/collateral';
 import type { HttpClient } from '../../../src/lib/http';
 
-const createMockHttpClient = (mockResponse: unknown): HttpClient => ({
-  get: async () => ({ success: true, data: mockResponse }),
-  post: async () => ({ success: true, data: mockResponse }),
-});
+const createMockHttpClient = (mockResponse: unknown): HttpClient =>
+  ({
+    get: async () => ({ success: true, data: mockResponse }),
+    post: async () => ({ success: true, data: mockResponse }),
+  }) as unknown as HttpClient;
 
-const createFailingHttpClient = (): HttpClient => ({
-  get: async () => ({ success: false, error: {} }),
-  post: async () => ({ success: false, error: {} }),
-});
+const createFailingHttpClient = (): HttpClient =>
+  ({
+    get: async () => ({ success: false, error: {} }),
+    post: async () => ({ success: false, error: {} }),
+  }) as unknown as HttpClient;
 
 describe('CollateralApi', () => {
   test('balance() fetches collateral balance', async () => {

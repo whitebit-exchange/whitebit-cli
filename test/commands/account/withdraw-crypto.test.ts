@@ -21,7 +21,7 @@ describe('account withdraw-crypto command', () => {
       id: 12345,
     };
 
-    global.fetch = createMockFetch(mockResponse);
+    global.fetch = createMockFetch(mockResponse) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -31,7 +31,7 @@ describe('account withdraw-crypto command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await accountWithdrawCryptoCommand.handler({
+      await accountWithdrawCryptoCommand.handler!({
         positional: ['BTC', '0.1', '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'],
         flags: {
           apiUrl: 'https://whitebit.com',
@@ -53,7 +53,7 @@ describe('account withdraw-crypto command', () => {
       id: 67890,
     };
 
-    global.fetch = createMockFetch(mockResponse);
+    global.fetch = createMockFetch(mockResponse) as unknown as typeof fetch;
 
     let capturedOutput = '';
     const originalStdoutWrite = process.stdout.write;
@@ -63,7 +63,7 @@ describe('account withdraw-crypto command', () => {
     }) as typeof process.stdout.write;
 
     try {
-      await accountWithdrawCryptoCommand.handler({
+      await accountWithdrawCryptoCommand.handler!({
         positional: ['XRP', '100', 'rN7n7otQDd6FczFgLdlqtyMVrn3PvNvMGmm'],
         flags: {
           memo: '123456',
@@ -82,10 +82,10 @@ describe('account withdraw-crypto command', () => {
 
   test('handles withdrawal error', async () => {
     const mockError = { code: 2001, message: 'Insufficient balance' };
-    global.fetch = createMockFetch(mockError, 400);
+    global.fetch = createMockFetch(mockError, 400) as unknown as typeof fetch;
 
     try {
-      await accountWithdrawCryptoCommand.handler({
+      await accountWithdrawCryptoCommand.handler!({
         positional: ['BTC', '1000', '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'],
         flags: {
           apiUrl: 'https://whitebit.com',

@@ -72,6 +72,7 @@ describe('ConvertApi', () => {
       from: 'BTC',
       to: 'USDT',
       amount: '0.1',
+      direction: 'from',
     });
 
     expect(result.id).toBe('est-123');

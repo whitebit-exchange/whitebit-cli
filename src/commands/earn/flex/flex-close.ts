@@ -4,11 +4,15 @@ import { AccountApi } from '../../../lib/api/account';
 import { parseArg } from '../../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../../lib/config';
 import { formatOutput } from '../../../lib/formatter';
+import { globalOptions } from '../../../lib/global-options';
 import { HttpClient } from '../../../lib/http';
 
 export const accountFlexCloseCommand = defineCommand({
   name: 'close',
   description: 'Close flexible staking and withdraw all tokens immediately without fees',
+  options: {
+    ...globalOptions,
+  },
   handler: async ({ positional }) => {
     const runtimeConfig = loadConfig();
     const config = loadAuthConfig();

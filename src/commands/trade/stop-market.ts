@@ -5,12 +5,14 @@ import { TradeApi } from '../../lib/api/trade';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 import { HttpClient } from '../../lib/http';
 
 export const tradeStopMarketCommand = defineCommand({
   name: 'stop-market',
   description: 'Create a conditional order: wait for activation_price, then execute as market',
   options: {
+    ...globalOptions,
     clientOrderId: option(z.string().optional(), {
       short: 'c',
       description: 'User-defined order ID for tracking and cancellation',

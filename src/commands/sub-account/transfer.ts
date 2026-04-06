@@ -5,12 +5,14 @@ import { SubAccountApi } from '../../lib/api/sub-account';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 import { HttpClient } from '../../lib/http';
 
 export const transferCommand = defineCommand({
   name: 'transfer',
   description: 'Transfer funds between main account and sub-accounts',
   options: {
+    ...globalOptions,
     fromId: option(z.string().min(1).optional(), {
       short: 'f',
       description: 'Source sub-account ID (omit for main account transfer)',

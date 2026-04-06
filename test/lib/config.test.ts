@@ -158,7 +158,7 @@ describe('config loader', () => {
   });
 
   test('throws a clear error when auth config is missing credentials', () => {
-    expect(() => loadAuthConfig()).toThrow('Missing WhiteBIT API credentials');
+    expect(() => loadAuthConfig()).toThrow('API credentials are required for this command.');
   });
 
   test('trims surrounding whitespace from auth credentials', () => {

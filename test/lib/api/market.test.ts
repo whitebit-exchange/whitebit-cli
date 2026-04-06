@@ -42,7 +42,7 @@ describe('MarketApi', () => {
       const mockData: ServerTime = { time: 1631451591 };
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.serverTime();
@@ -56,7 +56,7 @@ describe('MarketApi', () => {
       const mockError = { success: false, message: 'Server error' };
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockError, 500),
+        fetch: createMockFetch(mockError, 500) as unknown as typeof fetch,
         retryMaxRetries: 0,
       });
 
@@ -72,7 +72,7 @@ describe('MarketApi', () => {
       const mockData: ServerStatus = { status: 'operational' };
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.status();
@@ -101,7 +101,7 @@ describe('MarketApi', () => {
       ];
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.markets();
@@ -144,16 +144,16 @@ describe('MarketApi', () => {
       ];
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.marketStatus();
 
       expect(result.success).toBe(true);
       expect(result.data?.length).toBe(2);
-      expect(result.data?.[0].market).toBe('BTC_USDT');
-      expect(result.data?.[0].status).toBe('active');
-      expect(result.data?.[1].status).toBe('inactive');
+      expect(result.data![0]!.market).toBe('BTC_USDT');
+      expect(result.data![0]!.status).toBe('active');
+      expect(result.data![1]!.status).toBe('inactive');
     });
   });
 
@@ -176,14 +176,14 @@ describe('MarketApi', () => {
       };
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.assetStatus();
 
       expect(result.success).toBe(true);
       expect(result.data).toHaveProperty('BTC');
-      expect(result.data?.BTC.canDeposit).toBe(true);
+      expect(result.data!['BTC']!.canDeposit).toBe(true);
     });
   });
 
@@ -192,7 +192,7 @@ describe('MarketApi', () => {
       const mockData: string[] = ['BTC_USDT_PERP', 'ETH_USDT_PERP'];
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.availableFuturesMarkets();
@@ -208,7 +208,7 @@ describe('MarketApi', () => {
       const mockData: string[] = ['BTC_USDT', 'ETH_USDT'];
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.collateralMarkets();
@@ -242,14 +242,14 @@ describe('MarketApi', () => {
       };
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.tickers();
 
       expect(result.success).toBe(true);
       expect(result.data).toHaveProperty('BTC_USDT');
-      expect(result.data?.BTC_USDT.last_price).toBe('50000');
+      expect(result.data!['BTC_USDT']!.last_price).toBe('50000');
     });
   });
 
@@ -268,15 +268,15 @@ describe('MarketApi', () => {
       };
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.depth({ market: 'BTC_USDT' });
 
       expect(result.success).toBe(true);
-      expect(result.data?.asks.length).toBe(2);
-      expect(result.data?.bids.length).toBe(2);
-      expect(result.data?.asks[0][0]).toBe('50001');
+      expect(result.data!.asks.length).toBe(2);
+      expect(result.data!.bids.length).toBe(2);
+      expect(result.data!.asks[0]![0]).toBe('50001');
     });
 
     test('supports optional limit param', async () => {
@@ -287,13 +287,13 @@ describe('MarketApi', () => {
       };
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.depth({ market: 'BTC_USDT', limit: 1 });
 
       expect(result.success).toBe(true);
-      expect(result.data?.asks.length).toBe(1);
+      expect(result.data!.asks.length).toBe(1);
     });
   });
 
@@ -305,14 +305,14 @@ describe('MarketApi', () => {
       ];
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.trades({ market: 'BTC_USDT' });
 
       expect(result.success).toBe(true);
       expect(result.data?.length).toBe(2);
-      expect(result.data?.[0].tradeId).toBe(12345);
+      expect(result.data![0]!.tradeId).toBe(12345);
     });
 
     test('supports optional type filter', async () => {
@@ -321,13 +321,13 @@ describe('MarketApi', () => {
       ];
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.trades({ market: 'BTC_USDT', type: 'buy' });
 
       expect(result.success).toBe(true);
-      expect(result.data?.[0].type).toBe('buy');
+      expect(result.data![0]!.type).toBe('buy');
     });
   });
 
@@ -346,14 +346,14 @@ describe('MarketApi', () => {
       ];
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.kline({ market: 'BTC_USDT', interval: '1h' });
 
       expect(result.success).toBe(true);
       expect(result.data?.length).toBe(1);
-      expect(result.data?.[0].close).toBe('50000');
+      expect(result.data![0]!.close).toBe('50000');
     });
 
     test('supports optional start, end, and limit params', async () => {
@@ -370,7 +370,7 @@ describe('MarketApi', () => {
       ];
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.kline({
@@ -408,14 +408,14 @@ describe('MarketApi', () => {
       ];
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.fee();
 
       expect(result.success).toBe(true);
       expect(result.data?.length).toBe(1);
-      expect(result.data?.[0].ticker).toBe('BTC');
+      expect(result.data![0]!.ticker).toBe('BTC');
     });
   });
 
@@ -427,14 +427,14 @@ describe('MarketApi', () => {
       ];
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.fundingHistory({ market: 'BTC_USDT_PERP' });
 
       expect(result.success).toBe(true);
       expect(result.data?.length).toBe(2);
-      expect(result.data?.[0].market).toBe('BTC_USDT_PERP');
+      expect(result.data![0]!.market).toBe('BTC_USDT_PERP');
     });
 
     test('supports optional limit and offset params', async () => {
@@ -443,7 +443,7 @@ describe('MarketApi', () => {
       ];
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.fundingHistory({ market: 'BTC_USDT_PERP', limit: 50, offset: 0 });
@@ -463,7 +463,7 @@ describe('MarketApi', () => {
       };
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.miningPoolOverview();
@@ -496,15 +496,15 @@ describe('MarketApi', () => {
       };
       api = new MarketApi({
         apiUrl: API_URL,
-        fetch: createMockFetch(mockData),
+        fetch: createMockFetch(mockData) as unknown as typeof fetch,
       });
 
       const result = await api.marketActivity();
 
       expect(result.success).toBe(true);
       expect(result.data).toHaveProperty('BTC_USDT');
-      expect(result.data?.BTC_USDT.lastPrice).toBe('50000');
-      expect(result.data?.ETH_USDT.change24h).toBe('1.5');
+      expect(result.data!['BTC_USDT']!.lastPrice).toBe('50000');
+      expect(result.data!['ETH_USDT']!.change24h).toBe('1.5');
     });
   });
 });

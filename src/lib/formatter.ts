@@ -1,9 +1,11 @@
+import { getGlobalConfigOverrides } from './config';
 import type { ApiResponse } from './types';
 
 export type OutputFormat = 'json' | 'table';
 
 export interface FormatOutputOptions {
   format: OutputFormat;
+  raw?: boolean;
 }
 
 export interface FormattedError {
@@ -16,8 +18,9 @@ export interface FormatErrorOptions {
   format?: OutputFormat;
 }
 
-const MAX_TABLE_CELL_LENGTH = 50;
+const MAX_TABLE_CELL_LENGTH = 80;
 const ANSI_RED = '\u001b[31m';
+const ANSI_DIM = '\u001b[2m';
 const ANSI_RESET = '\u001b[0m';
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -168,8 +171,12 @@ const normalizeError = (error: unknown): FormattedError => {
 };
 
 export const formatOutput = (data: unknown, options: FormatOutputOptions): void => {
+  const overrides = getGlobalConfigOverrides();
+  const raw = options.raw ?? overrides.raw ?? false;
+
   if (options.format === 'json') {
-    process.stdout.write(`${JSON.stringify({ success: true, data }, null, 2)}\n`);
+    const payload = raw ? data : { success: true, data };
+    process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
     return;
   }
 
@@ -178,12 +185,24 @@ export const formatOutput = (data: unknown, options: FormatOutputOptions): void 
 
 export const formatError = (error: unknown, options: FormatErrorOptions = {}): void => {
   const normalized = normalizeError(error);
+
+  // Carry suggestion from typed errors through to output
+  const suggestion =
+    isRecord(error) && typeof (error as { suggestion?: unknown }).suggestion === 'string'
+      ? (error as { suggestion: string }).suggestion
+      : undefined;
+
   if (options.format === 'json') {
-    process.stderr.write(`${JSON.stringify({ success: false, error: normalized }, null, 2)}\n`);
+    process.stderr.write(
+      `${JSON.stringify({ success: false, error: { ...normalized, ...(suggestion ? { suggestion } : {}) } }, null, 2)}\n`,
+    );
     return;
   }
 
   process.stderr.write(`${ANSI_RED}Error${ANSI_RESET}: ${normalized.message}\n`);
+  if (suggestion) {
+    process.stderr.write(`${ANSI_DIM}Hint: ${suggestion}${ANSI_RESET}\n`);
+  }
   if (typeof normalized.details !== 'undefined') {
     process.stderr.write(`${JSON.stringify(normalized.details, null, 2)}\n`);
   }

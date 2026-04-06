@@ -51,4 +51,16 @@ describe('parseGlobalConfigOverrides', () => {
 
     expect(overrides).toEqual({});
   });
+
+  test('parses --raw flag', () => {
+    const overrides = parseGlobalConfigOverrides(['market', 'list', '--raw']);
+
+    expect(overrides).toEqual({ raw: true });
+  });
+
+  test('--raw and --json can coexist', () => {
+    const overrides = parseGlobalConfigOverrides(['market', 'list', '--raw', '--json']);
+
+    expect(overrides).toEqual({ raw: true, json: true });
+  });
 });

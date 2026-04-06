@@ -4,12 +4,14 @@ import { z } from 'zod';
 import { parseArg } from '../../lib/cli-helpers';
 import { loadAuthConfig, loadConfig } from '../../lib/config';
 import { formatOutput } from '../../lib/formatter';
+import { globalOptions } from '../../lib/global-options';
 import { authenticatedPost } from '../../lib/http';
 
 export const collateralBulkOrderCommand = defineCommand({
   name: 'bulk-order',
   description: 'Create multiple collateral limit orders',
   options: {
+    ...globalOptions,
     orders: option(z.string().min(1), {
       short: 'o',
       description: 'JSON array of orders with side, amount, price, leverage, clientOrderId',
