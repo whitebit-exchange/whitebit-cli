@@ -1,6 +1,6 @@
 # WhiteBIT CLI
 
-[![npm](https://img.shields.io/npm/v/whitebit.svg?style=flat-square)](https://www.npmjs.com/package/whitebit)
+[![npm](https://img.shields.io/npm/v/whitebit-cli.svg?style=flat-square)](https://www.npmjs.com/package/whitebit-cli)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](LICENSE)
 
 WhiteBIT Exchange CLI — trade, manage accounts, and query market data directly from your terminal.
@@ -20,40 +20,26 @@ Built for scripting, CI/CD pipelines, and anyone who prefers the command line ov
 
 ## Installation
 
-### Homebrew (macOS/Linux)
+### Homebrew (macOS/Linux) — Coming Soon
+
+> Homebrew tap is not yet available. Use NPM in the meantime.
 
 ```bash
 brew tap whitebit-exchange/tap
-brew install whitebit
+brew install whitebit-cli
 ```
 
 ### NPM/Bunx
 
 ```bash
 # Run directly with bunx (recommended)
-bunx whitebit market list
+bunx whitebit-cli market list
 
 # Or install globally with npm
-npm install -g whitebit
+npm install -g whitebit-cli
 
 # Or run with npx
-npx whitebit market list
-```
-
-### Binary Download
-
-Download pre-compiled binaries from [GitHub Releases](https://github.com/whitebit-exchange/whitebit-cli/releases):
-
-- **macOS (ARM64):** `whitebit-darwin-arm64`
-- **macOS (x64):** `whitebit-darwin-x64`
-- **Linux (ARM64):** `whitebit-linux-arm64`
-- **Linux (x64):** `whitebit-linux-x64`
-- **Windows (x64):** `whitebit-windows-x64.exe`
-
-```bash
-# Example: Install on macOS ARM64
-curl -L -o /usr/local/bin/whitebit https://github.com/whitebit-exchange/whitebit-cli/releases/latest/download/whitebit-darwin-arm64
-chmod +x /usr/local/bin/whitebit
+npx whitebit-cli market list
 ```
 
 ## Quick Start
@@ -74,6 +60,8 @@ whitebit trade spot limit-order BTC_USDT buy 0.001 50000
 ```
 
 Public market data commands work without credentials. See [Authentication](#authentication) for all credential options.
+
+> Running from source? Replace `whitebit` with `bun src/cli.ts` in all commands.
 
 ## Authentication
 
@@ -171,7 +159,7 @@ Manage deposit addresses and requests.
 Manage withdrawals and view history.
 
 - `withdraw crypto <asset> <amount> <address>` — Withdraw crypto
-- `withdraw crypto-amount <asset> <address>` — Estimate withdrawal amount
+- `withdraw crypto-amount <asset> <address> <amount>` — Withdraw crypto where recipient gets exact amount (fee added on top)
 - `withdraw fiat <currency> <amount> <provider>` — Withdraw fiat
 - `withdraw history` — Withdrawal history
 
@@ -187,7 +175,7 @@ Manage redemption codes.
 
 - `codes create <asset> <amount>` — Create redemption code
 - `codes apply <code>` — Redeem code
-- `codes history` — Code creation history
+- `codes history` — Redemption history (codes you have applied)
 - `codes list` — Active codes
 
 ### Earn (Requires Auth)
@@ -287,7 +275,7 @@ Manage sub-accounts and transfers.
 - `sub-account create <alias>` — Create sub-account
 - `sub-account balance <id>` — Sub-account balance
 - `sub-account transfer <asset> <amount> [--fromId <id>] [--toId <id>]` — Transfer funds to/from sub-account
-- `sub-account transfer-history` — Sub-account transfer history
+- `sub-account transfer-history <sub_account_id>` — Sub-account transfer history
 - `sub-account edit <id> <alias>` — Edit sub-account details
 - `sub-account delete <id>` — Delete a sub-account
 - `sub-account block <id>` — Block a sub-account
@@ -429,6 +417,19 @@ Open an issue at [GitHub Issues](https://github.com/whitebit-exchange/whitebit-c
 For API errors, re-run with `--verbose` to capture the full request and response, and include that output in the issue.
 
 ## Development
+
+### Dependencies
+
+The following tools must be installed before working with this project:
+
+- **[Bun](https://bun.sh) ≥ 1.0** — runtime, package manager, test runner, and bundler. Install via:
+  ```bash
+  curl -fsSL https://bun.sh/install | bash
+  ```
+- **Node.js ≥ 18** — required only if using `npm`/`npx` instead of Bun directly.
+- **Git** — to clone the repository.
+
+### Setup
 
 ```bash
 # Clone repository

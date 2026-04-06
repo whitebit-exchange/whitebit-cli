@@ -1,5 +1,5 @@
 {
-  "name": "whitebit",
+  "name": "whitebit-cli",
   "version": "0.1.0",
   "description": "WhiteBIT Exchange CLI — Trade, manage accounts, and query market data from the terminal",
   "license": "Apache-2.0",
