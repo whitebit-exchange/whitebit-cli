@@ -20,13 +20,10 @@ Built for scripting, CI/CD pipelines, and anyone who prefers the command line ov
 
 ## Installation
 
-### Homebrew (macOS/Linux) — Coming Soon
-
-> Homebrew tap is not yet available. Use NPM in the meantime.
+### Homebrew (macOS/Linux)
 
 ```bash
-brew tap whitebit-exchange/tap
-brew install whitebit-cli
+brew install whitebit-exchange/tap/whitebit
 ```
 
 ### NPM/Bunx
