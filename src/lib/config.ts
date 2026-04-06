@@ -313,6 +313,7 @@ export const loadConfig = (options: LoadConfigOptions = {}): LoadedConfig => {
       verbose: config.verbose || undefined,
       dryRun: config.dryRun || undefined,
       retry: merged.retry,
+      raw: config.raw || undefined,
     };
   }
 

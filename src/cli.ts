@@ -131,7 +131,7 @@ try {
   await cli.run(Bun.argv.slice(2));
 } catch (error) {
   const overrides = getGlobalConfigOverrides();
-  const format = overrides.json ? 'json' : (overrides.format ?? 'table');
+  const format = overrides.json || overrides.raw ? 'json' : (overrides.format ?? 'table');
   formatError(error, { format });
   process.exit(inferExitCode(error));
 }

@@ -22,7 +22,7 @@ export const accountMiningHashrateCommand = defineCommand({
     const account = positional[0];
     if (!account) {
       throw new Error(
-        'Missing required argument: ACCOUNT\n\nUsage: whitebit mining-pool hashrate <account>',
+        'Missing required argument: ACCOUNT\n\nUsage: whitebit market mining-hashrate <account>',
       );
     }
 

@@ -89,6 +89,24 @@ describe('output formatter', () => {
     expect(captureWrites(stdoutSpy)).toContain('No results found');
   });
 
+  test('JSON format with raw:true emits bare data without envelope', () => {
+    const stdoutSpy = spyOn(process.stdout, 'write').mockImplementation(() => true);
+
+    formatOutput({ ticker: 'BTC_USDT' }, { format: 'json', raw: true });
+
+    const parsed = JSON.parse(captureWrites(stdoutSpy));
+    expect(parsed).toEqual({ ticker: 'BTC_USDT' });
+  });
+
+  test('JSON format with raw:false emits { success: true, data } envelope', () => {
+    const stdoutSpy = spyOn(process.stdout, 'write').mockImplementation(() => true);
+
+    formatOutput({ ticker: 'BTC_USDT' }, { format: 'json', raw: false });
+
+    const parsed = JSON.parse(captureWrites(stdoutSpy));
+    expect(parsed).toEqual({ success: true, data: { ticker: 'BTC_USDT' } });
+  });
+
   test('table format truncates long values (>80 chars)', () => {
     const stdoutSpy = spyOn(process.stdout, 'write').mockImplementation(() => true);
     const longValue = 'x'.repeat(90); // 90 > MAX_TABLE_CELL_LENGTH (80)

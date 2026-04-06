@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 export const globalOptions = {
   json: option(z.boolean().optional(), { description: 'Output as JSON' }),
+  raw: option(z.boolean().optional(), { description: 'Output raw API response without envelope' }),
   verbose: option(z.boolean().optional(), {
     description: 'Verbose output (show raw API responses)',
     short: 'V',
@@ -21,6 +22,7 @@ export const globalOptions = {
 
 export type GlobalFlags = {
   json?: boolean;
+  raw?: boolean;
   verbose?: boolean;
   'dry-run'?: boolean;
   format?: 'json' | 'table';
