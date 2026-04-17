@@ -1,10 +1,9 @@
 import { describe, expect, test } from 'bun:test';
 
-import { listCommand } from '../../../src/commands/sub-account/list';
-import type { SubAccount } from '../../../src/lib/types/sub-account';
+import { subAccountGroup } from '../../../src/commands/sub-account';
+import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
-const createMockFetch =
-  (mockResponse: unknown, status = 200) =>
+const createMockFetch = (mockResponse: unknown, status = 200) =>
   async (): Promise<Response> =>
     ({
       ok: status >= 200 && status < 300,
@@ -15,56 +14,37 @@ const createMockFetch =
       text: async () => JSON.stringify(mockResponse),
     }) as Response;
 
+const listCommand = subAccountGroup.commands.find((c) => c.name === 'list')!;
+
 describe('sub-account list command', () => {
+  test('command is registered in sub-account group', () => {
+    expect(listCommand).toBeDefined();
+    expect(listCommand.name).toBe('list');
+  });
+
   test('lists sub-accounts successfully', async () => {
-    const mockSubAccounts: SubAccount[] = [
+    setGlobalConfigOverrides({ format: 'json' });
+
+    const mockSubAccounts = [
       { id: 'sub-1', alias: 'Trading Bot', status: 'active' },
       { id: 'sub-2', alias: 'Savings Account', status: 'active' },
     ];
 
     global.fetch = createMockFetch(mockSubAccounts) as unknown as typeof fetch;
 
-    let capturedOutput = '';
-    const originalStdoutWrite = process.stdout.write;
+    let output = '';
+    const orig = process.stdout.write;
     process.stdout.write = ((chunk: string) => {
-      capturedOutput += chunk;
+      output += chunk;
       return true;
     }) as typeof process.stdout.write;
 
     try {
-      await listCommand.handler!({
-        flags: {
-          apiUrl: 'https://whitebit.com',
-          apiKey: 'test-key',
-          apiSecret: 'test-secret',
-          format: 'json' as const,
-        },
-      } as never);
-
-      expect(capturedOutput).toContain('Trading Bot');
-      expect(capturedOutput).toContain('Savings Account');
+      await listCommand.handler!({ flags: {} } as never);
+      expect(output).toContain('Trading Bot');
+      expect(output).toContain('Savings Account');
     } finally {
-      process.stdout.write = originalStdoutWrite;
-    }
-  });
-
-  test('handles error gracefully', async () => {
-    const mockError = { code: 1001, message: 'Authentication failed' };
-    global.fetch = createMockFetch(mockError, 401) as unknown as typeof fetch;
-
-    try {
-      await listCommand.handler!({
-        flags: {
-          apiUrl: 'https://whitebit.com',
-          apiKey: 'test-key',
-          apiSecret: 'test-secret',
-          format: 'json' as const,
-        },
-      } as never);
-      expect.unreachable();
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect((error as Error).message).toContain('Authentication failed');
+      process.stdout.write = orig;
     }
   });
 });

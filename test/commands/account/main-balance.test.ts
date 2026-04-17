@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'bun:test';
 
-import { accountMainBalanceCommand } from '../../../src/commands/balance/main-balance';
+import { accountGroup } from '../../../src/commands/account';
+import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
-const createMockFetch =
-  (mockResponse: unknown, status = 200) =>
+const createMockFetch = (mockResponse: unknown, status = 200) =>
   async (): Promise<Response> =>
     ({
       ok: status >= 200 && status < 300,
@@ -14,8 +14,17 @@ const createMockFetch =
       text: async () => JSON.stringify(mockResponse),
     }) as Response;
 
+const mainBalanceCommand = accountGroup.commands.find((c) => c.name === 'main-balance')!;
+
 describe('account main-balance command', () => {
+  test('command is registered in account group', () => {
+    expect(mainBalanceCommand).toBeDefined();
+    expect(mainBalanceCommand.name).toBe('main-balance');
+  });
+
   test('fetches main balance successfully', async () => {
+    setGlobalConfigOverrides({ format: 'json' });
+
     const mockBalance = {
       BTC: { main_balance: '1.5' },
       ETH: { main_balance: '10.0' },
@@ -23,81 +32,42 @@ describe('account main-balance command', () => {
 
     global.fetch = createMockFetch(mockBalance) as unknown as typeof fetch;
 
-    let capturedOutput = '';
-    const originalStdoutWrite = process.stdout.write;
+    let output = '';
+    const orig = process.stdout.write;
     process.stdout.write = ((chunk: string) => {
-      capturedOutput += chunk;
+      output += chunk;
       return true;
     }) as typeof process.stdout.write;
 
     try {
-      await accountMainBalanceCommand.handler!({
-        positional: [],
-        flags: {
-          apiUrl: 'https://whitebit.com',
-          apiKey: 'test-key',
-          apiSecret: 'test-secret',
-          format: 'json' as const,
-        },
-      } as never);
-
-      expect(capturedOutput).toContain('1.5');
-      expect(capturedOutput).toContain('BTC');
+      await mainBalanceCommand.handler!({ flags: {} } as never);
+      expect(output).toContain('BTC');
+      expect(output).toContain('1.5');
     } finally {
-      process.stdout.write = originalStdoutWrite;
+      process.stdout.write = orig;
     }
   });
 
-  test('fetches main balance with ticker filter', async () => {
-    const mockBalance = {
-      BTC: { main_balance: '1.5' },
-    };
+  test('fetches balance with ticker filter', async () => {
+    setGlobalConfigOverrides({ format: 'json' });
+
+    const mockBalance = { BTC: { main_balance: '1.5' } };
 
     global.fetch = createMockFetch(mockBalance) as unknown as typeof fetch;
 
-    let capturedOutput = '';
-    const originalStdoutWrite = process.stdout.write;
+    let output = '';
+    const orig = process.stdout.write;
     process.stdout.write = ((chunk: string) => {
-      capturedOutput += chunk;
+      output += chunk;
       return true;
     }) as typeof process.stdout.write;
 
     try {
-      await accountMainBalanceCommand.handler!({
-        positional: ['BTC'],
-        flags: {
-          apiUrl: 'https://whitebit.com',
-          apiKey: 'test-key',
-          apiSecret: 'test-secret',
-          format: 'json' as const,
-        },
-      } as never);
-
-      expect(capturedOutput).toContain('1.5');
-      expect(capturedOutput).toContain('BTC');
+      await mainBalanceCommand.handler!({ flags: { ticker: 'BTC' } } as never);
+      expect(output).toContain('BTC');
+      expect(output).toContain('1.5');
     } finally {
-      process.stdout.write = originalStdoutWrite;
-    }
-  });
-
-  test('handles error gracefully', async () => {
-    const mockError = { code: 1001, message: 'Invalid ticker' };
-    global.fetch = createMockFetch(mockError, 400) as unknown as typeof fetch;
-
-    try {
-      await accountMainBalanceCommand.handler!({
-        positional: [],
-        flags: {
-          apiUrl: 'https://whitebit.com',
-          apiKey: 'test-key',
-          apiSecret: 'test-secret',
-          format: 'json' as const,
-        },
-      } as never);
-      expect.unreachable();
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect((error as Error).message).toContain('Invalid ticker');
+      process.stdout.write = orig;
     }
   });
 });

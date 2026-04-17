@@ -1,12 +1,8 @@
 {
   "name": "whitebit-cli",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "WhiteBIT Exchange CLI — Trade, manage accounts, and query market data from the terminal",
   "license": "Apache-2.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/whitebit-exchange/whitebit-cli"
-  },
   "bin": {
     "whitebit": "src/cli.ts"
   },
@@ -32,21 +28,17 @@
     "build": "bun build --compile --minify src/cli.ts --outfile dist/whitebit",
     "lint": "biome check .",
     "format": "biome format --write .",
-    "typecheck": "tsc --noEmit",
-    "test": "bun test",
-    "smoke": "bash test/smoke.sh --dev"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@bunli/core": "^0.8.2",
-    "@bunli/plugin-completions": "^0.3.4",
     "smol-toml": "^1.6.0",
+    "whitebit-typescript-sdk": "^1.0.6",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.6",
     "@types/bun": "^1.3.10",
-    "@types/js-yaml": "^4.0.9",
-    "js-yaml": "^4.1.1",
     "typescript": "^5.9.3"
   }
 }

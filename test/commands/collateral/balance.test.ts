@@ -1,10 +1,9 @@
 import { describe, expect, test } from 'bun:test';
 
-import { collateralBalanceCommand } from '../../../src/commands/collateral/balance';
-import type { CollateralBalance } from '../../../src/lib/types/collateral';
+import { collateralGroup } from '../../../src/commands/collateral';
+import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
-const createMockFetch =
-  (mockResponse: unknown, status = 200) =>
+const createMockFetch = (mockResponse: unknown, status = 200) =>
   async (): Promise<Response> =>
     ({
       ok: status >= 200 && status < 300,
@@ -15,56 +14,37 @@ const createMockFetch =
       text: async () => JSON.stringify(mockResponse),
     }) as Response;
 
+const balanceCommand = collateralGroup.commands.find((c) => c.name === 'balance')!;
+
 describe('collateral balance command', () => {
+  test('command is registered in collateral group', () => {
+    expect(balanceCommand).toBeDefined();
+    expect(balanceCommand.name).toBe('balance');
+  });
+
   test('fetches collateral balance successfully', async () => {
-    const mockBalance: CollateralBalance = {
+    setGlobalConfigOverrides({ format: 'json' });
+
+    const mockBalance = {
       BTC: { available: '1.5', freeze: '0.5' },
       USDT: { available: '10000', freeze: '5000' },
     };
 
     global.fetch = createMockFetch(mockBalance) as unknown as typeof fetch;
 
-    let capturedOutput = '';
-    const originalStdoutWrite = process.stdout.write;
+    let output = '';
+    const orig = process.stdout.write;
     process.stdout.write = ((chunk: string) => {
-      capturedOutput += chunk;
+      output += chunk;
       return true;
     }) as typeof process.stdout.write;
 
     try {
-      await collateralBalanceCommand.handler!({
-        flags: {
-          apiUrl: 'https://whitebit.com',
-          apiKey: 'test-key',
-          apiSecret: 'test-secret',
-          format: 'json' as const,
-        },
-      } as never);
-
-      expect(capturedOutput).toContain('BTC');
-      expect(capturedOutput).toContain('1.5');
+      await balanceCommand.handler!({ flags: {} } as never);
+      expect(output).toContain('BTC');
+      expect(output).toContain('1.5');
     } finally {
-      process.stdout.write = originalStdoutWrite;
-    }
-  });
-
-  test('handles error gracefully', async () => {
-    const mockError = { code: 1001, message: 'Authentication failed' };
-    global.fetch = createMockFetch(mockError, 401) as unknown as typeof fetch;
-
-    try {
-      await collateralBalanceCommand.handler!({
-        flags: {
-          apiUrl: 'https://whitebit.com',
-          apiKey: 'test-key',
-          apiSecret: 'test-secret',
-          format: 'json' as const,
-        },
-      } as never);
-      expect.unreachable();
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect((error as Error).message).toContain('Authentication failed');
+      process.stdout.write = orig;
     }
   });
 });

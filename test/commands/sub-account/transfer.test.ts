@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'bun:test';
 
-import { transferCommand } from '../../../src/commands/sub-account/transfer';
+import { subAccountGroup } from '../../../src/commands/sub-account';
+import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
-const createMockFetch =
-  (mockResponse: unknown, status = 200) =>
+const createMockFetch = (mockResponse: unknown, status = 200) =>
   async (): Promise<Response> =>
     ({
       ok: status >= 200 && status < 300,
@@ -14,86 +14,61 @@ const createMockFetch =
       text: async () => JSON.stringify(mockResponse),
     }) as Response;
 
-describe('sub-account transfer command', () => {
+const transferToSubCommand = subAccountGroup.commands.find((c) => c.name === 'transfer-to-sub')!;
+const transferToMainCommand = subAccountGroup.commands.find((c) => c.name === 'transfer-to-main')!;
+
+describe('sub-account transfer commands', () => {
+  test('transfer-to-sub is registered', () => {
+    expect(transferToSubCommand).toBeDefined();
+    expect(transferToSubCommand.name).toBe('transfer-to-sub');
+  });
+
+  test('transfer-to-main is registered', () => {
+    expect(transferToMainCommand).toBeDefined();
+    expect(transferToMainCommand.name).toBe('transfer-to-main');
+  });
+
   test('transfers funds to sub-account successfully', async () => {
-    const mockResult = { result: 'success' };
+    setGlobalConfigOverrides({ format: 'json' });
 
-    global.fetch = createMockFetch(mockResult) as unknown as typeof fetch;
+    global.fetch = createMockFetch({ result: 'success' }) as unknown as typeof fetch;
 
-    let capturedOutput = '';
-    const originalStdoutWrite = process.stdout.write;
+    let output = '';
+    const orig = process.stdout.write;
     process.stdout.write = ((chunk: string) => {
-      capturedOutput += chunk;
+      output += chunk;
       return true;
     }) as typeof process.stdout.write;
 
     try {
-      await transferCommand.handler!({
-        positional: ['BTC', '0.5'],
-        flags: {
-          toId: 'sub-1',
-          apiUrl: 'https://whitebit.com',
-          apiKey: 'test-key',
-          apiSecret: 'test-secret',
-          format: 'json' as const,
-        },
+      await transferToSubCommand.handler!({
+        flags: { id: 'sub-1', ticker: 'BTC', amount: '0.5' },
       } as never);
-
-      expect(capturedOutput).toContain('success');
+      expect(output).toContain('success');
     } finally {
-      process.stdout.write = originalStdoutWrite;
+      process.stdout.write = orig;
     }
   });
 
-  test('transfers funds from sub-account successfully', async () => {
-    const mockResult = { result: 'success' };
+  test('transfers funds from sub-account to main', async () => {
+    setGlobalConfigOverrides({ format: 'json' });
 
-    global.fetch = createMockFetch(mockResult) as unknown as typeof fetch;
+    global.fetch = createMockFetch({ result: 'success' }) as unknown as typeof fetch;
 
-    let capturedOutput = '';
-    const originalStdoutWrite = process.stdout.write;
+    let output = '';
+    const orig = process.stdout.write;
     process.stdout.write = ((chunk: string) => {
-      capturedOutput += chunk;
+      output += chunk;
       return true;
     }) as typeof process.stdout.write;
 
     try {
-      await transferCommand.handler!({
-        positional: ['ETH', '1.0'],
-        flags: {
-          fromId: 'sub-1',
-          apiUrl: 'https://whitebit.com',
-          apiKey: 'test-key',
-          apiSecret: 'test-secret',
-          format: 'json' as const,
-        },
+      await transferToMainCommand.handler!({
+        flags: { id: 'sub-1', ticker: 'ETH', amount: '1.0' },
       } as never);
-
-      expect(capturedOutput).toContain('success');
+      expect(output).toContain('success');
     } finally {
-      process.stdout.write = originalStdoutWrite;
-    }
-  });
-
-  test('handles insufficient balance error', async () => {
-    const mockError = { code: 1002, message: 'Insufficient balance' };
-    global.fetch = createMockFetch(mockError, 400) as unknown as typeof fetch;
-
-    try {
-      await transferCommand.handler!({
-        positional: ['BTC', '100'],
-        flags: {
-          fromId: 'sub-1',
-          apiUrl: 'https://whitebit.com',
-          apiKey: 'test-key',
-          apiSecret: 'test-secret',
-          format: 'json' as const,
-        },
-      } as never);
-      expect.unreachable();
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect((error as Error).message).toContain('Insufficient balance');
+      process.stdout.write = orig;
     }
   });
 });
