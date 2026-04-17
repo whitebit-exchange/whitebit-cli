@@ -13,8 +13,12 @@ const setCommand = defineCommand({
   options: {
     'api-key': option(z.string(), { description: 'WhiteBit API key' }),
     'api-secret': option(z.string(), { description: 'WhiteBit API secret (token)' }),
-    'api-url': option(z.string().optional(), { description: 'Custom API URL (default: https://whitebit.com)' }),
-    profile: option(z.string().optional(), { description: 'Config profile name (default: default)' }),
+    'api-url': option(z.string().optional(), {
+      description: 'Custom API URL (default: https://whitebit.com)',
+    }),
+    profile: option(z.string().optional(), {
+      description: 'Config profile name (default: default)',
+    }),
   },
   handler: async ({ flags }) => {
     const { format } = loadConfig();

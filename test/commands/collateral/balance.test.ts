@@ -3,7 +3,8 @@ import { describe, expect, test } from 'bun:test';
 import { collateralGroup } from '../../../src/commands/collateral';
 import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
-const createMockFetch = (mockResponse: unknown, status = 200) =>
+const createMockFetch =
+  (mockResponse: unknown, status = 200) =>
   async (): Promise<Response> =>
     ({
       ok: status >= 200 && status < 300,

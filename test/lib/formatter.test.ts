@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, spyOn, test, vi } from 'bun:test';
 
-import { formatError, formatOutput } from '../../src/lib/formatter';
 import { setGlobalConfigOverrides } from '../../src/lib/config';
+import { formatError, formatOutput } from '../../src/lib/formatter';
 
 const captureWrites = (spy: ReturnType<typeof spyOn>): string =>
   spy.mock.calls.map((args: unknown[]) => String(args[0])).join('');

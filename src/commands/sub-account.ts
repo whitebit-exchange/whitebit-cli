@@ -30,7 +30,9 @@ const createCommand = defineCommand({
     alias: option(z.string(), { description: 'Sub-account alias/name' }),
     email: option(z.string().optional(), { description: 'Sub-account email' }),
     spot: option(z.boolean().optional(), { description: 'Enable spot trading (default true)' }),
-    collateral: option(z.boolean().optional(), { description: 'Enable collateral trading (default false)' }),
+    collateral: option(z.boolean().optional(), {
+      description: 'Enable collateral trading (default false)',
+    }),
   },
   handler: async ({ flags }) => {
     const { format } = loadConfig();

@@ -55,9 +55,7 @@ const renderTable = (data: unknown): string => {
   const r = rows(data);
   if (r.length === 0) return 'No results found';
   const h = headers(r);
-  const w = h.map((hdr) =>
-    Math.max(hdr.length, ...r.map((row) => cell(row[hdr]).length)),
-  );
+  const w = h.map((hdr) => Math.max(hdr.length, ...r.map((row) => cell(row[hdr]).length)));
   const border = `+${w.map((n) => '-'.repeat(n + 2)).join('+')}+`;
   const hdrRow = `| ${h.map((hdr, i) => hdr.padEnd(w[i] ?? 0)).join(' | ')} |`;
   const dataRows = r.map(

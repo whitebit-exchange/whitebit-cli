@@ -3,7 +3,8 @@ import { describe, expect, test } from 'bun:test';
 import { spotGroup } from '../../../src/commands/spot';
 import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
-const createMockFetch = (mockResponse: unknown, status = 200) =>
+const createMockFetch =
+  (mockResponse: unknown, status = 200) =>
   async (): Promise<Response> =>
     ({
       ok: status >= 200 && status < 300,
@@ -27,8 +28,22 @@ describe('spot active-orders command', () => {
     setGlobalConfigOverrides({ format: 'json' });
 
     const mockOrders = [
-      { orderId: 123456, market: 'BTC_USDT', side: 'buy', type: 'limit', amount: '0.01', price: '50000' },
-      { orderId: 123457, market: 'ETH_USDT', side: 'sell', type: 'limit', amount: '1.5', price: '3000' },
+      {
+        orderId: 123456,
+        market: 'BTC_USDT',
+        side: 'buy',
+        type: 'limit',
+        amount: '0.01',
+        price: '50000',
+      },
+      {
+        orderId: 123457,
+        market: 'ETH_USDT',
+        side: 'sell',
+        type: 'limit',
+        amount: '1.5',
+        price: '3000',
+      },
     ];
 
     global.fetch = createMockFetch(mockOrders) as unknown as typeof fetch;

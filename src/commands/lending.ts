@@ -1,7 +1,7 @@
 import { defineCommand, defineGroup, option } from '@bunli/core';
 import { z } from 'zod';
 
-import { authFields, createClient, createPublicClient } from '../lib/client';
+import { authFields, createClient } from '../lib/client';
 import { loadConfig } from '../lib/config';
 import { formatOutput } from '../lib/formatter';
 

@@ -6,7 +6,12 @@ import { loadAuthConfig, loadPublicConfig } from './config';
 
 function makeSigningFetch(apiKey: string, apiSecret: string) {
   return async (input: string | URL | Request, init?: RequestInit): Promise<Response> => {
-    const url = typeof input === 'string' ? input : input instanceof URL ? input.href : (input as Request).url;
+    const url =
+      typeof input === 'string'
+        ? input
+        : input instanceof URL
+          ? input.href
+          : (input as Request).url;
     const endpointPath = new URL(url).pathname;
 
     let bodyObj: Record<string, unknown> = {};

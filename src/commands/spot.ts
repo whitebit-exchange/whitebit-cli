@@ -56,7 +56,9 @@ const marketOrderCommand = defineCommand({
   options: {
     market: option(z.string(), { description: 'Market pair, e.g. BTC_USDT', short: 'm' }),
     side: option(z.enum(['buy', 'sell']), { description: 'buy or sell' }),
-    amount: option(z.string(), { description: 'Amount in quote currency (buy) or base currency (sell)' }),
+    amount: option(z.string(), {
+      description: 'Amount in quote currency (buy) or base currency (sell)',
+    }),
     'client-order-id': option(z.string().optional(), { description: 'Optional client order ID' }),
   },
   handler: async ({ flags }) => {
@@ -155,9 +157,7 @@ const cancelAllCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    await client.spotTrading.cancelAllOrders(
-      flags.market ? { market: flags.market } : undefined,
-    );
+    await client.spotTrading.cancelAllOrders(flags.market ? { market: flags.market } : undefined);
     formatOutput({ success: true }, format);
   },
 });

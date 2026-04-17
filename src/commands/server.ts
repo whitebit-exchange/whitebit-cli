@@ -1,5 +1,4 @@
-import { defineCommand, defineGroup, option } from '@bunli/core';
-import { z } from 'zod';
+import { defineCommand, defineGroup } from '@bunli/core';
 
 import { createPublicClient } from '../lib/client';
 import { loadConfig } from '../lib/config';

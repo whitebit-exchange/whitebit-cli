@@ -18,7 +18,8 @@ const inferExitCode = (error: unknown): number => {
   const msg = error instanceof Error ? error.message : String(error ?? '');
   const name = error instanceof Error ? error.name : '';
   if (name === 'CredentialsMissingError') return 2;
-  if (msg.toLowerCase().includes('missing required') || msg.toLowerCase().includes('usage:')) return 4;
+  if (msg.toLowerCase().includes('missing required') || msg.toLowerCase().includes('usage:'))
+    return 4;
   return 1;
 };
 
@@ -53,7 +54,12 @@ try {
   await cli.run(rawArgv);
 } catch (error) {
   const overrides = getGlobalConfigOverrides();
-  const format = (overrides.json || overrides.raw) ? 'json' : ((overrides.format as string) === 'json' ? 'json' : 'table');
+  const format =
+    overrides.json || overrides.raw
+      ? 'json'
+      : (overrides.format as string) === 'json'
+        ? 'json'
+        : 'table';
   formatError(error, format as 'json' | 'table');
   process.exit(inferExitCode(error));
 }

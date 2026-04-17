@@ -12,7 +12,9 @@ const estimateCommand = defineCommand({
     from: option(z.string(), { description: 'Source asset ticker, e.g. BTC' }),
     to: option(z.string(), { description: 'Target asset ticker, e.g. USDT' }),
     amount: option(z.string(), { description: 'Amount to convert' }),
-    direction: option(z.enum(['from', 'to']).optional(), { description: 'Direction: from or to (default: from)' }),
+    direction: option(z.enum(['from', 'to']).optional(), {
+      description: 'Direction: from or to (default: from)',
+    }),
   },
   handler: async ({ flags }) => {
     const { format } = loadConfig();
