@@ -1,25 +1,57 @@
 import { describe, expect, test } from 'bun:test';
 
-import { convertEstimateCommand } from '../../../src/commands/convert/estimate';
+import { convertGroup } from '../../../src/commands/convert';
+import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
-describe('convertEstimateCommand', () => {
-  test('command metadata is correct', () => {
-    expect(convertEstimateCommand).toBeDefined();
-    expect(convertEstimateCommand.name).toBe('estimate');
-    expect(convertEstimateCommand.description).toBe(
-      'Get conversion quote with rate and estimated output amount before commit',
-    );
+const createMockFetch =
+  (mockResponse: unknown, status = 200) =>
+  async (): Promise<Response> =>
+    ({
+      ok: status >= 200 && status < 300,
+      status,
+      statusText: status === 200 ? 'OK' : 'Error',
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => mockResponse,
+      text: async () => JSON.stringify(mockResponse),
+    }) as Response;
+
+const estimateCommand = convertGroup.commands.find((c) => c.name === 'estimate')!;
+
+describe('convert estimate command', () => {
+  test('command is registered in convert group', () => {
+    expect(estimateCommand).toBeDefined();
+    expect(estimateCommand.name).toBe('estimate');
   });
 
-  test('command handler accepts positional arguments', async () => {
-    expect(convertEstimateCommand.handler).toBeDefined();
-    const mockContext = {
-      positional: ['BTC', 'USDT', '1'],
-      flags: {},
+  test('fetches conversion estimate successfully', async () => {
+    setGlobalConfigOverrides({ format: 'json' });
+
+    const mockEstimate = {
+      quoteId: 'quote-123',
+      from: 'BTC',
+      to: 'USDT',
+      amount: '1',
+      estimatedAmount: '50000',
+      rate: '50000',
     };
-    expect(mockContext.positional).toHaveLength(3);
-    expect(mockContext.positional[0]).toBe('BTC');
-    expect(mockContext.positional[1]).toBe('USDT');
-    expect(mockContext.positional[2]).toBe('1');
+
+    global.fetch = createMockFetch(mockEstimate) as unknown as typeof fetch;
+
+    let output = '';
+    const orig = process.stdout.write;
+    process.stdout.write = ((chunk: string) => {
+      output += chunk;
+      return true;
+    }) as typeof process.stdout.write;
+
+    try {
+      await estimateCommand.handler!({
+        flags: { from: 'BTC', to: 'USDT', amount: '1' },
+      } as never);
+      expect(output).toContain('quote-123');
+      expect(output).toContain('50000');
+    } finally {
+      process.stdout.write = orig;
+    }
   });
 });

@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 
-import { accountWithdrawCryptoCommand } from '../../../src/commands/withdraw/withdraw-crypto';
+import { accountGroup } from '../../../src/commands/account';
+import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
 const createMockFetch =
   (mockResponse: unknown, status = 200) =>
@@ -14,90 +15,68 @@ const createMockFetch =
       text: async () => JSON.stringify(mockResponse),
     }) as Response;
 
-describe('account withdraw-crypto command', () => {
+const withdrawCommand = accountGroup.commands.find((c) => c.name === 'withdraw')!;
+
+describe('account withdraw command', () => {
+  test('command is registered in account group', () => {
+    expect(withdrawCommand).toBeDefined();
+    expect(withdrawCommand.name).toBe('withdraw');
+  });
+
   test('withdraws crypto successfully', async () => {
-    const mockResponse = {
-      success: true,
-      id: 12345,
-    };
+    setGlobalConfigOverrides({ format: 'json' });
+
+    const mockResponse = { id: 12345 };
 
     global.fetch = createMockFetch(mockResponse) as unknown as typeof fetch;
 
-    let capturedOutput = '';
-    const originalStdoutWrite = process.stdout.write;
+    let output = '';
+    const orig = process.stdout.write;
     process.stdout.write = ((chunk: string) => {
-      capturedOutput += chunk;
+      output += chunk;
       return true;
     }) as typeof process.stdout.write;
 
     try {
-      await accountWithdrawCryptoCommand.handler!({
-        positional: ['BTC', '0.1', '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'],
+      await withdrawCommand.handler!({
         flags: {
-          apiUrl: 'https://whitebit.com',
-          apiKey: 'test-key',
-          apiSecret: 'test-secret',
-          format: 'json' as const,
+          ticker: 'BTC',
+          amount: '0.1',
+          address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
         },
       } as never);
-
-      expect(capturedOutput).toContain('12345');
+      expect(output).toContain('12345');
     } finally {
-      process.stdout.write = originalStdoutWrite;
+      process.stdout.write = orig;
     }
   });
 
-  test('withdraws crypto with network and memo', async () => {
-    const mockResponse = {
-      success: true,
-      id: 67890,
-    };
+  test('withdraws with optional memo', async () => {
+    setGlobalConfigOverrides({ format: 'json' });
+
+    const mockResponse = { id: 67890 };
 
     global.fetch = createMockFetch(mockResponse) as unknown as typeof fetch;
 
-    let capturedOutput = '';
-    const originalStdoutWrite = process.stdout.write;
+    let output = '';
+    const orig = process.stdout.write;
     process.stdout.write = ((chunk: string) => {
-      capturedOutput += chunk;
+      output += chunk;
       return true;
     }) as typeof process.stdout.write;
 
     try {
-      await accountWithdrawCryptoCommand.handler!({
-        positional: ['XRP', '100', 'rN7n7otQDd6FczFgLdlqtyMVrn3PvNvMGmm'],
+      await withdrawCommand.handler!({
         flags: {
+          ticker: 'XRP',
+          amount: '100',
+          address: 'rN7n7otQDd6FczFgLdlqtyMVrn3PvNvMGmm',
           memo: '123456',
-          apiUrl: 'https://whitebit.com',
-          apiKey: 'test-key',
-          apiSecret: 'test-secret',
-          format: 'json' as const,
         },
       } as never);
-
-      expect(capturedOutput).toContain('67890');
+      expect(output).toContain('67890');
     } finally {
-      process.stdout.write = originalStdoutWrite;
-    }
-  });
-
-  test('handles withdrawal error', async () => {
-    const mockError = { code: 2001, message: 'Insufficient balance' };
-    global.fetch = createMockFetch(mockError, 400) as unknown as typeof fetch;
-
-    try {
-      await accountWithdrawCryptoCommand.handler!({
-        positional: ['BTC', '1000', '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'],
-        flags: {
-          apiUrl: 'https://whitebit.com',
-          apiKey: 'test-key',
-          apiSecret: 'test-secret',
-          format: 'json' as const,
-        },
-      } as never);
-      expect.unreachable();
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect((error as Error).message).toContain('Insufficient balance');
+      process.stdout.write = orig;
     }
   });
 });

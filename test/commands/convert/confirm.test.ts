@@ -1,23 +1,49 @@
 import { describe, expect, test } from 'bun:test';
 
-import { convertConfirmCommand } from '../../../src/commands/convert/confirm';
+import { convertGroup } from '../../../src/commands/convert';
+import { setGlobalConfigOverrides } from '../../../src/lib/config';
 
-describe('convertConfirmCommand', () => {
-  test('command metadata is correct', () => {
-    expect(convertConfirmCommand).toBeDefined();
-    expect(convertConfirmCommand.name).toBe('confirm');
-    expect(convertConfirmCommand.description).toBe(
-      'Execute conversion using a previously estimated quote ID',
-    );
+const createMockFetch =
+  (mockResponse: unknown, status = 200) =>
+  async (): Promise<Response> =>
+    ({
+      ok: status >= 200 && status < 300,
+      status,
+      statusText: status === 200 ? 'OK' : 'Error',
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => mockResponse,
+      text: async () => JSON.stringify(mockResponse),
+    }) as Response;
+
+const confirmCommand = convertGroup.commands.find((c) => c.name === 'confirm')!;
+
+describe('convert confirm command', () => {
+  test('command is registered in convert group', () => {
+    expect(confirmCommand).toBeDefined();
+    expect(confirmCommand.name).toBe('confirm');
   });
 
-  test('command handler accepts positional arguments', async () => {
-    expect(convertConfirmCommand.handler).toBeDefined();
-    const mockContext = {
-      positional: ['est-123'],
-      flags: {},
-    };
-    expect(mockContext.positional).toHaveLength(1);
-    expect(mockContext.positional[0]).toBe('est-123');
+  test('confirms conversion successfully', async () => {
+    setGlobalConfigOverrides({ format: 'json' });
+
+    const mockResult = { success: true, transactionId: 'txn-456' };
+
+    global.fetch = createMockFetch(mockResult) as unknown as typeof fetch;
+
+    let output = '';
+    const orig = process.stdout.write;
+    process.stdout.write = ((chunk: string) => {
+      output += chunk;
+      return true;
+    }) as typeof process.stdout.write;
+
+    try {
+      await confirmCommand.handler!({
+        flags: { 'quote-id': 'quote-123' },
+      } as never);
+      expect(output).toContain('txn-456');
+    } finally {
+      process.stdout.write = orig;
+    }
   });
 });

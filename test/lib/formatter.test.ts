@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, spyOn, test, vi } from 'bun:test';
 
+import { setGlobalConfigOverrides } from '../../src/lib/config';
 import { formatError, formatOutput } from '../../src/lib/formatter';
 
 const captureWrites = (spy: ReturnType<typeof spyOn>): string =>
@@ -13,7 +14,7 @@ describe('output formatter', () => {
   test('JSON format outputs { success: true, data } envelope', () => {
     const stdoutSpy = spyOn(process.stdout, 'write').mockImplementation(() => true);
 
-    formatOutput({ ticker: 'BTC_USDT' }, { format: 'json' });
+    formatOutput({ ticker: 'BTC_USDT' }, 'json');
 
     const parsed = JSON.parse(captureWrites(stdoutSpy));
     expect(parsed).toEqual({
@@ -22,39 +23,22 @@ describe('output formatter', () => {
     });
   });
 
-  test('JSON error outputs { success: false, error: { code, message, details } }', () => {
+  test('JSON error outputs { success: false, error: { message } }', () => {
     const stderrSpy = spyOn(process.stderr, 'write').mockImplementation(() => true);
 
-    formatError(
-      {
-        code: 'ERR_TEST',
-        message: 'Something failed',
-        details: { requestId: 'abc' },
-      },
-      { format: 'json' },
-    );
+    formatError(new Error('Something failed'), 'json');
 
     const parsed = JSON.parse(captureWrites(stderrSpy));
     expect(parsed).toEqual({
       success: false,
-      error: {
-        code: 'ERR_TEST',
-        message: 'Something failed',
-        details: { requestId: 'abc' },
-      },
+      error: { message: 'Something failed' },
     });
   });
 
   test('table format renders flat objects as ASCII table', () => {
     const stdoutSpy = spyOn(process.stdout, 'write').mockImplementation(() => true);
 
-    formatOutput(
-      {
-        market: 'BTC_USDT',
-        last_price: '100000',
-      },
-      { format: 'table' },
-    );
+    formatOutput({ market: 'BTC_USDT', last_price: '100000' }, 'table');
 
     const output = captureWrites(stdoutSpy);
     expect(output).toContain('market');
@@ -71,7 +55,7 @@ describe('output formatter', () => {
         { market: 'BTC_USDT', price: '100000' },
         { market: 'ETH_USDT', price: '3000' },
       ],
-      { format: 'table' },
+      'table',
     );
 
     const output = captureWrites(stdoutSpy);
@@ -84,24 +68,25 @@ describe('output formatter', () => {
   test('table format handles empty arrays', () => {
     const stdoutSpy = spyOn(process.stdout, 'write').mockImplementation(() => true);
 
-    formatOutput([], { format: 'table' });
+    formatOutput([], 'table');
 
     expect(captureWrites(stdoutSpy)).toContain('No results found');
   });
 
   test('JSON format with raw:true emits bare data without envelope', () => {
+    setGlobalConfigOverrides({ raw: true });
     const stdoutSpy = spyOn(process.stdout, 'write').mockImplementation(() => true);
 
-    formatOutput({ ticker: 'BTC_USDT' }, { format: 'json', raw: true });
+    formatOutput({ ticker: 'BTC_USDT' }, 'json');
 
     const parsed = JSON.parse(captureWrites(stdoutSpy));
     expect(parsed).toEqual({ ticker: 'BTC_USDT' });
   });
 
-  test('JSON format with raw:false emits { success: true, data } envelope', () => {
+  test('JSON format without raw emits { success: true, data } envelope', () => {
     const stdoutSpy = spyOn(process.stdout, 'write').mockImplementation(() => true);
 
-    formatOutput({ ticker: 'BTC_USDT' }, { format: 'json', raw: false });
+    formatOutput({ ticker: 'BTC_USDT' }, 'json');
 
     const parsed = JSON.parse(captureWrites(stdoutSpy));
     expect(parsed).toEqual({ success: true, data: { ticker: 'BTC_USDT' } });
@@ -109,11 +94,11 @@ describe('output formatter', () => {
 
   test('table format truncates long values (>80 chars)', () => {
     const stdoutSpy = spyOn(process.stdout, 'write').mockImplementation(() => true);
-    const longValue = 'x'.repeat(90); // 90 > MAX_TABLE_CELL_LENGTH (80)
+    const longValue = 'x'.repeat(90);
 
-    formatOutput([{ note: longValue }], { format: 'table' });
+    formatOutput([{ note: longValue }], 'table');
 
     const output = captureWrites(stdoutSpy);
-    expect(output).toContain(`${'x'.repeat(77)}...`); // 80 - 3 = 77
+    expect(output).toContain(`${'x'.repeat(77)}...`);
   });
 });

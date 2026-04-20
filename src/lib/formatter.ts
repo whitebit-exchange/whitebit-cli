@@ -1,213 +1,92 @@
 import { getGlobalConfigOverrides } from './config';
-import type { ApiResponse } from './types';
 
 export type OutputFormat = 'json' | 'table';
 
-export interface FormatOutputOptions {
-  format: OutputFormat;
-  raw?: boolean;
-}
+const MAX_CELL = 80;
+const RED = '\u001b[31m';
+const DIM = '\u001b[2m';
+const RST = '\u001b[0m';
 
-export interface FormattedError {
-  code: string;
-  message: string;
-  details?: unknown;
-}
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && !Array.isArray(v);
 
-export interface FormatErrorOptions {
-  format?: OutputFormat;
-}
+const truncate = (s: string): string =>
+  s.length <= MAX_CELL ? s : `${s.slice(0, MAX_CELL - 3)}...`;
 
-const MAX_TABLE_CELL_LENGTH = 80;
-const ANSI_RED = '\u001b[31m';
-const ANSI_DIM = '\u001b[2m';
-const ANSI_RESET = '\u001b[0m';
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
-
-const truncate = (value: string): string => {
-  if (value.length <= MAX_TABLE_CELL_LENGTH) {
-    return value;
-  }
-
-  return `${value.slice(0, MAX_TABLE_CELL_LENGTH - 3)}...`;
+const cell = (v: unknown): string => {
+  if (v === null || v === undefined) return '';
+  if (typeof v === 'string') return truncate(v);
+  if (typeof v === 'number' || typeof v === 'boolean' || typeof v === 'bigint') return String(v);
+  return truncate(JSON.stringify(v));
 };
 
-const normalizeCellValue = (value: unknown): string => {
-  if (value === null || typeof value === 'undefined') {
-    return '';
-  }
-
-  if (typeof value === 'string') {
-    return truncate(value);
-  }
-
-  if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
-    return String(value);
-  }
-
-  return truncate(JSON.stringify(value));
-};
-
-const flattenRow = (row: Record<string, unknown>, prefix = ''): Record<string, unknown> => {
+const flatten = (row: Record<string, unknown>, prefix = ''): Record<string, unknown> => {
   const result: Record<string, unknown> = {};
-
-  for (const [key, value] of Object.entries(row)) {
-    const flatKey = prefix ? `${prefix}.${key}` : key;
-
-    if (isRecord(value)) {
-      Object.assign(result, flattenRow(value, flatKey));
-    } else if (Array.isArray(value)) {
-      result[flatKey] = truncate(JSON.stringify(value));
-    } else {
-      result[flatKey] = value;
-    }
+  for (const [k, v] of Object.entries(row)) {
+    const key = prefix ? `${prefix}.${k}` : k;
+    if (isRecord(v)) Object.assign(result, flatten(v, key));
+    else if (Array.isArray(v)) result[key] = truncate(JSON.stringify(v));
+    else result[key] = v;
   }
-
   return result;
 };
 
-/**
- * Unwrap API response wrappers like `{ data: [...] }` or `{ records: [...] }`.
- * Returns the inner array if found, otherwise returns the original data unchanged.
- * Only unwraps when the inner value is an Array.
- */
-export const unwrapTableData = (data: unknown): unknown => {
-  if (!isRecord(data)) {
-    return data;
-  }
-
-  // Check .records first (more specific/explicit wrapper key)
-  if ('records' in data && Array.isArray(data.records)) {
-    return data.records;
-  }
-
-  // Check .data second (generic wrapper key)
-  if ('data' in data && Array.isArray(data.data)) {
-    return data.data;
-  }
-
+const unwrap = (data: unknown): unknown => {
+  if (!isRecord(data)) return data;
+  if ('records' in data && Array.isArray(data.records)) return data.records;
+  if ('data' in data && Array.isArray(data.data)) return data.data;
   return data;
 };
 
-const collectRows = (data: unknown): Record<string, unknown>[] => {
-  if (Array.isArray(data)) {
-    return data.map((item) => (isRecord(item) ? flattenRow(item) : { value: item }));
-  }
-
-  if (isRecord(data)) {
-    return [flattenRow(data)];
-  }
-
-  return [{ value: data }];
+const rows = (data: unknown): Record<string, unknown>[] => {
+  const d = unwrap(data);
+  if (Array.isArray(d)) return d.map((item) => (isRecord(item) ? flatten(item) : { value: item }));
+  if (isRecord(d)) return [flatten(d)];
+  return [{ value: d }];
 };
 
-const collectHeaders = (rows: Record<string, unknown>[]): string[] => {
-  const headers: string[] = [];
-  for (const row of rows) {
-    for (const key of Object.keys(row)) {
-      if (!headers.includes(key)) {
-        headers.push(key);
-      }
-    }
-  }
-
-  return headers;
+const headers = (r: Record<string, unknown>[]): string[] => {
+  const h: string[] = [];
+  for (const row of r) for (const k of Object.keys(row)) if (!h.includes(k)) h.push(k);
+  return h;
 };
 
 const renderTable = (data: unknown): string => {
-  const rows = collectRows(data);
-  if (rows.length === 0) {
-    return 'No results found';
-  }
-
-  const headers = collectHeaders(rows);
-  const widths = headers.map((header) => {
-    const rowMax = rows.reduce((max, row) => {
-      const value = normalizeCellValue(row[header]);
-      return Math.max(max, value.length);
-    }, 0);
-
-    return Math.max(header.length, rowMax);
-  });
-  const border = `+${widths.map((width) => '-'.repeat(width + 2)).join('+')}+`;
-  const headerRow = `| ${headers
-    .map((header, index) => header.padEnd(widths[index] ?? 0))
-    .join(' | ')} |`;
-  const dataRows = rows.map(
-    (row) =>
-      `| ${headers
-        .map((header, index) => normalizeCellValue(row[header]).padEnd(widths[index] ?? 0))
-        .join(' | ')} |`,
+  const r = rows(data);
+  if (r.length === 0) return 'No results found';
+  const h = headers(r);
+  const w = h.map((hdr) => Math.max(hdr.length, ...r.map((row) => cell(row[hdr]).length)));
+  const border = `+${w.map((n) => '-'.repeat(n + 2)).join('+')}+`;
+  const hdrRow = `| ${h.map((hdr, i) => hdr.padEnd(w[i] ?? 0)).join(' | ')} |`;
+  const dataRows = r.map(
+    (row) => `| ${h.map((hdr, i) => cell(row[hdr]).padEnd(w[i] ?? 0)).join(' | ')} |`,
   );
-
-  return [border, headerRow, border, ...dataRows, border].join('\n');
+  return [border, hdrRow, border, ...dataRows, border].join('\n');
 };
 
-const normalizeError = (error: unknown): FormattedError => {
-  if (isRecord(error) && typeof error.message === 'string') {
-    const code =
-      typeof error.code === 'string' && error.code.length > 0 ? error.code : 'ERR_UNKNOWN';
-    return {
-      code,
-      message: error.message,
-      details: error.details,
-    };
-  }
-
-  if (error instanceof Error) {
-    return {
-      code: 'ERR_UNKNOWN',
-      message: error.message,
-    };
-  }
-
-  return {
-    code: 'ERR_UNKNOWN',
-    message: 'Unknown error',
-    details: error,
-  };
-};
-
-export const formatOutput = (data: unknown, options: FormatOutputOptions): void => {
+export const formatOutput = (data: unknown, format: OutputFormat): void => {
   const overrides = getGlobalConfigOverrides();
-  const raw = options.raw ?? overrides.raw ?? false;
-
-  if (options.format === 'json') {
-    const payload = raw ? data : { success: true, data };
-    process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
-    return;
+  const raw = overrides.raw ?? false;
+  if (format === 'json') {
+    process.stdout.write(`${JSON.stringify(raw ? data : { success: true, data }, null, 2)}\n`);
+  } else {
+    process.stdout.write(`${renderTable(data)}\n`);
   }
-
-  process.stdout.write(`${renderTable(data)}\n`);
 };
 
-export const formatError = (error: unknown, options: FormatErrorOptions = {}): void => {
-  const normalized = normalizeError(error);
-
-  // Carry suggestion from typed errors through to output
+export const formatError = (error: unknown, format?: OutputFormat): void => {
+  const msg = error instanceof Error ? error.message : String(error ?? 'Unknown error');
   const suggestion =
     isRecord(error) && typeof (error as { suggestion?: unknown }).suggestion === 'string'
       ? (error as { suggestion: string }).suggestion
       : undefined;
 
-  if (options.format === 'json') {
+  if (format === 'json') {
     process.stderr.write(
-      `${JSON.stringify({ success: false, error: { ...normalized, ...(suggestion ? { suggestion } : {}) } }, null, 2)}\n`,
+      `${JSON.stringify({ success: false, error: { message: msg, ...(suggestion ? { suggestion } : {}) } }, null, 2)}\n`,
     );
     return;
   }
-
-  process.stderr.write(`${ANSI_RED}Error${ANSI_RESET}: ${normalized.message}\n`);
-  if (suggestion) {
-    process.stderr.write(`${ANSI_DIM}Hint: ${suggestion}${ANSI_RESET}\n`);
-  }
-  if (typeof normalized.details !== 'undefined') {
-    process.stderr.write(`${JSON.stringify(normalized.details, null, 2)}\n`);
-  }
-};
-
-export const printJson = (payload: ApiResponse): void => {
-  formatOutput(payload, { format: 'json' });
+  process.stderr.write(`${RED}Error${RST}: ${msg}\n`);
+  if (suggestion) process.stderr.write(`${DIM}Hint: ${suggestion}${RST}\n`);
 };

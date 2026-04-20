@@ -1,12 +1,3 @@
-/**
- * Typed error classes used for reliable exit code inference in cli.ts.
- * Throw these instead of plain Error at key failure points.
- *
- * @bunli/core always calls process.exit(1) for handler errors, losing instanceof
- * identity. Each typed error records its intended exit code in _pendingExitCode so
- * cli.ts can intercept the forced exit(1) and use the correct code instead.
- */
-
 let _pendingExitCode: number | undefined;
 
 export const getPendingExitCode = (): number | undefined => _pendingExitCode;
@@ -14,7 +5,7 @@ export const getPendingExitCode = (): number | undefined => _pendingExitCode;
 export class CredentialsMissingError extends Error {
   readonly type = 'CredentialsMissingError' as const;
   readonly suggestion =
-    'Run `whitebit login` to save your API credentials, or pass --api-key and --api-secret.';
+    'Run `whitebit2 config set --api-key <key> --api-secret <secret>` to save your API credentials.';
 
   constructor() {
     super('API credentials are required for this command.');
