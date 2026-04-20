@@ -40,6 +40,7 @@
     "@bunli/core": "^0.8.2",
     "@bunli/plugin-completions": "^0.3.4",
     "smol-toml": "^1.6.0",
+    "whitebit-typescript-sdk": "^1.0.6",
     "zod": "^4.3.6"
   },
   "devDependencies": {
