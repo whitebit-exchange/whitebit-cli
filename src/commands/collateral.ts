@@ -1,7 +1,7 @@
 import { defineCommand, defineGroup, option } from '@bunli/core';
 import { z } from 'zod';
 
-import { authFields, createClient } from '../lib/client';
+import { createClient, withAuth } from '../lib/client';
 import { loadConfig } from '../lib/config';
 import { formatOutput } from '../lib/formatter';
 
@@ -61,14 +61,15 @@ const limitOrderCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.collateralTrading.createCollateralLimitOrder({
-      market: flags.market,
-      side: flags.side,
-      amount: flags.amount,
-      price: flags.price,
-      ...(flags['client-order-id'] && { client_order_id: flags['client-order-id'] }),
-      ...authFields(),
-    });
+    const res = await client.collateralTrading.createCollateralLimitOrder(
+      withAuth({
+        market: flags.market,
+        side: flags.side,
+        amount: flags.amount,
+        price: flags.price,
+        ...(flags['client-order-id'] && { clientOrderId: flags['client-order-id'] }),
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -85,13 +86,14 @@ const marketOrderCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.collateralTrading.createCollateralMarketOrder({
-      market: flags.market,
-      side: flags.side,
-      amount: flags.amount,
-      ...(flags['client-order-id'] && { client_order_id: flags['client-order-id'] }),
-      ...authFields(),
-    });
+    const res = await client.collateralTrading.createCollateralMarketOrder(
+      withAuth({
+        market: flags.market,
+        side: flags.side,
+        amount: flags.amount,
+        ...(flags['client-order-id'] && { clientOrderId: flags['client-order-id'] }),
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -110,15 +112,16 @@ const stopLimitCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.collateralTrading.createCollateralStopLimitOrder({
-      market: flags.market,
-      side: flags.side,
-      amount: flags.amount,
-      price: flags.price,
-      activation_price: flags['activation-price'],
-      ...(flags['client-order-id'] && { client_order_id: flags['client-order-id'] }),
-      ...authFields(),
-    });
+    const res = await client.collateralTrading.createCollateralStopLimitOrder(
+      withAuth({
+        market: flags.market,
+        side: flags.side,
+        amount: flags.amount,
+        price: flags.price,
+        activation_price: flags['activation-price'],
+        ...(flags['client-order-id'] && { clientOrderId: flags['client-order-id'] }),
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -136,14 +139,15 @@ const triggerMarketCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.collateralTrading.createCollateralTriggerMarketOrder({
-      market: flags.market,
-      side: flags.side,
-      amount: flags.amount,
-      activation_price: flags['activation-price'],
-      ...(flags['client-order-id'] && { client_order_id: flags['client-order-id'] }),
-      ...authFields(),
-    });
+    const res = await client.collateralTrading.createCollateralTriggerMarketOrder(
+      withAuth({
+        market: flags.market,
+        side: flags.side,
+        amount: flags.amount,
+        activation_price: flags['activation-price'],
+        ...(flags['client-order-id'] && { clientOrderId: flags['client-order-id'] }),
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -162,15 +166,16 @@ const ocoOrderCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.collateralTrading.createCollateralOcoOrder({
-      market: flags.market,
-      side: flags.side,
-      amount: flags.amount,
-      price: flags.price,
-      activation_price: flags['activation-price'],
-      stop_limit_price: flags['stop-limit-price'],
-      ...authFields(),
-    });
+    const res = await client.collateralTrading.createCollateralOcoOrder(
+      withAuth({
+        market: flags.market,
+        side: flags.side,
+        amount: flags.amount,
+        price: flags.price,
+        activation_price: flags['activation-price'],
+        stop_limit_price: flags['stop-limit-price'],
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -185,11 +190,12 @@ const cancelConditionalCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    await client.collateralTrading.cancelConditionalOrder({
-      market: flags.market,
-      id: flags.id,
-      ...authFields(),
-    });
+    await client.collateralTrading.cancelConditionalOrder(
+      withAuth({
+        market: flags.market,
+        id: flags.id,
+      }),
+    );
     formatOutput({ success: true }, format);
   },
 });
@@ -204,11 +210,12 @@ const cancelOcoCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.collateralTrading.cancelOcoOrder({
-      market: flags.market,
-      order_id: flags['order-id'],
-      ...authFields(),
-    });
+    const res = await client.collateralTrading.cancelOcoOrder(
+      withAuth({
+        market: flags.market,
+        orderId: flags['order-id'],
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -278,10 +285,11 @@ const setLeverageCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.collateralTrading.changeCollateralAccountLeverage({
-      leverage: flags.leverage,
-      ...authFields(),
-    });
+    const res = await client.collateralTrading.changeCollateralAccountLeverage(
+      withAuth({
+        leverage: flags.leverage,
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -306,10 +314,11 @@ const setHedgeModeCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    await client.collateralTrading.updateHedgeMode({
-      hedgeMode: flags.enable,
-      ...authFields(),
-    });
+    await client.collateralTrading.updateHedgeMode(
+      withAuth({
+        hedgeMode: flags.enable,
+      }),
+    );
     formatOutput({ success: true }, format);
   },
 });

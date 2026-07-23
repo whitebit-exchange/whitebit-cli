@@ -5,9 +5,7 @@ import { accountGroup } from './commands/account';
 import { collateralGroup } from './commands/collateral';
 import { configGroup } from './commands/config';
 import { convertGroup } from './commands/convert';
-import { lendingGroup } from './commands/lending';
 import { marketGroup } from './commands/market';
-import { miningGroup } from './commands/mining';
 import { serverGroup } from './commands/server';
 import { spotGroup } from './commands/spot';
 import { subAccountGroup } from './commands/sub-account';
@@ -46,8 +44,6 @@ cli.command(collateralGroup);
 cli.command(accountGroup);
 cli.command(convertGroup);
 cli.command(subAccountGroup);
-cli.command(miningGroup);
-cli.command(lendingGroup);
 cli.command(configGroup);
 
 try {

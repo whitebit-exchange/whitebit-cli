@@ -8,7 +8,7 @@
         "@bunli/core": "^0.8.2",
         "@bunli/plugin-completions": "^0.3.4",
         "smol-toml": "^1.6.0",
-        "whitebit-typescript-sdk": "^1.0.6",
+        "whitebit-typescript-sdk": "^1.0.8",
         "zod": "^4.3.6",
       },
       "devDependencies": {
@@ -349,7 +349,7 @@
 
     "whatwg-url": ["whatwg-url@5.0.0", "", { "dependencies": { "tr46": "~0.0.3", "webidl-conversions": "^3.0.0" } }, "sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw=="],
 
-    "whitebit-typescript-sdk": ["whitebit-typescript-sdk@1.0.6", "", { "dependencies": { "form-data": "^4.0.0", "node-fetch": "^2.7.0", "qs": "6.11.2", "readable-stream": "^4.5.2" } }, "sha512-GEwJIK+QEiommKTCpPH9WLtVPrU1VshWcijPY2WqES163Tq+RJBqOgCuefOHnH78XCQpqSinDZL26zmY175/bg=="],
+    "whitebit-typescript-sdk": ["whitebit-typescript-sdk@1.0.8", "", { "dependencies": { "form-data": "^4.0.0", "node-fetch": "^2.7.0", "qs": "6.11.2", "readable-stream": "^4.5.2" } }, "sha512-5O5GSTgzolVW2TNEXZx1+6JLark1fVC5+t49Qg/WjzmJmkIg2eQIAPog9+UH4+YTMqOdRu4MQl6kmEhYSHAsFA=="],
 
     "ws": ["ws@8.20.0", "", { "peerDependencies": { "bufferutil": "^4.0.1", "utf-8-validate": ">=5.0.2" }, "optionalPeers": ["bufferutil", "utf-8-validate"] }, "sha512-sAt8BhgNbzCtgGbt2OxmpuryO63ZoDk/sqaB/znQm94T4fCEsy/yV+7CdC1kJhOU9lboAEU7R3kquuycDoibVA=="],
 
