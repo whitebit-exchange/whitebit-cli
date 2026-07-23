@@ -1,7 +1,7 @@
 import { defineCommand, defineGroup, option } from '@bunli/core';
 import { z } from 'zod';
 
-import { authFields, createClient } from '../lib/client';
+import { createClient, withAuth } from '../lib/client';
 import { loadConfig } from '../lib/config';
 import { formatOutput } from '../lib/formatter';
 
@@ -16,10 +16,11 @@ const mainBalanceCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.mainAccount.getMainBalance({
-      ...(flags.ticker && { ticker: flags.ticker }),
-      ...authFields(),
-    });
+    const res = await client.mainAccount.getMainBalance(
+      withAuth({
+        ...(flags.ticker && { ticker: flags.ticker }),
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -36,13 +37,14 @@ const depositWithdrawHistoryCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.mainAccount.getDepositWithdrawHistory({
-      ...(flags.method !== undefined && { transactionMethod: flags.method }),
-      ...(flags.ticker && { ticker: flags.ticker }),
-      ...(flags.limit !== undefined && { limit: flags.limit }),
-      ...(flags.offset !== undefined && { offset: flags.offset }),
-      ...authFields(),
-    });
+    const res = await client.mainAccount.getDepositWithdrawHistory(
+      withAuth({
+        ...(flags.method !== undefined && { transactionMethod: flags.method }),
+        ...(flags.ticker && { ticker: flags.ticker }),
+        ...(flags.limit !== undefined && { limit: flags.limit }),
+        ...(flags.offset !== undefined && { offset: flags.offset }),
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -61,13 +63,14 @@ const transferCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    await client.transfer.betweenBalances({
-      from: flags.from,
-      to: flags.to,
-      ticker: flags.ticker,
-      amount: flags.amount,
-      ...authFields(),
-    });
+    await client.transfer.betweenBalances(
+      withAuth({
+        from: flags.from,
+        to: flags.to,
+        ticker: flags.ticker,
+        amount: flags.amount,
+      }),
+    );
     formatOutput({ success: true }, format);
   },
 });
@@ -84,11 +87,12 @@ const depositAddressCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.deposit.getDepositAddress({
-      ticker: flags.ticker,
-      ...(flags.network && { network: flags.network }),
-      ...authFields(),
-    });
+    const res = await client.deposit.getDepositAddress(
+      withAuth({
+        ticker: flags.ticker,
+        ...(flags.network && { network: flags.network }),
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -103,11 +107,12 @@ const createAddressCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.deposit.createNewAddress({
-      ticker: flags.ticker,
-      ...(flags.network && { network: flags.network }),
-      ...authFields(),
-    });
+    const res = await client.deposit.createNewAddress(
+      withAuth({
+        ticker: flags.ticker,
+        ...(flags.network && { network: flags.network }),
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -121,22 +126,23 @@ const withdrawCommand = defineCommand({
     ticker: option(z.string(), { description: 'Asset ticker, e.g. USDT' }),
     amount: option(z.string(), { description: 'Amount to withdraw' }),
     address: option(z.string(), { description: 'Destination address' }),
-    'unique-id': option(z.string().optional(), { description: 'Unique idempotency ID' }),
+    'unique-id': option(z.string(), { description: 'Unique idempotency ID' }),
     network: option(z.string().optional(), { description: 'Network, e.g. TRC20, ERC20' }),
     memo: option(z.string().optional(), { description: 'Memo/tag (for XRP, EOS, etc.)' }),
   },
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.withdraw.createWithdraw({
-      ticker: flags.ticker,
-      amount: flags.amount,
-      address: flags.address,
-      ...(flags['unique-id'] && { unique_id: flags['unique-id'] }),
-      ...(flags.network && { network: flags.network }),
-      ...(flags.memo && { memo: flags.memo }),
-      ...authFields(),
-    });
+    const res = await client.withdraw.createWithdraw(
+      withAuth({
+        ticker: flags.ticker,
+        amount: flags.amount,
+        address: flags.address,
+        uniqueId: flags['unique-id'],
+        ...(flags.network && { network: flags.network }),
+        ...(flags.memo && { memo: flags.memo }),
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -149,7 +155,7 @@ const feesCommand = defineCommand({
   handler: async () => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.fees.getFees({ ...authFields() });
+    const res = await client.fees.getFees(withAuth({}));
     formatOutput(res, format);
   },
 });

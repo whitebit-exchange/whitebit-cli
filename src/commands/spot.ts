@@ -1,7 +1,7 @@
 import { defineCommand, defineGroup, option } from '@bunli/core';
 import { z } from 'zod';
 
-import { authFields, createClient } from '../lib/client';
+import { createClient, withAuth } from '../lib/client';
 import { loadConfig } from '../lib/config';
 import { formatOutput } from '../lib/formatter';
 
@@ -36,16 +36,17 @@ const limitOrderCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.spotTrading.createLimitOrder({
-      market: flags.market,
-      side: flags.side,
-      amount: flags.amount,
-      price: flags.price,
-      ...(flags['post-only'] !== undefined && { postOnly: flags['post-only'] }),
-      ...(flags.ioc !== undefined && { ioc: flags.ioc }),
-      ...(flags['client-order-id'] && { client_order_id: flags['client-order-id'] }),
-      ...authFields(),
-    });
+    const res = await client.spotTrading.createLimitOrder(
+      withAuth({
+        market: flags.market,
+        side: flags.side,
+        amount: flags.amount,
+        price: flags.price,
+        ...(flags['post-only'] !== undefined && { postOnly: flags['post-only'] }),
+        ...(flags.ioc !== undefined && { ioc: flags.ioc }),
+        ...(flags['client-order-id'] && { clientOrderId: flags['client-order-id'] }),
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -64,13 +65,14 @@ const marketOrderCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.spotTrading.createMarketOrder({
-      market: flags.market,
-      side: flags.side,
-      amount: flags.amount,
-      ...(flags['client-order-id'] && { client_order_id: flags['client-order-id'] }),
-      ...authFields(),
-    });
+    const res = await client.spotTrading.createMarketOrder(
+      withAuth({
+        market: flags.market,
+        side: flags.side,
+        amount: flags.amount,
+        ...(flags['client-order-id'] && { clientOrderId: flags['client-order-id'] }),
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -89,15 +91,16 @@ const stopLimitCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.spotTrading.createStopLimitOrder({
-      market: flags.market,
-      side: flags.side,
-      amount: flags.amount,
-      price: flags.price,
-      activation_price: flags['activation-price'],
-      ...(flags['client-order-id'] && { client_order_id: flags['client-order-id'] }),
-      ...authFields(),
-    });
+    const res = await client.spotTrading.createStopLimitOrder(
+      withAuth({
+        market: flags.market,
+        side: flags.side,
+        amount: flags.amount,
+        price: flags.price,
+        activation_price: flags['activation-price'],
+        ...(flags['client-order-id'] && { clientOrderId: flags['client-order-id'] }),
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -115,14 +118,15 @@ const stopMarketCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.spotTrading.createStopMarketOrder({
-      market: flags.market,
-      side: flags.side,
-      amount: flags.amount,
-      activation_price: flags['activation-price'],
-      ...(flags['client-order-id'] && { client_order_id: flags['client-order-id'] }),
-      ...authFields(),
-    });
+    const res = await client.spotTrading.createStopMarketOrder(
+      withAuth({
+        market: flags.market,
+        side: flags.side,
+        amount: flags.amount,
+        activation_price: flags['activation-price'],
+        ...(flags['client-order-id'] && { clientOrderId: flags['client-order-id'] }),
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -138,12 +142,13 @@ const cancelOrderCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.spotTrading.cancelOrder({
-      market: flags.market,
-      ...(flags['order-id'] !== undefined && { order_id: flags['order-id'] }),
-      ...(flags['client-order-id'] && { client_order_id: flags['client-order-id'] }),
-      ...authFields(),
-    });
+    const res = await client.spotTrading.cancelOrder(
+      withAuth({
+        market: flags.market,
+        ...(flags['order-id'] !== undefined && { orderId: flags['order-id'] }),
+        ...(flags['client-order-id'] && { clientOrderId: flags['client-order-id'] }),
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -213,12 +218,13 @@ const orderDealsCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.spotTrading.getOrderDeals({
-      order_id: flags['order-id'],
-      ...(flags.limit !== undefined && { limit: flags.limit }),
-      ...(flags.offset !== undefined && { offset: flags.offset }),
-      ...authFields(),
-    });
+    const res = await client.spotTrading.getOrderDeals(
+      withAuth({
+        orderId: flags['order-id'],
+        ...(flags.limit !== undefined && { limit: flags.limit }),
+        ...(flags.offset !== undefined && { offset: flags.offset }),
+      }),
+    );
     formatOutput(res, format);
   },
 });
@@ -256,14 +262,15 @@ const modifyOrderCommand = defineCommand({
   handler: async ({ flags }) => {
     const { format } = loadConfig();
     const client = createClient();
-    const res = await client.spotTrading.modifyOrder({
-      market: flags.market,
-      ...(flags['order-id'] !== undefined && { order_id: flags['order-id'] }),
-      ...(flags['client-order-id'] && { client_order_id: flags['client-order-id'] }),
-      ...(flags.price && { price: flags.price }),
-      ...(flags.amount && { amount: flags.amount }),
-      ...authFields(),
-    });
+    const res = await client.spotTrading.modifyOrder(
+      withAuth({
+        market: flags.market,
+        ...(flags['order-id'] !== undefined && { orderId: flags['order-id'] }),
+        ...(flags['client-order-id'] && { clientOrderId: flags['client-order-id'] }),
+        ...(flags.price && { price: flags.price }),
+        ...(flags.amount && { amount: flags.amount }),
+      }),
+    );
     formatOutput(res, format);
   },
 });

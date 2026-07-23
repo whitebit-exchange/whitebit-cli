@@ -49,8 +49,8 @@ const historyCommand = defineCommand({
   options: {
     'from-ticker': option(z.string().optional(), { description: 'Filter by source ticker' }),
     'to-ticker': option(z.string().optional(), { description: 'Filter by target ticker' }),
-    limit: option(z.string().optional(), { description: 'Number of records (string)' }),
-    offset: option(z.string().optional(), { description: 'Pagination offset (string)' }),
+    limit: option(z.coerce.number().optional(), { description: 'Number of records' }),
+    offset: option(z.coerce.number().optional(), { description: 'Pagination offset' }),
   },
   handler: async ({ flags }) => {
     const { format } = loadConfig();
@@ -58,8 +58,8 @@ const historyCommand = defineCommand({
     const res = await client.convertHistory({
       ...(flags['from-ticker'] && { fromTicker: flags['from-ticker'] }),
       ...(flags['to-ticker'] && { toTicker: flags['to-ticker'] }),
-      ...(flags.limit && { limit: flags.limit }),
-      ...(flags.offset && { offset: flags.offset }),
+      ...(flags.limit !== undefined && { limit: flags.limit }),
+      ...(flags.offset !== undefined && { offset: flags.offset }),
     });
     formatOutput(res, format);
   },

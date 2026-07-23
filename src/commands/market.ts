@@ -133,17 +133,6 @@ const fundingHistoryCommand = defineCommand({
   },
 });
 
-const miningPoolOverviewCommand = defineCommand({
-  name: 'mining-overview',
-  description: 'Get public mining pool overview',
-  handler: async () => {
-    const { format } = loadConfig();
-    const client = createPublicClient();
-    const res = await client.publicApiV4.miningPoolOverview();
-    formatOutput(res, format);
-  },
-});
-
 export const marketGroup = defineGroup({
   name: 'market',
   description: 'Public market data (no auth required)',
@@ -158,6 +147,5 @@ export const marketGroup = defineGroup({
     collateralMarketsCommand,
     futuresMarketsCommand,
     fundingHistoryCommand,
-    miningPoolOverviewCommand,
   ],
 });
