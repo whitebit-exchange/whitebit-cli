@@ -16,6 +16,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
+    "resolveJsonModule": true,
     "types": ["bun"]
   },
   "include": ["src/**/*.ts", "test/**/*.ts"]
